@@ -255,7 +255,7 @@ namespace Xunmei.Smart.Native
                 out sessionCount);
 
             int dataSize = Marshal.SizeOf(typeof(NativeMethods.WTS_SESSION_INFO));
-            int current = (int)pSessionInfo;
+            long current = (long)pSessionInfo;
             for (int i = 0; i < sessionCount; i++)
             {
                 NativeMethods.WTS_SESSION_INFO sessionInfo =

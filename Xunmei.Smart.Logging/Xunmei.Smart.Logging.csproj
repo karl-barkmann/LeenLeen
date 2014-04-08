@@ -53,11 +53,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>cd $(ProjectDir)
-nuget SetApiKey FA3B1B0C-2F74-478A-A6BC-21DFEA886E83 -Source http://192.168.0.10/nuget 
-nuget spec
-nuget pack $(ProjectFileName) -Prop Configuration=Release
-nuget push $(TargetName).1.0.0.1.nupkg -Source http://192.168.0.10/nuget</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
