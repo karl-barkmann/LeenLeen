@@ -1,0 +1,1227 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Xunmei.Smart.Common</name>
+    </assembly>
+    <members>
+        <member name="T:System.ComponentModel.AbortableBackgroundWorker">
+            <summary>
+            可中止的后台工作者组件。
+            </summary>
+        </member>
+        <member name="M:System.ComponentModel.AbortableBackgroundWorker.#ctor">
+            <summary>
+            可中止的后台工作者组件。
+            </summary>
+        </member>
+        <member name="M:System.ComponentModel.AbortableBackgroundWorker.OnDoWork(System.ComponentModel.DoWorkEventArgs)">
+            <summary>
+            引发 System.ComponentModel.BackgroundWorker.DoWork 事件。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:System.ComponentModel.AbortableBackgroundWorker.Abort">
+            <summary>
+            中止后台工作者组件。
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Aspect">
+            <summary>
+            简单切面编程辅助类型。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Aspect.Combine(System.Action{System.Action})">
+            <summary>
+            增加切面定义。
+            </summary>
+            <param name="aspect">切面操作。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Aspect.Do(System.Action)">
+            <summary>
+            做实际工作。
+            </summary>
+            <param name="work">工作内容。</param>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Aspect.Define">
+            <summary>
+            定义切面。
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.AsyncResultNoResult">
+            <summary>
+            表示没有返回值的异步操作。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.AsyncResultNoResult.#ctor(System.AsyncCallback,System.Object)">
+            <summary>
+            构造异步操作的实例。
+            </summary>
+            <param name="asyncCallback">异步操作完成后的回调。</param>
+            <param name="state">用户状态对象。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.AsyncResultNoResult.SetAsCompleted(System.Exception,System.Boolean)">
+            <summary>
+            设置异步操作已经完成。
+            </summary>
+            <param name="exception">异步操作过程中发生的异常。</param>
+            <param name="completedSynchronously">操作是否为同步完成。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.AsyncResultNoResult.EndInvoke">
+            <summary>
+            结束异步操作，如果未完成时调用，将阻塞直到异步操作完成。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.AsyncResultNoResult.AsyncState">
+            <summary>
+            获取用户定义的对象，它限定或包含关于异步操作的信息
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.AsyncResultNoResult.AsyncWaitHandle">
+            <summary>
+            获取异步操作等待句柄。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.AsyncResultNoResult.CompletedSynchronously">
+            <summary>
+            获取一个值，指示操作是否同步完成。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.AsyncResultNoResult.IsCompleted">
+            <summary>
+            获取一个值，指示操作是否完成。
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.AsyncResult`1">
+            <summary>
+            表示有返回值的异步操作。
+            </summary>
+            <typeparam name="TResult">异步操作返回值类型。</typeparam>
+        </member>
+        <member name="M:Xunmei.Smart.Common.AsyncResult`1.#ctor(System.AsyncCallback,System.Object)">
+            <summary>
+            构造异步操作的实例。
+            </summary>
+            <param name="asyncCallback">异步操作完成后的回调。</param>
+            <param name="state">用户状态对象。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.AsyncResult`1.SetAsCompleted(`0,System.Boolean)">
+            <summary>
+            设置异步操作已经完成。
+            </summary>
+            <param name="result">异步操作后的返回值。</param>
+            <param name="completedSynchronously">操作是否为同步完成。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.AsyncResult`1.EndInvoke">
+            <summary>
+            结束异步操作，如果未完成时调用，将阻塞直到异步操作完成。
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.ConcurrentList`1">
+            <summary>
+            表示可通过索引访问的对象的强类型列表。 提供用于并发对列表进行搜索、排序和操作的方法。
+            </summary>
+            <typeparam name="T">列表中元素的类型。</typeparam>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.#ctor">
+            <summary>
+            构造并发强类型列表的实例。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.#ctor(System.Int32)">
+            <summary>
+            构造并发强类型列表的实例。
+            </summary>
+            <param name="capcity">初始容量</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.#ctor(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            构造并发强类型列表的实例。
+            </summary>
+            <param name="source">初始元素集合。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.IndexOf(`0)">
+            <summary>
+            获取元素项在列表中的索引。
+            </summary>
+            <param name="item">元素项。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.Insert(System.Int32,`0)">
+            <summary>
+            在列表指定索引位置插入元素。
+            </summary>
+            <param name="index">插入的索引。</param>
+            <param name="item">插入的元素。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.RemoveAt(System.Int32)">
+            <summary>
+            移除位于指定索引的元素。
+            </summary>
+            <param name="index">要移除的元素的索引。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.Add(`0)">
+            <summary>
+            添加元素的列表末尾,如果指定元素已经存在则更新。
+            </summary>
+            <param name="value">要添加的元素。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.Clear">
+            <summary>
+            清除列表。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.Contains(`0)">
+            <summary>
+            确定元素是否包含于列表中。
+            </summary>
+            <param name="item">要查找的元素。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            从数组指定位置开始复制列表中元素到数组。
+            </summary>
+            <param name="array">要复制到的数组。</param>
+            <param name="arrayIndex">开始放置元素的索引。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.Remove(`0)">
+            <summary>
+            从列表中移除指定元素。
+            </summary>
+            <param name="item">要移除的元素。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.GetEnumerator">
+            <summary>
+            返回循环访问的枚举器。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            返回循环访问的枚举器。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.Add(System.Object)">
+            <summary>
+            添加元素到列表结尾，并返回添加项的索引。
+            </summary>
+            <param name="value">要添加的元素。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.Contains(System.Object)">
+            <summary>
+            确定元素是否包含于列表中。
+            </summary>
+            <param name="value">要查找的元素。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.IndexOf(System.Object)">
+            <summary>
+            确定元素在列表中的索引。
+            </summary>
+            <param name="value">要查找的元素。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.Insert(System.Int32,System.Object)">
+            <summary>
+            在指定索引处插入元素。
+            </summary>
+            <param name="index">要插入的列表中德索引。</param>
+            <param name="value">要插入的元素。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.Remove(System.Object)">
+            <summary>
+            从列表中移除元素。
+            </summary>
+            <param name="value">要移除的元素。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.CopyTo(System.Array,System.Int32)">
+            <summary>
+            从数组的指定位置开始复制元素到数组中。
+            </summary>
+            <param name="array">要负责到的数组。</param>
+            <param name="index">开始复制的索引。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.FindIndex(System.Predicate{`0})">
+            <summary>
+            查找从第一个元素到最后一个元素的范围内第一个匹配元素的从零开始的索引。
+            </summary>
+            <param name="match">定义搜索元素的条件。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.FindIndex(System.Int32,System.Predicate{`0})">
+            <summary>
+            查找从指定索引到最后一个元素的范围内第一个匹配元素的从零开始的索引。
+            </summary>
+            <param name="startIndex">从零开始的搜索的起始索引。</param>
+            <param name="match">定义搜索元素的条件。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.ToArray">
+            <summary>
+            将元素列表复制到新的数组中。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.FindIndex(System.Int32,System.Int32,System.Predicate{`0})">
+            <summary>
+            查找从指定索引并包含指定元素数量的范围内第一个匹配元素的从零开始的索引。
+            </summary>
+            <param name="startIndex">从零开始的搜索的起始索引。</param>
+            <param name="count">要匹配的元素数量。</param>
+            <param name="match">定义搜索元素的条件。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.Foreach(System.Action{`0})">
+            <summary>
+            对每个元素执行指定操作。
+            </summary>
+            <param name="action">要对每个元素执行的委托。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.Sort">
+            <summary>
+            对列表内的元素进行排序。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ConcurrentList`1.Sort(System.Comparison{`0})">
+            <summary>
+            对列表内的元素进行排序。
+            </summary>
+            <param name="comparsion">比较元素时要使用的对比委托。</param>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ConcurrentList`1.Item(System.Int32)">
+            <summary>
+            获取或设置位于指定索引的元素。
+            </summary>
+            <param name="index">要设置或获取的索引。</param>
+            <returns></returns>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ConcurrentList`1.Count">
+            <summary>
+            获取列表中元素个数。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ConcurrentList`1.IsReadOnly">
+            <summary>
+            获取一个值，指示列表是否只读。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ConcurrentList`1.IsFixedSize">
+            <summary>
+            获取一个值，指示列表容量是否为固定大小。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ConcurrentList`1.System#Collections#IList#Item(System.Int32)">
+            <summary>
+            获取或设置位于指定索引的元素。
+            </summary>
+            <param name="index">要获取或设置的元素的索引。</param>
+            <returns></returns>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ConcurrentList`1.IsSynchronized">
+            <summary>
+            获取一个值，指示列表是否线程安全。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ConcurrentList`1.SyncRoot">
+            <summary>
+            获取集合同步锁定的对象。
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.EnumerationExtensions">
+            <summary>
+            枚举扩展方法类。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.EnumerationExtensions.GetDescription(System.Enum)">
+            <summary>
+            获取枚举值的描述特性中的描述字符串。
+            </summary>
+            <param name="value">描述字符串。</param>
+            <returns></returns>
+        </member>
+        <member name="T:Xunmei.Smart.Common.MTQEngine`1">
+            <summary>
+            多线程查询引擎。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.MTQEngine`1.#ctor">
+            <summary>
+            构造一个多线程查询引擎的实例。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.MTQEngine`1.Finalize">
+            <summary>
+            析构。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.MTQEngine`1.Execute(System.Collections.Generic.IEnumerable{Xunmei.Smart.Common.IDbQuerySegement{`0}})">
+            <summary>
+            执行查询。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.MTQEngine`1.ExecuteAsync(System.Collections.Generic.IEnumerable{Xunmei.Smart.Common.IDbQuerySegement{`0}})">
+            <summary>
+            开始异步执行查询。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.MTQEngine`1.Cancel">
+            <summary>
+            请求取消查询。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.MTQEngine`1.Dispose">
+            <summary>
+            释放资源。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.MTQEngine`1.Dispose(System.Boolean)">
+            <summary>
+            释放资源。
+            </summary>
+            <param name="disposing">是否正在主动释放。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.MTQEngine`1.OnCompleted(Xunmei.Smart.Common.AsyncQueryCompletedEventArgs{`0})">
+            <summary>
+            当查询被取完成发生。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.MTQEngine`1.OnCanceld(Xunmei.Smart.Common.AsyncQueryCompletedEventArgs{`0})">
+            <summary>
+            当查询被取消时发生。
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="E:Xunmei.Smart.Common.MTQEngine`1.Completed">
+            <summary>
+            当查询完成时发生。
+            </summary>
+        </member>
+        <member name="E:Xunmei.Smart.Common.MTQEngine`1.Canceld">
+            <summary>
+            当查询被取消时发生。
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.AsyncQueryCompletedEventArgs`1">
+            <summary>
+            异步查询完成参数。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.AsyncQueryCompletedEventArgs`1.#ctor(System.Exception,System.Boolean,System.Object,System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            构造异步查询完成参数的实例。
+            </summary>
+            <param name="error"></param>
+            <param name="cancelled"></param>
+            <param name="userState"></param>
+            <param name="result"></param>
+        </member>
+        <member name="P:Xunmei.Smart.Common.AsyncQueryCompletedEventArgs`1.Result">
+            <summary>
+            异步查询返回值。
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.IDbQuerySegement`1">
+            <summary>
+            查询片段接口。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.IDbQuerySegement`1.Bulid">
+            <summary>
+            构造查询方法。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Xunmei.Smart.Common.IDbQuerySegement`1.Order">
+            <summary>
+            查询顺序。
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.ArgumentValidator">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.CollectionExtensions">
+            <summary>
+            ICollection接口扩展。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.CollectionExtensions.AddRange``1(System.Collections.Generic.ICollection{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            添加一组对象到集合中。
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="target">目标集合。</param>
+            <param name="source">源集合。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.CollectionExtensions.AddRange``1(System.Collections.Generic.ICollection{``0},System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            添加目标集合指定数量的对象到集合中。
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="target">目标集合。</param>
+            <param name="source">源集合。</param>
+            <param name="count">需要提取元素的数量。</param>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.CommandLineHelper">
+            <summary>
+            命令行解析帮助者。
+            </summary>
+            <remarks>
+            '-' - 匹配命令
+            ' ' - 匹配参数
+            ie. -debug launch
+            </remarks>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.CommandLineHelper.GetCommands(System.String[])">
+            <summary>
+            获取用户命令列表。
+            </summary>
+            <param name="args">命令行参数。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.CommandLineHelper.GetCommand(System.String[],System.String)">
+            <summary>
+            获取用户命令。
+            </summary>
+            <param name="args">命令行参数。</param>
+            <param name="verb">命令代号。</param>
+            <returns></returns>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.CommandLineHelper.CommandLine">
+            <summary>
+            代表一条用户命令。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.CommandLineHelper.CommandLine.#ctor(System.String,System.String)">
+            <summary>
+            构造用户命令对象的实例。
+            </summary>
+            <param name="verb">命令代号。</param>
+            <param name="parameter">命令参数。</param>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.CommandLineHelper.CommandLine.Verb">
+            <summary>
+            命令。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.CommandLineHelper.CommandLine.Parameter">
+            <summary>
+            命令参数。
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.EnumerableExtensions">
+            <summary>
+            IEnumerable接口扩展。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.EnumerableExtensions.CanEnumerable``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            是否可以在此集合上进行Linq查询。
+            <para>避免集合为空或集合元素个数为零造成的错误。</para>
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="source">集合。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.EnumerableExtensions.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
+            <summary>
+            对集合中的所有元素执行指定操作。
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="source">集合。</param>
+            <param name="action">指定操作。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.EnumerableExtensions.ForEachWhile``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            对集合中的所有元素执行指定操作，且当退出条件满足时退出。
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="source">集合。</param>
+            <param name="action">指定操作。</param>
+            <param name="brekFunc">条件计算式。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.EnumerableExtensions.ForEachContinue``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0},System.Func{``0,System.Boolean})">
+            <summary>
+            对集合中的所有元素执行指定操作，且当继续条件满足时跳过继续。
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="source">集合。</param>
+            <param name="action">指定操作。</param>
+            <param name="continueFunc">继续条件计算式。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.EnumerableExtensions.ForEachWhile``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0},System.Func{``0,System.Boolean},System.Func{``0,System.Boolean})">
+            <summary>
+            对集合中的所有元素执行指定操作，且当退出条件满足时退出或继续条件满足时跳过继续。
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="source">集合。</param>
+            <param name="action">指定操作。</param>
+            <param name="brekFunc">退出条件计算式。</param>
+            <param name="continueFunc">继续条件计算式。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.EnumerableExtensions.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0,System.Int32})">
+            <summary>
+            对集合中的所有元素执行指定操作。
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="source">集合。</param>
+            <param name="action">指定操作。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.EnumerableExtensions.ForEachWhile``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0,System.Int32},System.Func{``0,System.Boolean})">
+            <summary>
+            对集合中的所有元素执行指定操作，且当退出条件满足时退出。
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="source">集合。</param>
+            <param name="action">指定操作。</param>
+            <param name="brekFunc">条件计算式。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.EnumerableExtensions.ForEachContinue``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0,System.Int32},System.Func{``0,System.Boolean})">
+            <summary>
+            对集合中的所有元素执行指定操作，且当继续条件满足时跳过继续。
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="source">集合。</param>
+            <param name="action">指定操作。</param>
+            <param name="continueFunc">继续条件计算式。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.EnumerableExtensions.ForEachWhile``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0,System.Int32},System.Func{``0,System.Boolean},System.Func{``0,System.Boolean})">
+            <summary>
+            对集合中的所有元素执行指定操作，且当退出条件满足时退出或继续条件满足时跳过继续。
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="source">集合。</param>
+            <param name="action">指定操作。</param>
+            <param name="brekFunc">退出条件计算式。</param>
+            <param name="continueFunc">继续条件计算式。</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.EnumerableExtensions.Cut``1(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Int32)">
+            <summary>
+            提取集合中从指定索引开始指定数量的元素。
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="source">集合。</param>
+            <param name="index">开始的索引。</param>
+            <param name="count">提取的数量。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.EnumerableExtensions.Top``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Int32},System.Int32)">
+            <summary>
+            提取排序后指定数量的元素。
+            </summary>
+            <typeparam name="T">集合中元素的类型。</typeparam>
+            <param name="source">集合。</param>
+            <param name="keySelector">排序筛选器。</param>
+            <param name="top">提取的数量。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.EnumerableExtensions.MaxBy``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Collections.Generic.IComparer{``1})">
+            <summary>
+            Returns the maximal element of the given sequence, based on
+            the given projection and the specified comparer for projected values. 
+            </summary>
+            <remarks>
+            If more than one element has the maximal projected value, the first
+            one encountered will be returned. This overload uses the default comparer
+            for the projected type. This operator uses immediate execution, but
+            only buffers a single result (the current maximal element).
+            </remarks>
+            <typeparam name="TSource">Type of the source sequence</typeparam>
+            <typeparam name="TKey">Type of the projected element</typeparam>
+            <param name="source">Source sequence</param>
+            <param name="selector">Selector to use to pick the results to compare</param>
+            <param name="comparer">Comparer to use to compare projected values</param>
+            <returns>The maximal element, according to the projection.</returns>
+        </member>
+        <member name="T:Xunmei.Smart.Common.EnumHelper">
+            <summary>
+            枚举辅助类
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.EnumHelper.GetDescription(System.Type,System.String)">
+            <summary>
+            获取枚举值的的描述信息。
+            </summary>
+            <param name="type">枚举类型。</param>
+            <param name="fieldName">枚举项。</param>
+            <returns>返回枚举项的Description信息，如果该项没有包含Description则返回枚举项的名称。</returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.EnumHelper.GetDescription(System.Object)">
+            <summary>
+            获取枚举值的的描述信息。
+            </summary>
+            <param name="obj">枚举对象。</param>
+            <returns>返回枚举项的Description信息，如果该项没有包含Description则返回枚举项的ToString()内容。</returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.EnumHelper.Parse``1(System.Int32)">
+            <summary>
+            根据枚举值获取枚举对象
+            </summary>
+            <typeparam name="T">枚举类型</typeparam>
+            <param name="value">枚举值</param>
+            <returns>枚举对象</returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.EnumHelper.GetValue``1(``0)">
+            <summary>
+            获取枚举值
+            </summary>
+            <typeparam name="T">枚举类型</typeparam>
+            <param name="type">枚举类型</param>
+            <returns>枚举</returns>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.Extensions">
+            <summary>
+            扩展类。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.Extensions.TodayLastSecond(System.DateTime)">
+            <summary>
+            今天最后一秒时的时间。
+            </summary>
+            <param name="time"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.Extensions.TodayFirstSecond(System.DateTime)">
+            <summary>
+            今天第一秒时的时间。
+            </summary>
+            <param name="time"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.Extensions.WeekFirstSecond(System.DateTime)">
+            <summary>
+            本周第一秒时的时间。
+            </summary>
+            <param name="time"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.Extensions.WeekLastSecond(System.DateTime)">
+            <summary>
+            本周最后一秒时的时间。
+            </summary>
+            <param name="time"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.Extensions.MonthFirstSecond(System.DateTime)">
+            <summary>
+            本月第一秒时的时间。
+            </summary>
+            <param name="time"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.Extensions.MonthLastSecond(System.DateTime)">
+            <summary>
+            本月最后一秒时的时间。
+            </summary>
+            <param name="time"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.Extensions.MustBeThrown(System.Exception)">
+            <summary>
+            获取一个值，指示该异常是否必须抛出。
+            </summary>
+            <param name="exception">异常对象。</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.Extensions.GetCustomAttribute``1(System.Type)">
+            <summary>
+            获取类型上指定的自定义特性。
+            </summary>
+            <typeparam name="T">要搜索的自定义特性类型。</typeparam>
+            <param name="type">要搜索自定义特性的类型。</param>
+            <returns></returns>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.NetUtils">
+            <summary>
+            网络帮助类。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.NetUtils.GetHostAddress">
+            <summary>
+            获取非Loopback的本机IPV4地址。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.NetStatHelper">
+            <summary>
+            使用netstat管道命令获取进程及端口信息。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.NetStatHelper.PortCanUse(System.Int32)">
+            <summary>
+            获取端口是否可用。
+            </summary>
+            <param name="port">端口号</param>
+            <returns>可用返回true，否则false。</returns>
+            <exception cref="T:System.ArgumentException">端口号指定错误。</exception>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.NetStatHelper.GetListeningPort">
+            <summary>
+            获取当前进程正在监听的端口。
+            </summary>
+            <returns>没有监听端口时，返回null。</returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.NetStatHelper.FindListeningProcess(System.Int32)">
+            <summary>
+            获取正在监听指定端口的进程信息。
+            </summary>
+            <param name="port">端口号</param>
+            <returns>没有找到监听指定端口的进程时，将返回空(null)。</returns>
+            <exception cref="T:System.ArgumentException">端口号指定错误。</exception>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.NetStatHelper.NetStatResult">
+            <summary>
+            netstat输出信息。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.NetStatHelper.NetStatResult.#ctor(System.String)">
+            <summary>
+            获取一条netstat输出信息。
+            </summary>
+            <param name="netStatResult"></param>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.NetStatHelper.NetStatResult.Protocol">
+            <summary>
+            协议类型
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.NetStatHelper.NetStatResult.LocalEndPoint">
+            <summary>
+            本地网络端点
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.NetStatHelper.NetStatResult.RemoteEndPoint">
+            <summary>
+            远程网络端点
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.NetStatHelper.NetStatResult.Status">
+            <summary>
+            netstat状态
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.NetStatHelper.NetStatResult.PID">
+            <summary>
+            进程ID
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.OSHelper">
+            <summary>
+            操作系统帮助类
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.OSHelper.IsLowerVista">
+            <summary>
+            操作系统是否低于vista
+            </summary>
+            <returns>低于vista返回true，否则false</returns>
+        </member>
+        <member name="T:Xunmei.Smart.Common.ApplicationRuntime">
+            <summary>
+            应用程序运行时信息。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ApplicationRuntime.Finalize">
+            <summary>
+            析构函数，确保资源释放。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.ApplicationRuntime.Dispose">
+            <summary>
+            资源释放。
+            </summary>
+        </member>
+        <member name="E:Xunmei.Smart.Common.ApplicationRuntime.TimelyInfoUpdated">
+            <summary>
+            当运行时及时信息更新时发生。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ApplicationRuntime.LocalHostAddress">
+            <summary>
+            获取客户端主机地址，不是Lookback地址。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ApplicationRuntime.LocalHostName">
+            <summary>
+            获取客户端主机名。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ApplicationRuntime.StartUpTime">
+            <summary>
+            获取客户端启动系统时间。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ApplicationRuntime.IsExiting">
+            <summary>
+            获取客户端是否正在退出，当正在退出客户端时该值为true，其他时间应始终为false。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ApplicationRuntime.TotalPhysicalMemory">
+            <summary>
+            获取客户端主机的总物理内存值（单位为M）。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.ApplicationRuntime.TimelyInfo">
+            <summary>
+            获取应用程序运行时及时信息。
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.ApplicationRuntime.TimelyInfoUpdatedEvent">
+            <summary>
+            运行时及时信息更新事件委托。
+            </summary>
+            <param name="e">运行时及时信息。</param>
+        </member>
+        <member name="T:Xunmei.Smart.Common.RuntimeTimelyInfo">
+            <summary>
+            应用程序运行时的及时变更信息。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.RuntimeTimelyInfo.CpuUsage">
+            <summary>
+            获取客户端主机CPU使用率。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.RuntimeTimelyInfo.PrivatePhysicalMemory">
+            <summary>
+            获取客户端进程物理内存使用量（单位为M）。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.RuntimeTimelyInfo.UesdPhysicalMemory">
+            <summary>
+            获取客户端主机已使用的物理内存量（单位为M）。
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.TimelyInfoUpdatedEventArgs">
+            <summary>
+            运行时及时信息更新事件参数。
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.TimelyInfoUpdatedEventArgs.#ctor(Xunmei.Smart.Common.RuntimeTimelyInfo)">
+            <summary>
+            构造运行时及时信息更新事件参数。
+            </summary>
+            <param name="timelyInfo"></param>
+        </member>
+        <member name="P:Xunmei.Smart.Common.TimelyInfoUpdatedEventArgs.UpdateTime">
+            <summary>
+            应用程序运行时及时信息的更新时间。
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.TimelyInfoUpdatedEventArgs.TimelyInfo">
+            <summary>
+            应用程序运行时及时信息。
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.QueuedActionExecuter">
+            <summary>
+            缓存线程，使用队列执行保存的action， 队列执行完一段时间后会自动释放
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.QueuedActionExecuter.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.QueuedActionExecuter.SetThreadName(System.String)">
+            <summary>
+            设置线程名字
+            </summary>
+            <param name="threadName"></param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.QueuedActionExecuter.ExecuteAction(System.Action)">
+            <summary>
+            将要执行的队列添加进来
+            </summary>
+            <param name="executeAction">要加入队列的方法.</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.QueuedActionExecuter.RemoveAction(System.Int32)">
+            <summary>
+            移除某动作，如果该动作还未执行
+            </summary>
+            <param name="actionId"></param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.QueuedActionExecuter.StopRunAsyn">
+            <summary>
+            异步停止执行
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.QueuedActionExecuter.StopRun">
+            <summary>
+            同步停止执行,如果正在执行界面操作，此方法可能导致死锁
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.QueuedActionExecuter.ThreadName">
+            <summary>
+            获取或设置线程名字
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.QueuedActionExecuter.ThreadLifeMilliseconds">
+            <summary>
+            获取或设置线程寿命，单位毫秒.(空闲指定时间后回收)
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.QueuedActionExecuter.ThreadRunIntervalMilliseconds">
+            <summary>
+            获取或设置线程执行间隔时间
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.QueuedActionExecuter.IsBusy">
+            <summary>
+            获取 是否正在忙
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.QueuedActionExecuter.Instance">
+            <summary>
+            获取共享实例
+            </summary>
+        </member>
+        <member name="E:Xunmei.Smart.Common.Utils.QueuedActionExecuter.BusyChanged">
+            <summary>
+            Busy状态发生变化
+            </summary>
+        </member>
+        <member name="E:Xunmei.Smart.Common.Utils.QueuedActionExecuter.ExcutedActionEvent">
+            <summary>
+            动作执行完成事件
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.ActionObject">
+            <summary>
+            表示一个动作
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.ActionObject.Id">
+            <summary>
+            动作id
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.ActionObject.Action">
+            <summary>
+            动作
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.ExecuteResult">
+            <summary>
+            表示action的执行结果
+            </summary>
+        </member>
+        <member name="F:Xunmei.Smart.Common.Utils.ExecuteResult.Executed">
+            <summary>
+            已执行
+            </summary>
+        </member>
+        <member name="F:Xunmei.Smart.Common.Utils.ExecuteResult.Throw">
+            <summary>
+            已抛弃
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.ExecuteResultArgs">
+            <summary>
+            执行结果参数
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.ExecuteResultArgs.Result">
+            <summary>
+            执行结果
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.ExecuteResultArgs.ActionId">
+            <summary>
+            事件id
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.SerializeHelper">
+            <summary>
+            序列化帮助类
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.SerializeHelper.ObjectToXml(System.Object)">
+            <summary>
+            把对象序列化为xml
+            </summary>
+            <param name="obj">The obj.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.SerializeHelper.XmlToObject``1(System.String)">
+            <summary>
+            把xml序列化为对象
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="xml">The XML.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Xunmei.Smart.Common.Utils.TimeActionExecuter">
+            <summary>
+            指定时间执行动作 执行完一段时间后会自动释放
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.TimeActionExecuter.SetThreadName(System.String)">
+            <summary>
+            设置线程名字
+            </summary>
+            <param name="threadName"></param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.TimeActionExecuter.ExecuteAction(System.Action,System.DateTime)">
+            <summary>
+            将要执行的队列添加进来
+            </summary>
+            <param name="executeAction">要加入队列的方法.</param>
+            <param name="executeTime">执行此方法的时间,时间没到会阻塞后面的方法.</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.TimeActionExecuter.StopRunAsyn">
+            <summary>
+            异步停止执行
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.Utils.TimeActionExecuter.StopRun">
+            <summary>
+            同步停止执行
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.TimeActionExecuter.ThreadName">
+            <summary>
+            获取或设置线程名字
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.TimeActionExecuter.ThreadRunIntervalMilliseconds">
+            <summary>
+            获取或设置线程执行间隔时间
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.Utils.TimeActionExecuter.IsBusy">
+            <summary>
+            获取 是否正在忙
+            </summary>
+        </member>
+        <member name="E:Xunmei.Smart.Common.Utils.TimeActionExecuter.BusyChanged">
+            <summary>
+            Busy状态发生变化
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.WeakEventListener`3">
+            <summary>
+            Implements a weak event listener that allows the owner to be garbage
+            collected if its only remaining link is an event handler.
+            </summary>
+            <typeparam name="TInstance">Type of instance listening for the event.</typeparam>
+            <typeparam name="TSource">Type of source for the event.</typeparam>
+            <typeparam name="TEventArgs">Type of event arguments for the event.</typeparam>
+        </member>
+        <member name="F:Xunmei.Smart.Common.WeakEventListener`3._weakInstance">
+            <summary>
+            WeakReference to the instance listening for the event.
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.WeakEventListener`3.#ctor(`0)">
+            <summary>
+            Initializes a new instances of the WeakEventListener class.
+            </summary>
+            <param name="instance">Instance subscribing to the event.</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.WeakEventListener`3.OnEvent(`1,`2)">
+            <summary>
+            Handler for the subscribed event calls OnEventAction to handle it.
+            </summary>
+            <param name="source">Event source.</param>
+            <param name="eventArgs">Event arguments.</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.WeakEventListener`3.Detach">
+            <summary>
+            Detaches from the subscribed event.
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.WeakEventListener`3.OnEventAction">
+            <summary>
+            Gets or sets the method to call when the event fires.
+            </summary>
+        </member>
+        <member name="P:Xunmei.Smart.Common.WeakEventListener`3.OnDetachAction">
+            <summary>
+            Gets or sets the method to call when detaching from the event.
+            </summary>
+        </member>
+        <member name="T:Xunmei.Smart.Common.WeakEventListener`2">
+            <summary>
+            Implements a weak event listener that allows the owner to be garbage
+            collected if its only remaining link is an event handler.
+            </summary>
+            <typeparam name="TSource">Type of source for the event.</typeparam>
+            <typeparam name="TEventArgs">Type of event arguments for the event.</typeparam>
+        </member>
+        <member name="M:Xunmei.Smart.Common.WeakEventListener`2.#ctor(`0,System.Delegate)">
+            <summary>
+            Initializes a new instances of the WeakEventListener class.
+            </summary>
+            <param name="source">Source of the event.</param>
+            <param name="handler">Event arguments for the event.</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.WeakEventListener`2.Finalize">
+            <summary>
+            DeConstructor.
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.WeakEventListener`2.Dispose">
+            <summary>
+            Dispose resources.
+            </summary>
+        </member>
+        <member name="M:Xunmei.Smart.Common.WeakEventListener`2.Dispose(System.Boolean)">
+            <summary>
+            Dispose resources.
+            </summary>
+            <param name="disposing">A value indicate if is disposing by caller.</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.WeakEventListener`2.StopListening(`0)">
+            <summary>
+            Stop listening the event.
+            </summary>
+            <param name="source">Source of the event.</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.WeakEventListener`2.OnEvent(System.Object,`1)">
+            <summary>
+            Fire when event occurs.
+            </summary>
+            <param name="sender">Source of the event.</param>
+            <param name="args">Event arguments for the event.</param>
+        </member>
+        <member name="T:Xunmei.Smart.Common.WeakReference`1">
+            <summary>
+            Represents a weak reference, which references an object while still allowing
+            that object to be reclaimed by garbage collection.
+            </summary>
+            <typeparam name="T">The type of the object that is referenced.</typeparam>
+        </member>
+        <member name="M:Xunmei.Smart.Common.WeakReference`1.#ctor(`0)">
+            <summary>
+            Initializes a new instance of the WeakReference{T} class, referencing
+            the specified object.
+            </summary>
+            <param name="target">The object to reference.</param>
+        </member>
+        <member name="M:Xunmei.Smart.Common.WeakReference`1.#ctor(`0,System.Boolean)">
+            <summary>
+            Initializes a new instance of the WeakReference{T} class, referencing
+            the specified object and using the specified resurrection tracking.
+            </summary>
+            <param name="target">An object to track.</param>
+            <param name="trackResurrection">Indicates when to stop tracking the object. 
+            If true, the object is tracked
+            after finalization; if false, the object is only tracked 
+            until finalization.</param>
+        </member>
+        <member name="P:Xunmei.Smart.Common.WeakReference`1.Target">
+            <summary>
+            Gets or sets the object (the target) referenced by the 
+            current WeakReference{T} object.
+            </summary>
+        </member>
+    </members>
+</doc>
