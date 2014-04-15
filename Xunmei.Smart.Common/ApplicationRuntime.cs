@@ -27,25 +27,19 @@ namespace Xunmei.Smart.Common
         private static TimeSpan timelyInfoUpdateInterval = TimeSpan.FromSeconds(1);
         private static bool keepUpdating;
         private static RuntimeTimelyInfo timelyInfo;
-        private static readonly object timelyInfoLocker = new object();
-        private static PerformanceCounter perfCounter = new PerformanceCounter(
+        private static PerformanceCounter performanceCounter = new PerformanceCounter(
                 "Processor", "% Processor Time", "_Total");
 
         #endregion
 
         #region 构造函数
 
+        private ApplicationRuntime()
+        { }
+
         static ApplicationRuntime()
         {
             Start();
-        }
-
-        /// <summary>
-        /// 析构函数，确保资源释放。
-        /// </summary>
-        ~ApplicationRuntime()
-        {
-            Dispose(false);
         }
 
         #endregion
@@ -77,7 +71,7 @@ namespace Xunmei.Smart.Common
         }
 
         /// <summary>
-        /// 获取客户端主机名。
+        /// 获取客户端本地主机名。
         /// </summary>
         public static string LocalHostName
         {
@@ -86,7 +80,7 @@ namespace Xunmei.Smart.Common
         }
 
         /// <summary>
-        /// 获取客户端启动系统时间。
+        /// 获取客户端启动时的系统时间。
         /// </summary>
         public static DateTime StartUpTime
         {
@@ -119,22 +113,12 @@ namespace Xunmei.Smart.Common
         {
             get
             {
-                if (timelyInfo == null)
-                {
-                    float usage = GetCpuUsage();
-                    float privatePhysicalMemory =
-                        (float)(Process.GetCurrentProcess().PrivateMemorySize64 / 1024.00 / 1024.00);
-                    lock (timelyInfoLocker)
-                    {
-                        if (timelyInfo == null)
-                        {
-                            timelyInfo = new RuntimeTimelyInfo();
-                            timelyInfo.CpuUsage = usage;
-                            timelyInfo.PrivatePhysicalMemory = privatePhysicalMemory;
-                        }
-                    }
-                }
-
+                RuntimeTimelyInfo timelyInfo = new RuntimeTimelyInfo();
+                float usage = GetCpuUsage();
+                float privatePhysicalMemory =
+                    (float)(Process.GetCurrentProcess().PrivateMemorySize64 / 1024.00 / 1024.00);
+                timelyInfo.CpuUsage = usage;
+                timelyInfo.PrivatePhysicalMemory = privatePhysicalMemory;
                 return timelyInfo;
             }
         }
@@ -151,25 +135,6 @@ namespace Xunmei.Smart.Common
             StartUpTime = Process.GetCurrentProcess().StartTime;
             LocalHostName = Dns.GetHostName();
             LocalHostAddress = NetUtils.GetHostAddress().ToString();
-
-            float usage = GetCpuUsage();
-            float privatePhysicalMemory =
-                (float)(Process.GetCurrentProcess().PrivateMemorySize64 / 1024.00 / 1024.00);
-            float usedPhysicalMemory =
-                    (float)((computerInfo.TotalPhysicalMemory - computerInfo.AvailablePhysicalMemory) / 1024.00 / 1024.00);
-            if (timelyInfo == null)
-            {
-                lock (timelyInfoLocker)
-                {
-                    if (timelyInfo == null)
-                    {
-                        timelyInfo = new RuntimeTimelyInfo();
-                        timelyInfo.CpuUsage = usage;
-                        timelyInfo.PrivatePhysicalMemory = privatePhysicalMemory;
-                        timelyInfo.UesdPhysicalMemory = usedPhysicalMemory;
-                    }
-                }
-            }
 
             keepUpdating = true;
             if (timelyInfoUpdateWorker == null)
@@ -191,16 +156,10 @@ namespace Xunmei.Smart.Common
                 ComputerInfo computerInfo = new ComputerInfo();
                 float usedPhysicalMemory =
                     (float)((computerInfo.TotalPhysicalMemory - computerInfo.AvailablePhysicalMemory) / 1024.00 / 1024.00);
-                lock (timelyInfoLocker)
-                {
-                    if (timelyInfo == null)
-                    {
-                        timelyInfo = new RuntimeTimelyInfo();
-                    }
-                    timelyInfo.CpuUsage = usage;
-                    timelyInfo.PrivatePhysicalMemory = privatePhysicalMemory;
-                    timelyInfo.UesdPhysicalMemory = usedPhysicalMemory;
-                }
+                timelyInfo = new RuntimeTimelyInfo();
+                timelyInfo.CpuUsage = usage;
+                timelyInfo.PrivatePhysicalMemory = privatePhysicalMemory;
+                timelyInfo.UsedPhysicalMemory = usedPhysicalMemory;
 
                 TimelyInfoUpdatedEventArgs e = new TimelyInfoUpdatedEventArgs(timelyInfo);
                 OnTimelyInfoUpdated(e);
@@ -212,10 +171,10 @@ namespace Xunmei.Smart.Common
         private static float GetUsedPhysicalMemory()
         {
             float usedPhysicalMemory = 0;
-            foreach (Process proccess in Process.GetProcesses())
+            foreach (Process process in Process.GetProcesses())
             {
-                usedPhysicalMemory += (float)(proccess.PrivateMemorySize64 / 1024.00 / 1024.00);
-                proccess.Dispose();
+                usedPhysicalMemory += (float)(process.PrivateMemorySize64 / 1024.00 / 1024.00);
+                process.Dispose();
             }
 
             return usedPhysicalMemory;
@@ -223,9 +182,9 @@ namespace Xunmei.Smart.Common
 
         private static float GetCpuUsage()
         {
-            if (perfCounter != null)
+            if (performanceCounter != null)
             {
-                return perfCounter.NextValue();
+                return performanceCounter.NextValue();
             }
             return 0;
         }
@@ -238,11 +197,11 @@ namespace Xunmei.Smart.Common
 
         private static void EndGetLocalHostAddress(IAsyncResult ar)
         {
-            IPAddress[] ipAdresses = Dns.EndGetHostAddresses(ar);
+            IPAddress[] ipAddresses = Dns.EndGetHostAddresses(ar);
 
-            var queryResult = from ipaddress in ipAdresses
-                              where ipaddress.AddressFamily == AddressFamily.InterNetwork
-                              select ipaddress;
+            var queryResult = from ipAddress in ipAddresses
+                              where ipAddress.AddressFamily == AddressFamily.InterNetwork
+                              select ipAddress;
 
             if (queryResult != null && queryResult.Count() > 0)
                 LocalHostAddress = queryResult.FirstOrDefault().ToString();
@@ -262,9 +221,16 @@ namespace Xunmei.Smart.Common
         {
             if (!disposed)
             {
-
                 if (disposing)
-                    disposed = true;
+                {
+                    keepUpdating = false;
+                    if (performanceCounter != null)
+                    {
+                        performanceCounter.Dispose();
+                        performanceCounter = null;
+                    }
+                }
+                disposed = true;
             }
         }
 
@@ -283,7 +249,7 @@ namespace Xunmei.Smart.Common
     /// <summary>
     /// 应用程序运行时的及时变更信息。
     /// </summary>
-    public class RuntimeTimelyInfo
+    public struct RuntimeTimelyInfo
     {
         /// <summary>
         /// 获取客户端主机CPU使用率。
@@ -306,7 +272,7 @@ namespace Xunmei.Smart.Common
         /// <summary>
         /// 获取客户端主机已使用的物理内存量（单位为M）。
         /// </summary>
-        public float UesdPhysicalMemory
+        public float UsedPhysicalMemory
         {
             get;
             set;

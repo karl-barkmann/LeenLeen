@@ -46,6 +46,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Xunmei.Smart.Common\Xunmei.Smart.Common.csproj">
+      <Project>{31813404-1063-43c3-9271-69f8009fa9da}</Project>
+      <Name>Xunmei.Smart.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Xunmei.Smart.Native\Xunmei.Smart.Native.csproj">
       <Project>{02fd087d-9eda-4976-8ca2-031c3792736a}</Project>
       <Name>Xunmei.Smart.Native</Name>
