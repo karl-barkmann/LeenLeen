@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Xunmei.Smart.Common;
-using Xunmei.Smart.Native;
+﻿using Smart.Common;
+using Smart.Native;
+using System;
 
 namespace Demo
 {
     public static class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
             Console.WriteLine(NativeMethodsUtil.IsAnyUserLogon() ? "有用户登陆" : "无用户登陆");
 

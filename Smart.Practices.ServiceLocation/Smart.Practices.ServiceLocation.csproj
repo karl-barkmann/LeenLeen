@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6BB5DD34-F863-4D7C-9825-8B0C19369661}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{758AB843-D816-4E52-8B66-0AB81A3DAAAF}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Demo</RootNamespace>
-    <AssemblyName>Demo</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>Smart.Practices.ServiceLocation</RootNamespace>
+    <AssemblyName>Smart.Practices.ServiceLocation</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,31 +30,32 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="ActivationException.cs" />
+    <Compile Include="IServiceLocator.cs" />
+    <Compile Include="ISimpleIoc.cs" />
+    <Compile Include="PreferredConstructorAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ServiceLocator.cs" />
+    <Compile Include="ServiceLocatorImplBase.cs" />
+    <Compile Include="ServiceLocatorProvider.cs" />
+    <Compile Include="SimpleIoc.cs" />
+    <Compile Include="SimpleServiceLocator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Smart.Common\Smart.Common.csproj">
-      <Project>{31813404-1063-43c3-9271-69f8009fa9da}</Project>
-      <Name>Smart.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Smart.Native\Smart.Native.csproj">
-      <Project>{02fd087d-9eda-4976-8ca2-031c3792736a}</Project>
-      <Name>Smart.Native</Name>
-    </ProjectReference>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
