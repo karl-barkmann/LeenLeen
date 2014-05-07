@@ -17,7 +17,7 @@ namespace Smart.Common
         /// <typeparam name="T">集合中元素的类型。</typeparam>
         /// <param name="source">集合。</param>
         /// <returns></returns>
-        public static bool CanEnumerable<T>(IEnumerable<T> source)
+        public static bool CanEnumerable<T>(this IEnumerable<T> source)
         {
             return source != null && source.Count() > 0;
         }

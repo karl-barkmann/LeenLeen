@@ -219,6 +219,7 @@ namespace Smart.Common
             }
             return xmlDoc.DocumentElement;
         }
+
         public static XName ToXName(this XmlQualifiedName qname)
         {
             return XName.Get(qname.Name, qname.Namespace);
