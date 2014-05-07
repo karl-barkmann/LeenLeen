@@ -23,6 +23,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Practices.ServiceLoca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Logging", "Smart.Logging\Smart.Logging.csproj", "{BD5253E4-E4E4-459F-BF80-D6531E151BB6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Windows.Controls", "Smart.Windows.Controls\Smart.Windows.Controls.csproj", "{2C0BCE42-4D89-401E-B3B9-8FAF92EDAD15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Windows", "Demo.Windows\Demo.Windows.csproj", "{C5FCE168-7968-4D9F-B33A-9653E269EE5E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +73,14 @@ Global
 		{BD5253E4-E4E4-459F-BF80-D6531E151BB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD5253E4-E4E4-459F-BF80-D6531E151BB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD5253E4-E4E4-459F-BF80-D6531E151BB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C0BCE42-4D89-401E-B3B9-8FAF92EDAD15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C0BCE42-4D89-401E-B3B9-8FAF92EDAD15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C0BCE42-4D89-401E-B3B9-8FAF92EDAD15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C0BCE42-4D89-401E-B3B9-8FAF92EDAD15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5FCE168-7968-4D9F-B33A-9653E269EE5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5FCE168-7968-4D9F-B33A-9653E269EE5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5FCE168-7968-4D9F-B33A-9653E269EE5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5FCE168-7968-4D9F-B33A-9653E269EE5E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

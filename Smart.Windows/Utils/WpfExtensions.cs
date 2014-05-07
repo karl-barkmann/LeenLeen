@@ -170,7 +170,9 @@ namespace Smart.Windows.Utils
             var hBitmap = source.GetHbitmap();
             try
             {
-                return Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, System.Windows.Int32Rect.Empty, System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                return Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, 
+                    
+                    BitmapSizeOptions.FromEmptyOptions());
             }
             finally
             {

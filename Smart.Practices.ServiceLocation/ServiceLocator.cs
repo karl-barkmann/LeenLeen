@@ -1,5 +1,6 @@
 ﻿//Copyright \x00a9 Microsoft 2008
 
+using Microsoft.Practices.ServiceLocation;
 namespace Smart.Practices.ServiceLocation
 {
     public static class ServiceLocator
