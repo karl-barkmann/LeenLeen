@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using Xunmei.Smart.Common.Utils;
+using Smart.Common;
 
 namespace Smart.Logging
 {

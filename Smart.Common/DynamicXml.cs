@@ -10,6 +10,7 @@ namespace Smart.Common
     public class DynamicXml : DynamicObject
     {
         XElement root;
+        private DynamicXml QueryPara;
 
         private DynamicXml(XElement root)
         {
@@ -106,6 +107,25 @@ namespace Smart.Common
                 }
                 return true;
             }
+
+            var elments = root.Descendants(binder.Name);
+            if (elments.Count() > 1)
+            {
+                return true;
+            }
+            else
+            {
+                if (elments.First().HasElements)
+                {
+
+                }
+                else
+                {
+                    elments.First().SetValue(value);
+                }
+                return true;
+            }
+
             return true;
         }
 
