@@ -65,7 +65,7 @@ namespace Smart.Practices.Mvvm
                 view.Loaded += LancyRegister;
                 return;
             }
-            //Possible empty views
+            
             owner.Closed += OwnerClosed;
             views.Add(view);
         }
