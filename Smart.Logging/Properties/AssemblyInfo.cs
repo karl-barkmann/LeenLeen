@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("Xunmei.Smart.Logging")]
-[assembly: AssemblyDescription("讯美Smart基础库")]
+[assembly: AssemblyTitle("Smart.Logging")]
+[assembly: AssemblyDescription("Smart基础库")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ChongQing Xunmei")]
-[assembly: AssemblyProduct("Xunmei.Smart.Logging")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Smart.Logging")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
-[assembly: AssemblyTrademark("ChongQing Xunmei")]
+[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // 将 ComVisible 设置为 false 使此程序集中的类型

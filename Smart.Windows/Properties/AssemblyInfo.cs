@@ -7,13 +7,13 @@ using System.Runtime.InteropServices;
 // 默认命名空间: Xunmei.Smart.Windows
 // 类库说明: 包含Smart WPF控件库及相关类等。
 // **********************************
-[assembly: AssemblyTitle("Xunmei.Smart.Windows")]
-[assembly: AssemblyDescription("讯美Smart桌面库")]
+[assembly: AssemblyTitle("Smart.Windows")]
+[assembly: AssemblyDescription("Smart桌面库")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ChongQing Xunmei")]
-[assembly: AssemblyProduct("Xunmei.Smart.Windows")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Smart.Windows")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
-[assembly: AssemblyTrademark("Xunmei")]
+[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]

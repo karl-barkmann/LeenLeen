@@ -7,13 +7,13 @@ using System.Runtime.InteropServices;
 // 默认命名空间: Xunmei.Smart.Common
 // 类库说明: 包含Smart基础库、工具库。
 // **********************************
-[assembly: AssemblyTitle("Xunmei.Smart.Common")]
-[assembly: AssemblyDescription("Xunmei Smart Base Library")]
+[assembly: AssemblyTitle("Smart.Common")]
+[assembly: AssemblyDescription("Smart Base Library")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ChongQing Xunmei")]
-[assembly: AssemblyProduct("Xunmei.Smart.Common")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Smart.Common")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
-[assembly: AssemblyTrademark("ChongQing Xunmei")]
+[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 [assembly: ComVisible(false)]

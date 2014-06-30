@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("Xunmei.Smart.Practices.Wcf")]
-[assembly: AssemblyDescription("讯美最佳设计准则(WCF)")]
+[assembly: AssemblyTitle("Smart.Practices.Wcf")]
+[assembly: AssemblyDescription("最佳设计准则(WCF)")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ChongQing Xunmei")]
-[assembly: AssemblyProduct("Xunmei.Smart.Practices.Wcf")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Smart.Practices.Wcf")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
-[assembly: AssemblyTrademark("Xunmei")]
+[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // 将 ComVisible 设置为 false 使此程序集中的类型

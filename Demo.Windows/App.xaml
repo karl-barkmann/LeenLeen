@@ -3,12 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Demo.Windows"
              xmlns:Controls="clr-namespace:Smart.Windows.Controls;assembly=Smart.Windows.Controls"
-             xmlns:SampleData="clr-namespace:Expression.Blend.SampleData.SampleDataSource" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
              x:Class="Demo.Windows.App"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <SampleData:SampleDataSource x:Key="SampleDataSource" d:IsDataSource="True"/>
-        <local:StateToBrushConverter x:Key="StateToBrushConverter"/>
         <Style x:Key="MultipeStateControlStyle" TargetType="{x:Type Controls:MultipeStateControl}">
             <Setter Property="Template">
                 <Setter.Value>

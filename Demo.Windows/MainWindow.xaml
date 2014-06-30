@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:Smart.Windows.Controls;assembly=Smart.Windows.Controls" x:Class="Demo.Windows.MainWindow"
         Title="MainWindow" Height="350" Width="525">
-    <Grid DataContext="{Binding Source={StaticResource SampleDataSource}}">
-        <controls:MultipeStateControl HorizontalAlignment="Left" Margin="165,99,0,0" VerticalAlignment="Top" Width="100" Height="126" State="{Binding State}" StateConverter="{Binding Mode=OneWay, Source={StaticResource StateToBrushConverter}}" Style="{DynamicResource MultipeStateControlStyle}" />
+    <Grid>
+        <controls:MultipeStateControl HorizontalAlignment="Left" Margin="196,93,0,0" VerticalAlignment="Top" Width="138" Height="126" State="{Binding State}" StateConverter="{Binding Mode=OneWay, Source={StaticResource StateToBrushConverter}}" Style="{DynamicResource MultipeStateControlStyle}" />
     </Grid>
 </Window>
