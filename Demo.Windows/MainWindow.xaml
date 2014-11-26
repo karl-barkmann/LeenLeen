@@ -5,5 +5,6 @@
         Title="MainWindow" Height="350" Width="525">
     <Grid>
         <controls:MultipeStateControl HorizontalAlignment="Left" Margin="196,93,0,0" VerticalAlignment="Top" Width="138" Height="126" State="{Binding State}" StateConverter="{Binding Mode=OneWay, Source={StaticResource StateToBrushConverter}}" Style="{DynamicResource MultipeStateControlStyle}" />
+        <Button Content="Button" HorizontalAlignment="Left" Margin="76,193,0,0" VerticalAlignment="Top" Width="103" Height="57" Click="Button_Click"/>
     </Grid>
 </Window>
