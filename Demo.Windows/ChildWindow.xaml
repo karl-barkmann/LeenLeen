@@ -1,9 +1,34 @@
 ﻿<Window x:Class="Demo.Windows.ChildWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="ChildWindow" Height="300" Width="300">
+        Title="ChildWindow" Height="300" Width="629" DataContext="{Binding Source={StaticResource Locator},Path=Main}">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding CrawlCommand}"/>
+        </i:EventTrigger>
+        <i:EventTrigger EventName="UnLoaded">
+            <i:InvokeCommandAction Command="{Binding StopCrawlingCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Height="65" Margin="98,85,0,0" VerticalAlignment="Top" Width="104"/>
-
+        <ListView HorizontalAlignment="Stretch" Margin="10,25,10,10" VerticalAlignment="Stretch" x:Name="SoundList" ItemsSource="{Binding Sources}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="路径" Width="480"  DisplayMemberBinding="{Binding RequestUrl}"/>
+                    <GridViewColumn Header="播放" Width="120">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <Hyperlink Command="{Binding PlayCommand}" >Play</Hyperlink>
+                                    <MediaElement Source="{Binding SoundStreamUri}" ></MediaElement>
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <TextBlock HorizontalAlignment="Stretch" Margin="10,5,0,0" TextWrapping="Wrap" Text="{Binding NextUrl,StringFormat=爬:{0}}" VerticalAlignment="Top"/>
     </Grid>
 </Window>

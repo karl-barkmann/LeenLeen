@@ -1,13 +1,16 @@
 ﻿using Abot.Crawler;
 using Abot.Poco;
+using CsQuery;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Demo.Crawler
 {
@@ -27,7 +30,7 @@ namespace Demo.Crawler
             {
                 CrawlDecision decision = new CrawlDecision();
                 var uri = crawledPage.Uri.ToString();
-                if (uri.StartsWith("http://www.tingchina.com/erge/"))
+                if (crawledPage.IsRoot || uri.StartsWith("http://www.tingchina.com/erge/"))
                 {
                     decision.Allow = true;
                 }
@@ -35,22 +38,6 @@ namespace Demo.Crawler
                 {
                     decision.Allow = false;
                     decision.Reason = "Just erge pages!";
-                }
-                return decision;
-            });
-
-            crawler.ShouldDownloadPageContent((crawledPage, crawledContext) =>
-            {
-                CrawlDecision decision = new CrawlDecision();
-                var uri = crawledPage.Uri.ToString();
-                if (Regex.IsMatch(uri,@"^http\://www\.tingchina\.com/erge/\d/play_\d_\d.htm$"))
-                {
-                    decision.Allow = true;
-                }
-                else
-                {
-                    decision.Allow = false;
-                    decision.Reason = "Download erge play pages!";
                 }
                 return decision;
             });
@@ -74,6 +61,32 @@ namespace Demo.Crawler
         static void crawler_ProcessPageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
         {
             CrawledPage crawledPage = e.CrawledPage;
+
+            if (Regex.IsMatch(crawledPage.Uri.ToString(), @"http://www.tingchina.com/erge/(\d+)/play_(\d+)_(\d+)\.htm"))
+            {
+
+                var csQuery = crawledPage.CsQueryDocument.Find("iframe");
+                foreach (var query in csQuery)
+                {
+                    if(query.Name=="playmedia")
+                    {
+                        var playSrc = query.GetAttribute("src");
+                        var request = String.Format("http://{0}{1}", crawledPage.Uri.Host, playSrc);
+
+                        var http = WebRequest.Create(request);
+                        var response = http.GetResponse();
+                        var stream = response.GetResponseStream();
+                        var sr = new StreamReader(stream);
+                        var content = sr.ReadToEnd();
+                        stream.Dispose();
+                        var realUrlIndex = content.IndexOf("url[3]=");
+                        var realUrlIndex1 = content.IndexOf(";", realUrlIndex);
+
+                        var realUrl = content.Substring(realUrlIndex, realUrlIndex1 - realUrlIndex);
+                        Console.WriteLine("!!!!!!!!!!!!!!!!!!!!   " + realUrl + "   !!!!!!!!!!!!!!!!!!!!");
+                    }
+                }
+            }
 
             if (crawledPage.WebException != null || crawledPage.HttpWebResponse.StatusCode != HttpStatusCode.OK)
                 Console.WriteLine("Crawl of page failed {0}", crawledPage.Uri.AbsoluteUri);
