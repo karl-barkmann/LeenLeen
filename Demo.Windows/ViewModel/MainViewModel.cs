@@ -116,7 +116,6 @@ namespace Demo.Windows.ViewModel
                     Console.WriteLine("Crawl of {0} completed with error: {1}", result.RootUri.AbsoluteUri, result.ErrorException.Message);
                 else
                     Console.WriteLine("Crawl of {0} completed without error.", result.RootUri.AbsoluteUri);
-
                 Console.ReadLine();
             }, null);
         }
