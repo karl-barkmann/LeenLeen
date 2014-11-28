@@ -48,7 +48,7 @@ namespace Demo.Windows
         }
 
         private string requestUrl = "";
-        private string soundStreamUri;
+        private string soundStreamUri = "";
 
         public string RequestUrl
         {

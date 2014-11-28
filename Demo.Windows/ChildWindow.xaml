@@ -7,7 +7,7 @@
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding CrawlCommand}"/>
         </i:EventTrigger>
-        <i:EventTrigger EventName="UnLoaded">
+        <i:EventTrigger EventName="Unloaded">
             <i:InvokeCommandAction Command="{Binding StopCrawlingCommand}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
@@ -15,8 +15,8 @@
         <ListView HorizontalAlignment="Stretch" Margin="10,25,10,10" VerticalAlignment="Stretch" x:Name="SoundList" ItemsSource="{Binding Sources}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="路径" Width="480"  DisplayMemberBinding="{Binding RequestUrl}"/>
-                    <GridViewColumn Header="播放" Width="120">
+                    <GridViewColumn Header="路径" DisplayMemberBinding="{Binding RequestUrl}"/>
+                    <GridViewColumn Header="播放" >
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock>
@@ -29,6 +29,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <TextBlock HorizontalAlignment="Stretch" Margin="10,5,0,0" TextWrapping="Wrap" Text="{Binding NextUrl,StringFormat=爬:{0}}" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Stretch" Margin="10,5,45,0" TextWrapping="Wrap" Text="{Binding NextUrl,StringFormat=爬:{0}}" VerticalAlignment="Top"/>
+        <Button Content="Stop" HorizontalAlignment="Right" Margin="0,2,10,0" VerticalAlignment="Top" Width="Auto" Command="{Binding StopCrawlingCommand}"/>
     </Grid>
 </Window>
