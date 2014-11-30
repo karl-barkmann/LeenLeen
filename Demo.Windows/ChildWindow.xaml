@@ -15,6 +15,11 @@
         <ListView HorizontalAlignment="Stretch" Margin="10,25,10,10" VerticalAlignment="Stretch" x:Name="SoundList" ItemsSource="{Binding Sources}">
             <ListView.View>
                 <GridView>
+                    <GridViewColumn Header="分类" DisplayMemberBinding="{Binding RequestUrl}"/>
+                    <GridViewColumn Header="作者" DisplayMemberBinding="{Binding RequestUrl}"/>
+                    <GridViewColumn Header="播音" DisplayMemberBinding="{Binding RequestUrl}"/>
+                    <GridViewColumn Header="书名" DisplayMemberBinding="{Binding RequestUrl}"/>
+                    <GridViewColumn Header="章节" DisplayMemberBinding="{Binding RequestUrl}"/>
                     <GridViewColumn Header="路径" DisplayMemberBinding="{Binding RequestUrl}"/>
                     <GridViewColumn Header="播放" >
                         <GridViewColumn.CellTemplate>

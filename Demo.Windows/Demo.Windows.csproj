@@ -62,6 +62,9 @@
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
+    <Reference Include="OfficeCorib">
+      <HintPath>..\lib\OfficeCorib.dll</HintPath>
+    </Reference>
     <Reference Include="Robots">
       <HintPath>..\packages\Abot.1.2.3.1031\lib\net40\Robots.dll</HintPath>
     </Reference>
@@ -91,8 +94,15 @@
     <Compile Include="ChildWindow.xaml.cs">
       <DependentUpon>ChildWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DefaultSectionStreamRequestUriService.cs" />
+    <Compile Include="IKeySectionStreamRequstUriResponseParser.cs" />
+    <Compile Include="ISectionStreamRequstUriService.cs" />
+    <Compile Include="TingChinaKeySectionStreamRequestUriService.cs" />
     <Compile Include="SoundPlayerSourceViewModel.cs" />
     <Compile Include="StateToBrushConverter.cs" />
+    <Compile Include="TingChinaKeySectionStreamRequestUriResponseParser.cs" />
+    <Compile Include="ViewModel\BookSectionViewModel.cs" />
+    <Compile Include="ViewModel\BookViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="ChildWindow.xaml">
@@ -130,6 +140,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Content Include="excel.cib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
