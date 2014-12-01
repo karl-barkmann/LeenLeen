@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Demo.Windows.ViewModel
 {
-    class BookSectionViewModel : ViewModelBase
+    public class BookSectionViewModel : ViewModelBase
     {
         private int sectionIndex;
         private Uri streamRequestUri;
