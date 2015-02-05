@@ -51,6 +51,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="BusyAdorner.cs" />
+    <Compile Include="BusyDecorator.cs" />
+    <Compile Include="BusyIndicator.cs" />
     <Compile Include="MultipeStateControl.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -78,6 +81,12 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Smart.Windows\Smart.Windows.csproj">
+      <Project>{9d717a92-e9a4-4dc7-92a3-c376c99aa0c6}</Project>
+      <Name>Smart.Windows</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
