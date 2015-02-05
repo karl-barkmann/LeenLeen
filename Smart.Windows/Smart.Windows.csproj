@@ -57,7 +57,7 @@
     <Compile Include="Data\DateTimeToStringConveter.cs" />
     <Compile Include="Controls\HeightExpander.cs" />
     <Compile Include="Data\IPAddressToStringConverter.cs" />
-    <Compile Include="Controls\NewSliderPanel.cs" />
+    <Compile Include="Controls\SlidablePanel.cs" />
     <Compile Include="Controls\NonTopMostPopup.cs" />
     <Compile Include="Data\NullToTargetConverter.cs" />
     <Compile Include="Controls\SliderPanel.cs" />
