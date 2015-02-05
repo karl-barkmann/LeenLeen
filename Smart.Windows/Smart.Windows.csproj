@@ -47,12 +47,16 @@
     <Compile Include="Data\ByteToImageSourceConverter.cs" />
     <Compile Include="Data\DateTimeToZhCNStringConverter.cs" />
     <Compile Include="Data\IntegerToBooleanConverter.cs" />
+    <Compile Include="Data\ValueConverters.cs" />
+    <Compile Include="Interactivity\DataGridColumnAdjustableBehavior.cs" />
+    <Compile Include="Interactivity\DragBehavior.cs" />
+    <Compile Include="Interactivity\RichTextBoxBindingBehavior.cs" />
+    <Compile Include="Interactivity\WatermarkBehavior.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="Controls\AnimatedUniformGrid.cs" />
     <Compile Include="Controls\AnimateWindow.cs" />
     <Compile Include="Controls\AutoClosePopup.cs" />
     <Compile Include="Interactivity\BindableSelectedItemBehavior.cs" />
-    <Compile Include="Data\BooleanToVisibilityConverter.cs" />
     <Compile Include="Controls\CubeControl.cs" />
     <Compile Include="Data\DateTimeToStringConveter.cs" />
     <Compile Include="Controls\HeightExpander.cs" />
