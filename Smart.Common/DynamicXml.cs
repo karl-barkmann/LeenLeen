@@ -9,8 +9,7 @@ namespace Smart.Common
 {
     public class DynamicXml : DynamicObject
     {
-        XElement root;
-        private DynamicXml QueryPara;
+        private readonly XElement root;
 
         private DynamicXml(XElement root)
         {
@@ -29,8 +28,6 @@ namespace Smart.Common
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            result = null;
-
             var att = root.Attribute(binder.Name);
             if (att != null)
             {
@@ -52,6 +49,10 @@ namespace Smart.Common
                 {
                     result = new DynamicXml(node);
                 }
+                else if (node.HasAttributes)
+                {
+                    result = new DynamicXml(node);
+                }
                 else
                 {
                     result = node.Value;
@@ -60,13 +61,13 @@ namespace Smart.Common
             }
 
             var elments = root.Descendants(binder.Name);
-            if (elments.Count() > 1)
+            if (elments.Any())
             {
-                result = nodes.Select(n => new DynamicXml(n)).ToList();
-                return true;
-            }
-            else
-            {
+                if (elments.Count() > 1)
+                {
+                    result = nodes.Select(n => new DynamicXml(n)).ToList();
+                    return true;
+                }
                 if (elments.First().HasElements)
                 {
                     result = new DynamicXml(elments.First());
@@ -75,8 +76,12 @@ namespace Smart.Common
                 {
                     result = elments.First().Value;
                 }
+
                 return true;
             }
+
+            result = null;
+            return false;
         }
 
         public override bool TrySetMember(SetMemberBinder binder, object value)
@@ -109,36 +114,31 @@ namespace Smart.Common
             }
 
             var elments = root.Descendants(binder.Name);
+            if (!elments.Any()) return false;
             if (elments.Count() > 1)
             {
                 return true;
             }
+            if (elments.First().HasElements)
+            {
+
+            }
             else
             {
-                if (elments.First().HasElements)
-                {
-
-                }
-                else
-                {
-                    elments.First().SetValue(value);
-                }
-                return true;
+                elments.First().SetValue(value);
             }
-
             return true;
         }
 
-        public override string ToString()
+        public new string ToString(string format = null)
         {
-            if (root != null)
+            if (format == "{iv}")
             {
-                return root.ToString();
+                return root != null ? root.Value : String.Empty;
             }
-            else
-            {
-                return base.ToString();
-            }
+
+            return root != null ? root.ToString() : base.ToString();
         }
     }
+
 }
