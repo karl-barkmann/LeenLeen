@@ -1,14 +1,20 @@
-﻿using GalaSoft.MvvmLight;
+﻿using CsQuery;
+using GalaSoft.MvvmLight;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Demo.Windows.ViewModel
 {
-    class BookViewModel : ViewModelBase
+    public class BookViewModel : ViewModelBase
     {
         private string author;
         private string actor;
@@ -16,6 +22,26 @@ namespace Demo.Windows.ViewModel
         private string name;
         private DateTime lastUpdateDate;
         private ObservableCollection<BookSectionViewModel> sections = new ObservableCollection<BookSectionViewModel>();
+        private readonly int id;
+        private Uri bookUri;
+
+        public BookViewModel(int id, Uri bookUri)
+        {
+            this.id = id;
+            this.bookUri = bookUri;
+
+            ThreadPool.QueueUserWorkItem(CrawlBookContent, null);
+        }
+
+        public int Id
+        {
+            get { return id; }
+        }
+
+        public Uri BookUri
+        {
+            get { return bookUri; }
+        }
 
         public string Author
         {
@@ -97,5 +123,26 @@ namespace Demo.Windows.ViewModel
                 }
             }
         }
+
+        #region Private methods
+
+        private void CrawlBookContent(object state)
+        {
+            var http = WebRequest.Create(bookUri);
+            var response = http.GetResponse();
+            var stream = response.GetResponseStream();
+            var sr = new StreamReader(stream, Encoding.GetEncoding("gb2312"));
+            var content = sr.ReadToEnd();
+            stream.Close();
+
+            var math = Regex.Match(content, "<a href=\"lei_(\\d+)_(\\d+).htm\" class=\"now\">*.*</a>");
+            if (math.Success)
+            {
+                var value = math.Captures[0].Value;
+                Category = CQ.CreateDocument(value).Text();
+            }
+        }
+
+        #endregion
     }
 }

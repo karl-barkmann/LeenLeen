@@ -1,6 +1,10 @@
 ﻿//2012.9.6 zhongying 创建新的幻灯片控件
+//2015.2.4 liping 添加ItemSource，ItemTemplate,ItemTemplateSelector使其支持数据binding.
+//2015.2.5 liping 重命名为SlidablePanel,支持鼠标滚动滑动
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,7 +16,7 @@ namespace Smart.Windows.Controls
     /// <summary>
     /// 全新的幻灯片面板控件，支持水平和垂直方向.代码重新整理更简洁，注释完整
     /// </summary>
-    public class NewSliderPanel : Panel
+    public class SlidablePanel : Panel
     {
         #region 成员变量
 
@@ -20,20 +24,23 @@ namespace Smart.Windows.Controls
         bool mouseDown;
         Point mouseLast;//上一次的鼠标位置
         Point mouseFirst;//第一鼠标点下的坐标
+        private static List<MouseWheelEventArgs> _reentrantList = new List<MouseWheelEventArgs>();
 
         #endregion
 
         #region 构造函数
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NewSliderPanel"/> class.
+        /// Initializes a new instance of the <see cref="SlidablePanel"/> class.
         /// </summary>
-        public NewSliderPanel()
+        public SlidablePanel()
         {
             RegisterEvent();
             ClipToBounds = true;
             Loaded += new RoutedEventHandler(NewSliderPanel_Loaded);
             SizeChanged += new SizeChangedEventHandler(NewSliderPanel_Loaded);
+            MouseWheel += NewSliderPanel_MouseWheel;
+            PreviewMouseWheel += NewSliderPanel_PreviewMouseWheel;
         }
 
         #endregion
@@ -70,7 +77,7 @@ namespace Smart.Windows.Controls
         public static readonly DependencyProperty SwitchPageLengthProperty = DependencyProperty.Register(
             SwitchPageLengthPropertyName,
             typeof(double),
-            typeof(NewSliderPanel),
+            typeof(SlidablePanel),
             new PropertyMetadata(0.2));
 
         #endregion
@@ -103,12 +110,12 @@ namespace Smart.Windows.Controls
         public static readonly DependencyProperty EnableDragProperty = DependencyProperty.Register(
             EnableDragPropertyName,
             typeof(bool),
-            typeof(NewSliderPanel),
+            typeof(SlidablePanel),
             new PropertyMetadata(true, new PropertyChangedCallback(EnableDragPropertyChangedCallback)));
 
         static void EnableDragPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            NewSliderPanel control = d as NewSliderPanel;
+            SlidablePanel control = d as SlidablePanel;
             bool enable = (bool)e.NewValue;
 
             control.UnregisterEvent();
@@ -146,12 +153,12 @@ namespace Smart.Windows.Controls
         public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register(
             OrientationPropertyName,
             typeof(Orientation),
-            typeof(NewSliderPanel),
+            typeof(SlidablePanel),
             new PropertyMetadata(Orientation.Horizontal, new PropertyChangedCallback(OrientationPropertyChangedCallback)));
 
         static void OrientationPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            NewSliderPanel control = d as NewSliderPanel;
+            SlidablePanel control = d as SlidablePanel;
 
             //control.InvalidateMeasure();
             control.InvalidateArrange();
@@ -264,7 +271,7 @@ namespace Smart.Windows.Controls
         public static readonly DependencyProperty SelectedIndexProperty = DependencyProperty.Register(
             SelectedIndexPropertyName,
             typeof(int),
-            typeof(NewSliderPanel),
+            typeof(SlidablePanel),
             new PropertyMetadata(0, new PropertyChangedCallback(SelectedIndexPropertyChangedCallback), new CoerceValueCallback(SelectedIndexCoerceValueCallback)));
 
         /// <summary>
@@ -275,7 +282,7 @@ namespace Smart.Windows.Controls
         /// <returns></returns>
         static object SelectedIndexCoerceValueCallback(DependencyObject d, object baseValue)
         {
-            NewSliderPanel control = d as NewSliderPanel;
+            SlidablePanel control = d as SlidablePanel;
             int count = (int)baseValue;
             if (count < 0) return 0;
 
@@ -292,7 +299,7 @@ namespace Smart.Windows.Controls
         /// <param name="e">The <see cref="System.Windows.DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         static void SelectedIndexPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            NewSliderPanel control = d as NewSliderPanel;
+            SlidablePanel control = d as SlidablePanel;
             control.Animation((int)e.NewValue, control.Duration);
         }
 
@@ -326,8 +333,70 @@ namespace Smart.Windows.Controls
         public static readonly DependencyProperty DurationProperty = DependencyProperty.Register(
             DurationPropertyName,
             typeof(double),
-            typeof(NewSliderPanel),
+            typeof(SlidablePanel),
             new PropertyMetadata(300d));
+
+        #endregion
+
+        #region ItemTempalte
+
+        public DataTemplate ItemTemplate
+        {
+            get { return (DataTemplate)GetValue(ItemTemplateProperty); }
+            set { SetValue(ItemTemplateProperty, value); }
+        }
+
+        public static readonly DependencyProperty ItemTemplateProperty =
+            DependencyProperty.Register("ItemTemplate", typeof(DataTemplate), typeof(SlidablePanel),
+            new PropertyMetadata(null, new PropertyChangedCallback(OnItemTemplatePropertyChanged)));
+
+        private static void OnItemTemplatePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            SlidablePanel sp = d as SlidablePanel;
+            sp.OnItemsSourceChanged(null, sp.ItemsSource);
+        }
+
+        #endregion
+
+        #region ItemsSource
+
+        public IEnumerable ItemsSource
+        {
+            get { return (IEnumerable)GetValue(ItemsSourceProperty); }
+            set { SetValue(ItemsSourceProperty, value); }
+        }
+
+        public static readonly DependencyProperty ItemsSourceProperty =
+            DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(SlidablePanel),
+            new PropertyMetadata(null, new PropertyChangedCallback(OnItemsSourcePropertyChanged)));
+
+        private static void OnItemsSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            IEnumerable oldValue = (IEnumerable)e.OldValue;
+            IEnumerable newValue = (IEnumerable)e.NewValue;
+            SlidablePanel sp = d as SlidablePanel;
+            sp.OnItemsSourceChanged(oldValue, newValue);
+        }
+
+        #endregion
+
+        #region ItemTemplateSelector
+
+        public DataTemplateSelector ItemTemplateSelector
+        {
+            get { return (DataTemplateSelector)GetValue(ItemTemplateSelectorProperty); }
+            set { SetValue(ItemTemplateSelectorProperty, value); }
+        }
+
+        public static readonly DependencyProperty ItemTemplateSelectorProperty =
+            DependencyProperty.Register("ItemTemplateSelector", typeof(DataTemplateSelector), typeof(SlidablePanel),
+            new PropertyMetadata(null, new PropertyChangedCallback(OnItemTemplateSelectorPropertyChanged)));
+
+        private static void OnItemTemplateSelectorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            SlidablePanel sp = d as SlidablePanel;
+            sp.OnItemsSourceChanged(null, sp.ItemsSource);
+        }
 
         #endregion
 
@@ -336,6 +405,59 @@ namespace Smart.Windows.Controls
         #endregion
 
         #region 回调
+
+        void NewSliderPanel_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (IsMouseOver)
+            {
+                if (e.Delta < 0)
+                {
+                    if (SelectedIndex < (Children.Count - 1))
+                    {
+                        SelectedIndex += 1;
+                        e.Handled = true;
+                    }
+                }
+                else
+                {
+                    if (SelectedIndex > 0)
+                    {
+                        SelectedIndex -= 1;
+                        e.Handled = true;
+                    }
+                }
+            }
+        }
+
+        void NewSliderPanel_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var sliderPanel = sender as SlidablePanel;
+            if (sliderPanel != null && !e.Handled && _reentrantList.Contains(e))
+            {
+                var previewEventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                {
+                    RoutedEvent = UIElement.PreviewMouseWheelEvent,
+                    Source = sender
+                };
+                var originalSource = e.OriginalSource as UIElement;
+                _reentrantList.Add(previewEventArg);
+                originalSource.RaiseEvent(previewEventArg);
+                _reentrantList.Remove(previewEventArg);
+                // at this point if no one else handled the event in our children, we do our job
+                if (!previewEventArg.Handled && ((e.Delta <= 0 && (SelectedIndex == Children.Count - 1)) ||
+                    (e.Delta > 0 && SelectedIndex == 0)))
+                {
+                    //This is it.
+                    //Our work is done,let's our parent scroll it!
+                    e.Handled = true;
+                    var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+                    eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+                    eventArg.Source = sender;
+                    var parent = sliderPanel.Parent as UIElement;
+                    parent.RaiseEvent(eventArg);
+                }
+            }
+        }
 
         void NewSliderPanel_Loaded(object sender, RoutedEventArgs e)
         {
@@ -494,6 +616,40 @@ namespace Smart.Windows.Controls
         #endregion
 
         #region 私有方法
+
+        protected virtual void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+        {
+            Children.Clear();
+            if (newValue != null)
+            {
+                foreach (var item in newValue)
+                {
+                    DataTemplate dataTemplate = null;
+
+                    // get data template
+                    if (this.ItemTemplateSelector != null)
+                    {
+                        dataTemplate = this.ItemTemplateSelector.SelectTemplate(item, this);
+                    }
+                    if (dataTemplate == null && this.ItemTemplate != null)
+                    {
+                        dataTemplate = this.ItemTemplate;
+                    }
+
+                    // load data template content
+                    if (dataTemplate != null)
+                    {
+                        FrameworkElement child = dataTemplate.LoadContent() as FrameworkElement;
+                        if (child != null)
+                        {
+                            // set data context
+                            child.DataContext = item;
+                            Children.Add(child);
+                        }
+                    }
+                }
+            }
+        }
 
         private void RegisterEvent()
         {

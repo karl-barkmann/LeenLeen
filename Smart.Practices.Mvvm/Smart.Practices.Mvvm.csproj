@@ -43,9 +43,18 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IAsynchronousViewModel.cs" />
     <Compile Include="IInteractionService.cs" />
     <Compile Include="InteractionService.cs" />
+    <Compile Include="IUIInteractionService.cs" />
+    <Compile Include="IView.cs" />
+    <Compile Include="IViewModel.cs" />
     <Compile Include="IViewViewModelMapping.cs" />
+    <Compile Include="UIInteractionService.cs" />
+    <Compile Include="ViewLocationProvider.cs" />
+    <Compile Include="ViewLocator.cs" />
+    <Compile Include="ViewModelLocationProvider.cs" />
+    <Compile Include="ViewModelLocator.cs" />
     <Compile Include="Weak.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
