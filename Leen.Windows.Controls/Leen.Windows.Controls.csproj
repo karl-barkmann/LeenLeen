@@ -33,13 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Windows.Presentation" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -89,7 +83,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Smart.Windows\Leen.Windows.csproj">
+    <ProjectReference Include="..\Leen.Windows\Leen.Windows.csproj">
       <Project>{9d717a92-e9a4-4dc7-92a3-c376c99aa0c6}</Project>
       <Name>Leen.Windows</Name>
     </ProjectReference>

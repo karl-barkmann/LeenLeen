@@ -1,9 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Linq;
 using Leen.Windows.Documents;
-using Leen.Windows.Utils;
 
 namespace Leen.Windows.Controls
 {
@@ -106,7 +104,7 @@ namespace Leen.Windows.Controls
             var window = Window.GetWindow(dp);
             if (window != null)
             {
-                var decorator = window.FindChild<AdornerDecorator>();
+                var decorator = window.GetVisualChild<AdornerDecorator>();
                 AdornerLayer adornerLayer = null;
                 if (decorator != null)
                 {

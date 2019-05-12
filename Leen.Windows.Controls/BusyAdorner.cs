@@ -16,7 +16,7 @@ namespace Leen.Windows.Documents
             : base(adornedElement)
         {
             IsHitTestVisible = true;
-
+            
             busyIndicator = new BusyIndicator();
             busyIndicator.DataContext = adornedElement;
             AddVisualChild(busyIndicator);
