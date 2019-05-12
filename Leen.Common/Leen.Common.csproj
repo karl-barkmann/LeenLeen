@@ -51,6 +51,7 @@
     <Compile Include="AsyncResultImplemention.cs" />
     <Compile Include="ConcurrentGenericList.cs" />
     <Compile Include="ServiceLocatorExtensions.cs" />
+    <Compile Include="Utils\DumpHelper.cs" />
     <Compile Include="Xml\DynamicXml.cs" />
     <Compile Include="DynamicXmlExtensions.cs" />
     <Compile Include="Extensions\EnumerationExtensions.cs" />

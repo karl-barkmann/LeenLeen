@@ -1,4 +1,5 @@
-﻿using Leen.Logging;
+﻿using CommonServiceLocator;
+using Leen.Logging;
 using System;
 using System.Windows;
 using System.Windows.Threading;
