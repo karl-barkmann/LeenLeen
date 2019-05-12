@@ -90,11 +90,11 @@
     <Compile Include="Xml\XValues.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Smart.Logging\Leen.Logging.csproj">
+    <ProjectReference Include="..\Leen.Logging\Leen.Logging.csproj">
       <Project>{bd5253e4-e4e4-459f-bf80-d6531e151bb6}</Project>
       <Name>Leen.Logging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Smart.Native\Leen.Native.csproj">
+    <ProjectReference Include="..\Leen.Native\Leen.Native.csproj">
       <Project>{02FD087D-9EDA-4976-8CA2-031C3792736A}</Project>
       <Name>Leen.Native</Name>
     </ProjectReference>

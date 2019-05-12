@@ -83,23 +83,23 @@
     <Compile Include="ViewModelLocator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Smart.Common\Leen.Common.csproj">
+    <ProjectReference Include="..\Leen.Common\Leen.Common.csproj">
       <Project>{31813404-1063-43c3-9271-69f8009fa9da}</Project>
       <Name>Leen.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Smart.Logging\Leen.Logging.csproj">
+    <ProjectReference Include="..\Leen.Logging\Leen.Logging.csproj">
       <Project>{BD5253E4-E4E4-459F-BF80-D6531E151BB6}</Project>
       <Name>Leen.Logging</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Smart.Native\Leen.Native.csproj">
+    <ProjectReference Include="..\Leen.Native\Leen.Native.csproj">
       <Project>{02FD087D-9EDA-4976-8CA2-031C3792736A}</Project>
       <Name>Leen.Native</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Smart.Practices.ServiceLocation\Leen.Practices.ServiceLocation.csproj">
+    <ProjectReference Include="..\Leen.Practices.ServiceLocation\Leen.Practices.ServiceLocation.csproj">
       <Project>{758AB843-D816-4E52-8B66-0AB81A3DAAAF}</Project>
       <Name>Leen.Practices.ServiceLocation</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Smart.Windows\Leen.Windows.csproj">
+    <ProjectReference Include="..\Leen.Windows\Leen.Windows.csproj">
       <Project>{9D717A92-E9A4-4DC7-92A3-C376C99AA0C6}</Project>
       <Name>Leen.Windows</Name>
     </ProjectReference>
