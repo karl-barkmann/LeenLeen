@@ -1,4 +1,4 @@
-﻿using Leen.Practices.ServiceLocation;
+﻿using CommonServiceLocator;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;

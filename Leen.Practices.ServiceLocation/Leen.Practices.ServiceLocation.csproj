@@ -46,7 +46,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ServiceLocator.cs" />
-    <Compile Include="ServiceLocatorExtensions.cs" />
     <Compile Include="ServiceLocatorImplBase.cs" />
     <Compile Include="ServiceLocatorProvider.cs" />
     <Compile Include="SimpleIoc.cs" />

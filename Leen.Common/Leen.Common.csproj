@@ -50,6 +50,7 @@
     <Compile Include="Aspect.cs" />
     <Compile Include="AsyncResultImplemention.cs" />
     <Compile Include="ConcurrentGenericList.cs" />
+    <Compile Include="ServiceLocatorExtensions.cs" />
     <Compile Include="Xml\DynamicXml.cs" />
     <Compile Include="DynamicXmlExtensions.cs" />
     <Compile Include="Extensions\EnumerationExtensions.cs" />
@@ -98,6 +99,11 @@
       <Project>{02FD087D-9EDA-4976-8CA2-031C3792736A}</Project>
       <Name>Leen.Native</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommonServiceLocator">
+      <Version>2.0.4</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

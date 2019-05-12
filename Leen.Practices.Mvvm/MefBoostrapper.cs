@@ -1,6 +1,5 @@
-﻿using Microsoft.Practices.ServiceLocation;
+﻿using CommonServiceLocator;
 using Leen.Logging;
-using Leen.Practices.ServiceLocation;
 using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;

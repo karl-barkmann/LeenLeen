@@ -95,14 +95,15 @@
       <Project>{02FD087D-9EDA-4976-8CA2-031C3792736A}</Project>
       <Name>Leen.Native</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Leen.Practices.ServiceLocation\Leen.Practices.ServiceLocation.csproj">
-      <Project>{758AB843-D816-4E52-8B66-0AB81A3DAAAF}</Project>
-      <Name>Leen.Practices.ServiceLocation</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Leen.Windows\Leen.Windows.csproj">
       <Project>{9D717A92-E9A4-4DC7-92A3-C376C99AA0C6}</Project>
       <Name>Leen.Windows</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommonServiceLocator">
+      <Version>2.0.4</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

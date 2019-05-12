@@ -1,6 +1,7 @@
-﻿using System;
+﻿using CommonServiceLocator;
+using System;
 
-namespace Leen.Practices.ServiceLocation
+namespace Leen.Common
 {
     /// <summary>
     /// <see cref="ServiceLocator"/> 扩展类, 提供一组帮助方法。

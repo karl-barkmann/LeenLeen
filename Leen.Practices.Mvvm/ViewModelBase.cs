@@ -1,5 +1,4 @@
 ﻿using Leen.Logging;
-using Leen.Practices.ServiceLocation;
 using Leen.Windows.Interaction;
 using System;
 using System.ComponentModel;
@@ -7,6 +6,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Windows;
+using Leen.Common;
+using CommonServiceLocator;
 
 namespace Leen.Practices.Mvvm
 {
