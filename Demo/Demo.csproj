@@ -46,7 +46,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Smart.Common\Leen.Common.csproj">
+    <ProjectReference Include="..\Leen.Common\Leen.Common.csproj">
       <Project>{31813404-1063-43c3-9271-69f8009fa9da}</Project>
       <Name>Leen.Common</Name>
     </ProjectReference>

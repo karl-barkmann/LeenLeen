@@ -155,12 +155,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Smart.Windows.Controls\Leen.Windows.Controls.csproj">
+    <ProjectReference Include="..\Leen.Windows.Controls\Leen.Windows.Controls.csproj">
       <Project>{2c0bce42-4d89-401e-b3b9-8faf92edad15}</Project>
       <Name>Leen.Windows.Controls</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Smart.Windows\Leen.Windows.csproj">
-      <Project>{9D717A92-E9A4-4DC7-92A3-C376C99AA0C6}</Project>
+    <ProjectReference Include="..\Leen.Windows\Leen.Windows.csproj">
+      <Project>{9d717a92-e9a4-4dc7-92a3-c376c99aa0c6}</Project>
       <Name>Leen.Windows</Name>
     </ProjectReference>
   </ItemGroup>
