@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace Smart.Common
+namespace Leen.Common
 {
     /// <summary>
     /// Implements a weak event listener that allows the owner to be garbage

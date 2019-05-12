@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
-namespace Smart.Windows.Controls
+namespace Leen.Windows.Controls
 {
     /// <summary>
     /// 可快速选择前一天或后一天的DatePicker。

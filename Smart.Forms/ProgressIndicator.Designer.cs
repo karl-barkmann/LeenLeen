@@ -1,4 +1,4 @@
-﻿namespace Smart.Forms
+﻿namespace Leen.Forms
 {
     partial class ProgressIndicator
     {

@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media.Animation;
 
-namespace Smart.Windows.Controls
+namespace Leen.Windows.Controls
 {
     /// <summary>
     /// 可以动画控制 widht，height，top，left的窗体 (还不成熟 建议不要乱用)

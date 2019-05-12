@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Smart.Common.Utils
+namespace Leen.Common.Utils
 {
     public static class Utils
     {

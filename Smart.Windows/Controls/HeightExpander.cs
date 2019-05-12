@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
-namespace Smart.Windows.Controls
+namespace Leen.Windows.Controls
 {
     /// <summary>
     /// 自动动画到实际高度大小的面板，初始高度为MinHeight

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Data;
 
-namespace Smart.Windows.Data
+namespace Leen.Windows.Data
 {
     /// <summary>
     /// 时间对象转换为中文描述。

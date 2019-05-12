@@ -2,7 +2,7 @@
 using System.Configuration;
 using System.IO;
 
-namespace Smart.Common.Utils
+namespace Leen.Common.Utils
 {
     public static class ConfigurationHelper
     {

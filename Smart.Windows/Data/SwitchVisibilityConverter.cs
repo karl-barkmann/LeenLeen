@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Data;
 
-namespace Smart.Windows.Data
+namespace Leen.Windows.Data
 {
     /// <summary>
     /// 切换可见性，如果可见则返回不可见，不可见则返回可见。

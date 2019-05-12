@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Data;
 
-namespace Smart.Windows.Data
+namespace Leen.Windows.Data
 {
     /// <summary>
     /// 日期对象转换为指定格式，转换参数为格式化格式。

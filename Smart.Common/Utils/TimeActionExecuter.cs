@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace Smart.Common.Utils
+namespace Leen.Common.Utils
 {
     /// <summary>
     /// 指定时间执行动作 执行完一段时间后会自动释放

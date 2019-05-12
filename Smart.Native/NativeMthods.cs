@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Smart.Native
+namespace Leen.Native
 {
     /// <summary>
     /// Some windows hook api.
@@ -9,7 +9,10 @@ namespace Smart.Native
     public class NativeMethods
     {
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        public delegate int HookProc(int code, IntPtr wParam, IntPtr lParam);
+        public delegate IntPtr HookProc(int code, IntPtr wParam, IntPtr lParam);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)] 
         public delegate void WinEventProc(IntPtr hWinEventHook, uint eventId, IntPtr hwnd,

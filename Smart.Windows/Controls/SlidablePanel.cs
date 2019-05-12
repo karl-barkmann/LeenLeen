@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace Smart.Windows.Controls
+namespace Leen.Windows.Controls
 {
     /// <summary>
     /// 全新的幻灯片面板控件，支持水平和垂直方向.代码重新整理更简洁，注释完整

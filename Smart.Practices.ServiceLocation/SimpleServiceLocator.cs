@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Smart.Practices.ServiceLocation
+namespace Leen.Practices.ServiceLocation
 {
     /// <summary>
     /// 简单服务检索器。

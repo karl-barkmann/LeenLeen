@@ -1,5 +1,5 @@
 ﻿
-namespace Smart.Common.Utils
+namespace Leen.Common.Utils
 {
     public static class NumberHelper
     {

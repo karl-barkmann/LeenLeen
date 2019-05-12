@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("Smart.Practices.ErrorReport")]
+[assembly: AssemblyTitle("Leen.Practices.ErrorReport")]
 [assembly: AssemblyDescription("最佳设计准则(错误报告)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Smart.Practices.ErrorReport")]
+[assembly: AssemblyProduct("Leen.Practices.ErrorReport")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

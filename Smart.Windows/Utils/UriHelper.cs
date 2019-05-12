@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Smart.Windows.Utils
+namespace Leen.Windows.Utils
 {
     /// <summary>
     /// WPF资源文件Uri帮助类。

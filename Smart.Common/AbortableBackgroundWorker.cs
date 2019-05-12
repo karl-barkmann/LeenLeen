@@ -7,7 +7,7 @@
 using System.ComponentModel;
 using System.Threading;
 
-namespace Smart.Common
+namespace Leen.Common
 {
     /// <summary>
     /// 可中止的后台工作者组件。

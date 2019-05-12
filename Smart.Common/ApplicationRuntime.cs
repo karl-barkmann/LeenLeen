@@ -11,9 +11,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using Microsoft.VisualBasic.Devices;
-using Smart.Common.Utils;
+using Leen.Common.Utils;
 
-namespace Smart.Common
+namespace Leen.Common
 {
     /// <summary>
     /// 应用程序运行时信息。

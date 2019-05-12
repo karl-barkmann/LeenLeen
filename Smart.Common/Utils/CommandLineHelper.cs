@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Smart.Common.Utils
+namespace Leen.Common.Utils
 {   
     /// <summary>
     /// 命令行解析帮助者。

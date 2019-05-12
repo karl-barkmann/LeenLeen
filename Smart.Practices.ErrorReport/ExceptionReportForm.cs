@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace Smart.Practices.ErrorReport
+namespace Leen.Practices.ErrorReport
 {
     internal class ExceptionReportForm : Form, IExceptionReportView
     {
@@ -84,7 +84,7 @@ namespace Smart.Practices.ErrorReport
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.Image = global::Smart.Practices.ErrorReport.Properties.Resources.Alert_12;
+            this.label1.Image = global::Leen.Practices.ErrorReport.Properties.Resources.Alert_12;
             this.label1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.label1.Location = new System.Drawing.Point(10, 9);
             this.label1.Name = "label1";

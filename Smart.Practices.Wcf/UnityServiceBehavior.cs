@@ -3,7 +3,7 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using Microsoft.Practices.Unity;
 
-namespace Smart.Practices.Wcf
+namespace Leen.Practices.Wcf
 {
     class UnityServiceBehavior : IServiceBehavior
     {

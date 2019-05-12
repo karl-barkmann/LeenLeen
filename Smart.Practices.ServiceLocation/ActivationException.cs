@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Smart.Practices.ServiceLocation
+namespace Leen.Practices.ServiceLocation
 {
     [Serializable]
     public class ActivationException : Exception

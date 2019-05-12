@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 
-namespace Smart.Native
+namespace Leen.Native
 {
     /// <summary>
     /// 进一步封装非托管API方法的辅助方法。

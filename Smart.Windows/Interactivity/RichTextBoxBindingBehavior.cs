@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Interactivity;
 
-namespace Smart.Windows.Interactivity
+namespace Leen.Windows.Interactivity
 {
     public class RichTextBoxBindingBehavior : Behavior<RichTextBox>
     {

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace Smart.Forms
+namespace Leen.Forms
 {
     /// <summary>
     /// 后台进度提示控件。

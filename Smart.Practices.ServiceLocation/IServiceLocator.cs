@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Smart.Practices.ServiceLocation
+namespace Leen.Practices.ServiceLocation
 {
     public interface IServiceLocator : IServiceProvider
     {

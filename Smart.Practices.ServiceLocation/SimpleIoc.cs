@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Smart.Practices.ServiceLocation
+namespace Leen.Practices.ServiceLocation
 {
     public class SimpleIoc : ISimpleIoc, IServiceLocator, IServiceProvider
     {
@@ -100,8 +100,10 @@ namespace Smart.Practices.ServiceLocation
             }
             else
             {
-                Dictionary<string, Delegate> dictionary2 = new Dictionary<string, Delegate>();
-                dictionary2.Add(key, factory);
+                Dictionary<string, Delegate> dictionary2 = new Dictionary<string, Delegate>
+                {
+                    { key, factory }
+                };
                 Dictionary<string, Delegate> dictionary = dictionary2;
                 this._factories.Add(classType, dictionary);
             }

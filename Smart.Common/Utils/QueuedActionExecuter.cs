@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Smart.Common.Utils
+namespace Leen.Common.Utils
 {
     /// <summary>
     /// 缓存线程，使用队列执行保存的action， 队列执行完一段时间后会自动释放

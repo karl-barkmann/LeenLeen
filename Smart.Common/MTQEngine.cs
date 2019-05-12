@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Threading;
 
-namespace Smart.Common
+namespace Leen.Common
 {
     /// <summary>
     /// 多线程查询引擎。

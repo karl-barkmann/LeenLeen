@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Smart.Logging
+namespace Leen.Logging
 {
     /// <summary>
     /// 日志记录接口，提供更多的记录方法。

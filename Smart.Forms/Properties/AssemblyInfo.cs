@@ -3,15 +3,15 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // **********************************
-// 程序集名称: Xunmei.Smart.Forms.dll
-// 默认命名空间: Xunmei.Smart.Forms
+// 程序集名称: Xunmei.Leen.Forms.dll
+// 默认命名空间: Xunmei.Leen.Forms
 // 类库说明: 包含Smart WinForm控件库及相关类等。
 // **********************************
-[assembly: AssemblyTitle("Smart.Forms")]
+[assembly: AssemblyTitle("Leen.Forms")]
 [assembly: AssemblyDescription("Smart桌面库")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Smart.Forms")]
+[assembly: AssemblyProduct("Leen.Forms")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

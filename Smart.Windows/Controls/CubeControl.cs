@@ -8,7 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Media3D;
 
-namespace Smart.Windows.Controls
+namespace Leen.Windows.Controls
 {
     /// <summary>
     /// 立方体控件，提供水平和垂直 90度旋转的命令

@@ -1,9 +1,9 @@
-﻿using Smart.Windows.Controls;
+﻿using Leen.Windows.Controls;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
 
-namespace Smart.Windows.Documents
+namespace Leen.Windows.Documents
 {
     public class BusyAdorner : Adorner
     {

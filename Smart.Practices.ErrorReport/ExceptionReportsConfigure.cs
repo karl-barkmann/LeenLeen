@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace Smart.Practices.ErrorReport
+namespace Leen.Practices.ErrorReport
 {
     /// <summary>
     /// 错误报告配置。

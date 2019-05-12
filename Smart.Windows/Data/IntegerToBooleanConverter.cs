@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Data;
 
-namespace Smart.Windows.Data
+namespace Leen.Windows.Data
 {
     /// <summary>
     /// 整形数字比较结果转换为布尔类型。

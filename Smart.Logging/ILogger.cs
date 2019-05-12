@@ -1,5 +1,5 @@
 ﻿
-namespace Smart.Logging
+namespace Leen.Logging
 {
     /// <summary>
     /// 日志记录接口。
@@ -9,22 +9,24 @@ namespace Smart.Logging
         /// <summary>
         /// 记录日志消息。
         /// </summary>
-        /// <param name="message">格式化日志消息。</param>
-        /// <param name="args">格式化参数</param>
-        void WriteMessage(string message, params object[] args);
+        /// <param name="message">日志消息内容。</param>
+        /// <param name="category">描述日志内容的级别。</param>
+        /// <param name="priority">描述日志内容的优先级。</param>
+        void Log(string message, LogLevel level, LogPriority priority);
     }
 
     /// <summary>
     /// 默认日志记录接口。
     /// </summary>
-    public class NullLogger : ILogger
+    public class EmptyLogger : ILogger
     {
         /// <summary>
         /// 记录日志消息。
         /// </summary>
-        /// <param name="message">格式化日志消息。</param>
-        /// <param name="args">格式化参数</param>
-        public void WriteMessage(string message, params object[] args)
+        /// <param name="message">日志消息内容。</param>
+        /// <param name="category">描述日志内容的级别。</param>
+        /// <param name="priority">描述日志内容的优先级。</param>
+        public void Log(string message, LogLevel level, LogPriority priority)
         {
             
         }

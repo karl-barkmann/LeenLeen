@@ -7,10 +7,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using Smart.Common;
-using Smart.Common.Utils;
+using Leen.Common;
+using Leen.Common.Utils;
 
-namespace Smart.Practices.ErrorReport
+namespace Leen.Practices.ErrorReport
 {
     /// <summary>
     /// 错误报告管理。

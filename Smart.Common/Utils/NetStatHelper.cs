@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Smart.Common.Utils
+namespace Leen.Common.Utils
 {
     /// <summary>
     /// 使用netstat管道命令获取进程及端口信息。

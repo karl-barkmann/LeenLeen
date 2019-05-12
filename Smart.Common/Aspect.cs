@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Smart.Common
+namespace Leen.Common
 {
     /// <summary>
     /// 简单切面编程辅助类型。

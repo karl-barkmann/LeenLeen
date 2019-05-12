@@ -1,29 +1,29 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Common", "Smart.Common\Smart.Common.csproj", "{31813404-1063-43C3-9271-69F8009FA9DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Common", "Smart.Common\Leen.Common.csproj", "{31813404-1063-43C3-9271-69F8009FA9DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Forms", "Smart.Forms\Smart.Forms.csproj", "{CDFC6443-4A37-4C5A-A421-FB344C38EAC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Forms", "Smart.Forms\Leen.Forms.csproj", "{CDFC6443-4A37-4C5A-A421-FB344C38EAC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Native", "Smart.Native\Smart.Native.csproj", "{02FD087D-9EDA-4976-8CA2-031C3792736A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Native", "Smart.Native\Leen.Native.csproj", "{02FD087D-9EDA-4976-8CA2-031C3792736A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Practices.ErrorReport", "Smart.Practices.ErrorReport\Smart.Practices.ErrorReport.csproj", "{4ACCA1D4-D408-4BA6-BAC4-96BD736B7351}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Practices.ErrorReport", "Smart.Practices.ErrorReport\Leen.Practices.ErrorReport.csproj", "{4ACCA1D4-D408-4BA6-BAC4-96BD736B7351}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Practices.Mvvm", "Smart.Practices.Mvvm\Smart.Practices.Mvvm.csproj", "{4DB7758A-9434-4230-8B69-7DDD39898E4B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Practices.Mvvm", "Smart.Practices.Mvvm\Leen.Practices.Mvvm.csproj", "{4DB7758A-9434-4230-8B69-7DDD39898E4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Practices.Wcf", "Smart.Practices.Wcf\Smart.Practices.Wcf.csproj", "{B8BCCBF2-BB01-4A33-8764-36D84972FB4D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Practices.Wcf", "Smart.Practices.Wcf\Leen.Practices.Wcf.csproj", "{B8BCCBF2-BB01-4A33-8764-36D84972FB4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Windows", "Smart.Windows\Smart.Windows.csproj", "{9D717A92-E9A4-4DC7-92A3-C376C99AA0C6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Windows", "Smart.Windows\Leen.Windows.csproj", "{9D717A92-E9A4-4DC7-92A3-C376C99AA0C6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{6BB5DD34-F863-4D7C-9825-8B0C19369661}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Practices.ServiceLocation", "Smart.Practices.ServiceLocation\Smart.Practices.ServiceLocation.csproj", "{758AB843-D816-4E52-8B66-0AB81A3DAAAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Practices.ServiceLocation", "Smart.Practices.ServiceLocation\Leen.Practices.ServiceLocation.csproj", "{758AB843-D816-4E52-8B66-0AB81A3DAAAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Logging", "Smart.Logging\Smart.Logging.csproj", "{BD5253E4-E4E4-459F-BF80-D6531E151BB6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Logging", "Smart.Logging\Leen.Logging.csproj", "{BD5253E4-E4E4-459F-BF80-D6531E151BB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smart.Windows.Controls", "Smart.Windows.Controls\Smart.Windows.Controls.csproj", "{2C0BCE42-4D89-401E-B3B9-8FAF92EDAD15}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Windows.Controls", "Smart.Windows.Controls\Leen.Windows.Controls.csproj", "{2C0BCE42-4D89-401E-B3B9-8FAF92EDAD15}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Windows", "Demo.Windows\Demo.Windows.csproj", "{C5FCE168-7968-4D9F-B33A-9653E269EE5E}"
 EndProject
@@ -90,5 +90,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CE48CFE2-9622-47E2-9AAA-43E0A8E2FC86}
 	EndGlobalSection
 EndGlobal

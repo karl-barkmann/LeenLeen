@@ -1,14 +1,14 @@
 using System;
 using System.Diagnostics;
 
-namespace Smart.Logging
+namespace Leen.Logging
 {
     /// <summary>
     /// TraceSource日志记录接口。
     /// </summary>
     public class TraceSourceLogger : ILogger, IDisposable
     {
-        private TraceSource traceSource;
+        private TraceSource _traceSource;
 
         /// <summary>
         /// 构造TraceSource日志记录接口的实例。
@@ -26,20 +26,18 @@ namespace Smart.Logging
         /// <param name="traceSource"></param>
         public TraceSourceLogger(TraceSource traceSource)
         {
-            if (traceSource == null)
-                throw new ArgumentNullException("traceSource");
-
-            this.traceSource = traceSource;
+            _traceSource = traceSource ?? throw new ArgumentNullException("traceSource");
         }
 
         /// <summary>
-        /// 记录日志。
+        /// 记录日志消息。
         /// </summary>
-        /// <param name="message">日志消息。</param>
-        /// <param name="args">格式化参数。</param>
-        public void WriteMessage(string message, params object[] args)
+        /// <param name="message">日志消息内容。</param>
+        /// <param name="category">描述日志内容的级别。</param>
+        /// <param name="priority">描述日志内容的优先级。</param>
+        public void Log(string message, LogLevel level, LogPriority priority)
         {
-            this.traceSource.TraceInformation(message, args);
+            _traceSource.TraceInformation(message);
         }
 
         /// <summary>
@@ -47,11 +45,11 @@ namespace Smart.Logging
         /// </summary>
         public void Dispose()
         {
-            if (this.traceSource != null)
+            if (_traceSource != null)
             {
-                this.traceSource.Flush();
-                this.traceSource.Close();
-                this.traceSource = null;
+                _traceSource.Flush();
+                _traceSource.Close();
+                _traceSource = null;
             }
         }
     }

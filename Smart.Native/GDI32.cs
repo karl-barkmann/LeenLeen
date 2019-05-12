@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace Smart.Native
+namespace Leen.Native
 {
     /// <summary>
     /// gdi32 API。

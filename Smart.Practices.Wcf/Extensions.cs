@@ -2,7 +2,7 @@
 using System.Net;
 using System.ServiceModel.Channels;
 
-namespace Smart.Practices.Wcf
+namespace Leen.Practices.Wcf
 {
     /// <summary>
     /// WCF相关扩展方法。

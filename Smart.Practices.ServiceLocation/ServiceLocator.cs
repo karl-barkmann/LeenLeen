@@ -1,22 +1,24 @@
 ﻿//Copyright \x00a9 Microsoft 2008
 
 using Microsoft.Practices.ServiceLocation;
-namespace Smart.Practices.ServiceLocation
+namespace Leen.Practices.ServiceLocation
 {
     public static class ServiceLocator
     {
-        private static ServiceLocatorProvider currentProvider;
+        private static ServiceLocatorProvider _currentProvider;
 
         public static void SetLocatorProvider(ServiceLocatorProvider newProvider)
         {
-            currentProvider = newProvider;
+            _currentProvider = newProvider;
         }
+
+        public static bool IsLocationProviderSet => _currentProvider != null;
 
         public static IServiceLocator Current
         {
             get
             {
-                return currentProvider();
+                return _currentProvider();
             }
         }
     }

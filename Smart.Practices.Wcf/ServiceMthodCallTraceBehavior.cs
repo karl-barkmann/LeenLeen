@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Practices.Unity.InterceptionExtension;
-using Smart.Logging;
+using Leen.Logging;
 
-namespace Smart.Practices.Wcf
+namespace Leen.Practices.Wcf
 {
     class ServiceMthodCallTraceBehavior : IInterceptionBehavior
     {

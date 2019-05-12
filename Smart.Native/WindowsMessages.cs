@@ -1,5 +1,5 @@
 ﻿
-namespace Smart.Native
+namespace Leen.Native
 {
     public enum WindowsMessages
     {

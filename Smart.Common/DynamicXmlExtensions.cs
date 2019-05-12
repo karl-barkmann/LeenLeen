@@ -1,7 +1,7 @@
 ﻿using Microsoft.CSharp.RuntimeBinder;
 using System;
 
-namespace Smart.Common
+namespace Leen.Common
 {
     public static class DynamicXmlExtensions
     {

@@ -7,7 +7,7 @@ using System.Windows;
 #if NETFX_CORE
 using Windows.UI.Xaml;
 #endif
-namespace Smart.Practices.Mvvm
+namespace Leen.Practices.Mvvm
 {
     /// <summary>
     /// This class defines the attached property and related change handler that calls the ViewModelLocator in Prism.Mvvm.
@@ -19,16 +19,18 @@ namespace Smart.Practices.Mvvm
         /// <summary>
         /// The AutoWireViewModel attached property.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2211:NonConstantFieldsShouldNotBeVisible")]
         public static DependencyProperty AutoWireViewModelProperty =
             DependencyProperty.RegisterAttached("AutoWireViewModel", typeof(bool), typeof(ViewModelLocator),
             new UIPropertyMetadata(false, AutoWireViewModelChanged));
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
         private static void AutoWireViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (DesignerProperties.GetIsInDesignMode(d)) return;
 
             var view = d as IView;
-            
+
             if (view == null)
             {
                 // TODO: Improve exception
@@ -66,5 +68,34 @@ namespace Smart.Practices.Mvvm
         }
 
         #endregion
+
+        /// <summary>
+        /// Gets the value of the Alias attached property.
+        /// </summary>
+        /// <remarks>
+        /// We can support multiple views over the same View-Model by setting a ViewModelLocator.Alias in Xaml.
+        /// </remarks>
+        /// <param name="obj">The dependency object that has this attached property.</param>
+        /// <returns>The view's view model alias.</returns>
+        internal static string GetAlias(DependencyObject obj)
+        {
+            return (string)obj.GetValue(AliasProperty);
+        }
+
+        /// <summary>
+        /// Sets the value of the Alias attached property.
+        /// </summary>
+        /// <param name="obj">The dependency object that has this attached property.</param>
+        /// <param name="value">The view's view model alias.</param>
+        internal static void SetAlias(DependencyObject obj, string value)
+        {
+            obj.SetValue(AliasProperty, value);
+        }
+
+        /// <summary>
+        /// The Alias attached property.
+        /// </summary>
+        internal static readonly DependencyProperty AliasProperty =
+            DependencyProperty.RegisterAttached("Alias", typeof(string), typeof(ViewModelLocator), new PropertyMetadata(null));
     }
 }

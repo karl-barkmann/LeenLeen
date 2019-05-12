@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Smart.Common
+namespace Leen.Common
 {
     /// <summary>
     /// 表示没有返回值的异步操作。

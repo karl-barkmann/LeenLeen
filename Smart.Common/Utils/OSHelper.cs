@@ -1,5 +1,5 @@
 ﻿
-namespace Smart.Common.Utils
+namespace Leen.Common.Utils
 {
     /// <summary>
     /// 操作系统帮助类

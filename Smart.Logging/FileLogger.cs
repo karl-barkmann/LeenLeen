@@ -2,12 +2,10 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
-using Smart.Common;
 
-namespace Smart.Logging
+namespace Leen.Logging
 {
     /// <summary>
     /// log文件日志记录接口。
@@ -22,7 +20,7 @@ namespace Smart.Logging
         /// </summary>
         /// <param name="logFile">日志文件名。
         /// <remarks>
-        /// 若包括应用程序用户数据目录名名称(例: VipClient/xxx.log)，则文件将存放于%programdata%，否则存放于应用程序根目录。
+        /// 若包括应用程序用户数据目录名名称(例: xxx/xxx.log)，则文件将存放于%programdata%，否则存放于应用程序根目录。
         /// </remarks>
         /// </param>
         /// <param name="isAsync">是否启用线程池异步写入。</param>
@@ -31,7 +29,7 @@ namespace Smart.Logging
         {
             if (String.IsNullOrEmpty(logFile))
             {
-                throw new ArgumentException("logFile不能为空");
+                throw new ArgumentException($"{nameof(logFile)}不能为空", nameof(logFile));
             }
             LogFile = logFile;
             Async = isAsync;
@@ -40,7 +38,7 @@ namespace Smart.Logging
         /// <summary>
         /// 获取或设置日志文件名(包括应用程序用户数据目录名)。
         /// <example>
-        /// 例: VipClient/xxx.log
+        /// 例: xxx/xxx.log
         /// </example>
         /// </summary>
         public string LogFile
@@ -75,100 +73,72 @@ namespace Smart.Logging
         /// <summary>
         /// 记录日志信息。
         /// </summary>
-        /// <param name="message">日志信息。</param>
-        /// <param name="args">格式化参数。</param>
-        public void WriteMessage(string message, params object[] args)
+        /// <param name="message">日志消息内容。</param>
+        /// <param name="category">描述日志内容的级别。</param>
+        /// <param name="priority">描述日志内容的优先级。</param>
+        public void Log(string message, LogLevel level, LogPriority priority)
         {
-            Write("{0}[{1}]:{2}", Thread.CurrentThread.Name, Thread.CurrentThread.ManagedThreadId,
-                String.Format(message, args));
+            Write(string.Format("{0}[{1}]:{2}", Thread.CurrentThread.Name, Thread.CurrentThread.ManagedThreadId,
+                String.Format(message)));
         }
 
-        private void Write(string message, params object[] args)
+        private void Write(string message)
         {
             if (!string.IsNullOrEmpty(LogFile))
             {
-                try
-                {
-                    string str = message;
-                    if (args != null)
-                    {
-                        str = string.Format(CultureInfo.InvariantCulture, message, args);
-                    }
-                    StringBuilder builder = new StringBuilder(message.Length + 0x20);
+                string str = message;
+                StringBuilder builder = new StringBuilder(message.Length + 0x20);
 
-                    builder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff", CultureInfo.InvariantCulture));
-                    builder.Append(" ");
-                    builder.Append(str);
-                    string content = builder.ToString();
-                    string logFile = Path.Combine(Path.GetDirectoryName(LogFile),
-                        String.Format("{0}{1}", DateTime.Now.ToString("yyyy-MM-dd"), Path.GetFileName(LogFile)));
-                    if (!string.IsNullOrEmpty(logFile))
+                builder.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff", CultureInfo.InvariantCulture));
+                builder.Append(" ");
+                builder.Append(str);
+                string content = builder.ToString();
+                string logFile = Path.Combine(Path.GetDirectoryName(LogFile),
+                    String.Format("{0}{1}", DateTime.Now.ToString("yyyy-MM-dd"), Path.GetFileName(LogFile)));
+                if (!string.IsNullOrEmpty(logFile))
+                {
+                    Action work = new Action(() =>
                     {
-                        Action work = new Action(() =>
+                        lock (lockObject)
                         {
-                            lock (lockObject)
+                            int tryTimes = 0;
+                            do
                             {
-                                int tryTimes = 0;
-                                do
+                                try
                                 {
-                                    try
+                                    if (!String.IsNullOrEmpty(Path.GetDirectoryName(LogFile)) &&
+                                        !Directory.Exists(Path.GetDirectoryName(LogFile)))
                                     {
-                                        if (!String.IsNullOrEmpty(Path.GetDirectoryName(LogFile)) &&
-                                            !Directory.Exists(Path.GetDirectoryName(LogFile)))
-                                        {
-                                            Directory.CreateDirectory(Path.GetDirectoryName(LogFile));
-                                        }
+                                        Directory.CreateDirectory(Path.GetDirectoryName(LogFile));
+                                    }
 
-                                        using (StreamWriter writer = File.AppendText(logFile))
-                                        {
-                                            writer.WriteLine(content);
-                                            break;
-                                        }
-                                    }
-                                    catch (UnauthorizedAccessException)
+                                    using (StreamWriter writer = File.AppendText(logFile))
                                     {
+                                        writer.WriteLine(content);
+                                        break;
+                                    }
+                                }
+                                catch (UnauthorizedAccessException)
+                                {
 
-                                    }
-                                    catch (IOException)
-                                    {
-                                        continue;
-                                    }
-                                } while (tryTimes++ < 5);
-                            }
-                        });
-                        if (Async)
-                        {
-                            ThreadPool.QueueUserWorkItem((state) => { work(); }, null);
+                                }
+                                catch (IOException)
+                                {
+                                    continue;
+                                }
+                            } while (tryTimes++ < 5);
                         }
-                        else
-                        {
-                            work();
-                        }
-                    }
-                }
-                catch (Exception exception)
-                {
-                    if (exception.MustBeThrown())
+                    });
+                    if (Async)
                     {
-                        throw;
+                        ThreadPool.QueueUserWorkItem((state) => { work(); }, null);
+                    }
+                    else
+                    {
+                        work();
                     }
                 }
             }
-        }
-
-        private string GetAssemblyLoadingBase()
-        {
-            Assembly assembly = Assembly.GetCallingAssembly();
-            if (!assembly.GlobalAssemblyCache)
-            {
-                string codeBase = assembly.GetName().CodeBase;
-                Uri assemblyUri = new Uri(codeBase, UriKind.RelativeOrAbsolute);
-                if (assemblyUri.Scheme == "file")
-                {
-                    return Path.GetDirectoryName(assemblyUri.LocalPath);
-                }
-            }
-            return "";
         }
 
         private string CheckPath(string logFile)
@@ -195,7 +165,7 @@ namespace Smart.Logging
             {
                 if (item == '\\')
                     continue;
-                if (invalidFileNameChars.Contains(item))
+                if (invalidPathChars.Contains(item))
                 {
                     throw new ArgumentException("logFile包含无效字符");
                 }

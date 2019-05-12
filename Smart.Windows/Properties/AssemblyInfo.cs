@@ -3,15 +3,15 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // **********************************
-// 程序集名称: Xunmei.Smart.Windows.dll
-// 默认命名空间: Xunmei.Smart.Windows
+// 程序集名称: Xunmei.Leen.Windows.dll
+// 默认命名空间: Xunmei.Leen.Windows
 // 类库说明: 包含Smart WPF控件库及相关类等。
 // **********************************
-[assembly: AssemblyTitle("Smart.Windows")]
+[assembly: AssemblyTitle("Leen.Windows")]
 [assembly: AssemblyDescription("Smart桌面库")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Smart.Windows")]
+[assembly: AssemblyProduct("Leen.Windows")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Smart.Common.Utils
+namespace Leen.Common.Utils
 {
     public class HashSetExt<T> : HashSet<T>
     {

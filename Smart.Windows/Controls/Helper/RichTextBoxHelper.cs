@@ -8,7 +8,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Smart.Windows.Controls.Helper
+namespace Leen.Windows.Controls.Helper
 {
     /// <summary>
     /// RichTextBox绑定帮助类。

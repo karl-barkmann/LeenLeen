@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Smart.Practices.ErrorReport
+namespace Leen.Practices.ErrorReport
 {
     /// <summary>
     /// 错误报告视图接口。

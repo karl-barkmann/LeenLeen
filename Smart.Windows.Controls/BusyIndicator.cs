@@ -5,7 +5,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Smart.Windows.Controls
+namespace Leen.Windows.Controls
 {
     [TemplatePart(Name = "PART_CancelButton", Type = typeof(Button))]
     [TemplatePart(Name = "PART_TargetHolder", Type = typeof(VisualBrush))]

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过以下
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("Smart.Practices.Wcf")]
+[assembly: AssemblyTitle("Leen.Practices.Wcf")]
 [assembly: AssemblyDescription("最佳设计准则(WCF)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Smart.Practices.Wcf")]
+[assembly: AssemblyProduct("Leen.Practices.Wcf")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

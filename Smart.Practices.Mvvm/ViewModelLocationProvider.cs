@@ -3,15 +3,15 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Reflection;
 
-namespace Smart.Practices.Mvvm
+namespace Leen.Practices.Mvvm
 {
     /// <summary>
     /// The ViewModelLocationProvider class locates the view model for the view that has the AutoWireViewModelChanged attached property set to true.
     /// The view model will be located and injected into the view's DataContext. To locate the view, two strategies are used: First the ViewModelLocationProvider
     /// will look to see if there is a view model factory registered for that view, if not it will try to infer the view model using a convention based approach.
-    /// This class also provide methods for registering the view model factories,
+    /// The default naming pattern: YourView -> YourViewModel.
+    /// This class also provide methods for registering the viewmodel factories,
     /// and also to override the default view model factory and the default view type to view model type resolver.
     /// </summary>
 
@@ -71,7 +71,6 @@ namespace Smart.Practices.Mvvm
         /// It first looks to see if there is a mapping registered for that view, if not it will fallback to the convention based approach.
         /// </summary>
         /// <param name="view">The dependency object, typically a view.</param>
-        /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         public static void AutoWireViewModelChanged(IView view)
         {
             // Try mappings first
@@ -80,7 +79,12 @@ namespace Smart.Practices.Mvvm
             if (viewModel == null)
             {
                 var viewModelType = defaultViewTypeToViewModelTypeResolver(view.GetType());
-                if (viewModelType == null) return;
+                if (viewModelType == null)
+                {
+                    throw new InvalidOperationException(string.Format(@"Trying to automatically look up the viewmodel of {0}, but fail to find any matched type¡£
+                        Probably you are not flowing the naming pattern or your view type to viewmodel type resolver is not working properly.",
+                        view.GetType()));
+                }
 
                 // Really need Container or Factories here to deal with injecting dependencies on construction
                 viewModel = defaultViewModelFactory(viewModelType);

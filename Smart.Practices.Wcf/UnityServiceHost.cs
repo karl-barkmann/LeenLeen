@@ -2,7 +2,7 @@
 using System.ServiceModel.Web;
 using Microsoft.Practices.Unity;
 
-namespace Smart.Practices.Wcf
+namespace Leen.Practices.Wcf
 {
     class UnityServiceHost : WebServiceHost
     {

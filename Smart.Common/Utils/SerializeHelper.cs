@@ -2,7 +2,7 @@
 using System.IO;
 using System.Xml.Serialization;
 
-namespace Smart.Common.Utils
+namespace Leen.Common.Utils
 {
     /// <summary>
     /// 序列化帮助类

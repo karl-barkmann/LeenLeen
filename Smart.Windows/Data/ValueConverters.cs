@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Linq;
 
-namespace Smart.Windows.Data
+namespace Leen.Windows.Data
 {
     /// <summary>
     /// Returns false when a bool is true.

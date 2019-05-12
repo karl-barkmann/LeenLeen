@@ -3,15 +3,15 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // **********************************
-// 程序集名称: Xunmei.Smart.Common.dll
-// 默认命名空间: Xunmei.Smart.Common
+// 程序集名称: Xunmei.Leen.Common.dll
+// 默认命名空间: Xunmei.Leen.Common
 // 类库说明: 包含Smart基础库、工具库。
 // **********************************
-[assembly: AssemblyTitle("Smart.Common")]
+[assembly: AssemblyTitle("Leen.Common")]
 [assembly: AssemblyDescription("Smart Base Library")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Smart.Common")]
+[assembly: AssemblyProduct("Leen.Common")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

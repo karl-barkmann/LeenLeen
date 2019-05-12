@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Smart.Common
+namespace Leen.Common
 {
     /// <summary>
     /// 表示可通过索引访问的对象的强类型列表。 提供用于并发对列表进行搜索、排序和操作的方法。
@@ -11,7 +11,7 @@ namespace Smart.Common
     public class ConcurrentList<T> : IList<T>, IList
     {
         private readonly object locker = new object();
-        private List<T> source;
+        private readonly List<T> source;
 
         /// <summary>
         /// 构造并发强类型列表的实例。
@@ -419,7 +419,6 @@ namespace Smart.Common
             }
         }
 
-
         private static T ParseValue(object value)
         {
             if (value == null)
@@ -428,7 +427,7 @@ namespace Smart.Common
                 {
                     throw new ArgumentException("当泛型列表初始化为值类型列表时不能插入null值。");
                 }
-                return default(T);
+                return default;
             }
             else
             {

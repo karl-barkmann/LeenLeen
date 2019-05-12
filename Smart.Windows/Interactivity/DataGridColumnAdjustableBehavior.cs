@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Interactivity;
 using System.Windows.Media;
 
-namespace Smart.Windows.Interactivity
+namespace Leen.Windows.Interactivity
 {
     /// <summary>
     /// 自动调整列宽度的数据网格控件。

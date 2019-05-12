@@ -155,9 +155,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Smart.Windows.Controls\Smart.Windows.Controls.csproj">
+    <ProjectReference Include="..\Smart.Windows.Controls\Leen.Windows.Controls.csproj">
       <Project>{2c0bce42-4d89-401e-b3b9-8faf92edad15}</Project>
-      <Name>Smart.Windows.Controls</Name>
+      <Name>Leen.Windows.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Smart.Windows\Leen.Windows.csproj">
+      <Project>{9D717A92-E9A4-4DC7-92A3-C376C99AA0C6}</Project>
+      <Name>Leen.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

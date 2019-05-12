@@ -7,9 +7,9 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Smart.Native;
+using Leen.Native;
 
-namespace Smart.Windows.Utils
+namespace Leen.Windows.Utils
 {
     /// <summary>
     /// WPF通用扩展方法。

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Smart.Common.Utils
+namespace Leen.Common.Utils
 {
     /// <summary>
     /// 网络帮助类。

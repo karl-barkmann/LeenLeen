@@ -6,9 +6,9 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Interactivity;
 using System.Windows.Media;
-using Smart.Windows.Utils;
+using Leen.Windows.Utils;
 
-namespace Smart.Windows.Interactivity
+namespace Leen.Windows.Interactivity
 {
     public class WatermarkBehavior : Behavior<TextBox>
     {

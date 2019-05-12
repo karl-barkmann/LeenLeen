@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace Smart.Forms
+namespace Leen.Forms
 {
     /// <summary>
     /// 控件扩展方法。

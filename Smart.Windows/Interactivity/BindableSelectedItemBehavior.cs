@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interactivity;
 
-namespace Smart.Windows.Interactivity
+namespace Leen.Windows.Interactivity
 {
     /// <summary>
     /// 使TreeView的选中项可以双向绑定。

@@ -2,10 +2,10 @@
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Linq;
-using Smart.Windows.Documents;
-using Smart.Windows.Utils;
+using Leen.Windows.Documents;
+using Leen.Windows.Utils;
 
-namespace Smart.Windows.Controls
+namespace Leen.Windows.Controls
 {
     public class BusyDecorator : Control
     {

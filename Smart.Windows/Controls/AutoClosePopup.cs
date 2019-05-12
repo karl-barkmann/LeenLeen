@@ -7,7 +7,7 @@
 using System;
 using System.Windows.Threading;
 
-namespace Smart.Windows.Controls
+namespace Leen.Windows.Controls
 {
     /// <summary>
     /// 自动关闭的Popup。

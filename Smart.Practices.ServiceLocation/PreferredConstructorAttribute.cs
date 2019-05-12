@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Smart.Practices.ServiceLocation
+namespace Leen.Practices.ServiceLocation
 {
     [AttributeUsage(AttributeTargets.Constructor)]
     public sealed class PreferredConstructorAttribute : Attribute

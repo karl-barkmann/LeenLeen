@@ -11,9 +11,9 @@ using System.Windows.Input;
 using System.Windows.Interactivity;
 using System.Windows.Interop;
 using System.Windows.Media;
-using Smart.Windows.Utils;
+using Leen.Windows.Utils;
 
-namespace Smart.Windows.Interactivity
+namespace Leen.Windows.Interactivity
 {
     public class DragBehavior : Behavior<UIElement>
     {

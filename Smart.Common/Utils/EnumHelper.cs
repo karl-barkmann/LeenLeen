@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace Smart.Common.Utils
+namespace Leen.Common.Utils
 {
     /// <summary>
     /// 枚举辅助类
@@ -81,6 +81,11 @@ namespace Smart.Common.Utils
             return value;
         }
 
+        /// <summary>
+        /// 获取枚举值集合。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static IEnumerable<T> GetValues<T>() where T : struct
         {
             foreach (var val in Enum.GetValues(typeof(T)))
@@ -89,6 +94,12 @@ namespace Smart.Common.Utils
             }
         }
 
+        /// <summary>
+        /// 获取字符串对应的枚举值。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static T Parse<T>(string value) where T : struct
         {
             return (T)Enum.Parse(typeof(T), value);

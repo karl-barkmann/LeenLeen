@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace Smart.Windows
+namespace Leen.Windows
 {
     /// <summary>
     /// 

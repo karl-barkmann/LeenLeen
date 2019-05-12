@@ -8,7 +8,7 @@ using System;
 using System.Net;
 using System.Windows.Data;
 
-namespace Smart.Windows.Data
+namespace Leen.Windows.Data
 {
     /// <summary>
     /// IP地址字符串与IPAddress的值转换器。

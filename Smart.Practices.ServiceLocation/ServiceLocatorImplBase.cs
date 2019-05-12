@@ -3,9 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Smart.Practices.ServiceLocation.Properties;
+using Leen.Practices.ServiceLocation.Properties;
 
-namespace Smart.Practices.ServiceLocation
+namespace Leen.Practices.ServiceLocation
 {
     public abstract class ServiceLocatorImplBase : IServiceLocator, IServiceProvider
     {

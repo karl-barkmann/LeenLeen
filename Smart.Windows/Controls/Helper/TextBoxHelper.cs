@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace Smart.Windows.Controls.Helper
+namespace Leen.Windows.Controls.Helper
 {
     /// <summary>
     /// TextBox控件绑定帮助类。

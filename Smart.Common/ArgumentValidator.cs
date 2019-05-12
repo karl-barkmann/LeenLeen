@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Smart.Common
+namespace Leen.Common
 {
     /// <summary>
     /// 

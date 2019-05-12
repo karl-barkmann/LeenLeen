@@ -3,7 +3,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
 
-namespace Smart.Practices.Wcf
+namespace Leen.Practices.Wcf
 {
     /// <summary>
     /// 服务器错误处理。
