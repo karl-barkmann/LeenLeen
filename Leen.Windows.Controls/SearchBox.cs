@@ -9,48 +9,57 @@ namespace Leen.Windows.Controls
     /// <summary>
     /// 支持水印的搜索框。
     /// </summary>
-    [TemplatePart(Name = PART_CLEAR_BUTTON, Type = typeof(ButtonBase))]
-    [TemplateVisualState(GroupName = VISUAL_STATE_WATERMARK_STATES, Name = VISUAL_STATE_WATERMARK_VISIBLE)]
-    [TemplateVisualState(GroupName = VISUAL_STATE_WATERMARK_STATES, Name = VISUAL_STATE_SEARCH_BUTTONS_VISIBLE)]
-    [TemplateVisualState(GroupName = VISUAL_STATE_WATERMARK_STATES, Name = VISUAL_STATE_WATERMARK_HIDDEN)]
+    [TemplatePart(Name = PART_ClearButton, Type = typeof(ButtonBase))]
+    [TemplateVisualState(GroupName = STATEGROUP_WatermarkStates, Name = STATE_WatermarkVisible)]
+    [TemplateVisualState(GroupName = STATEGROUP_WatermarkStates, Name = STATE_WatermarkDismiss)]
+    [TemplateVisualState(GroupName = STATEGROUP_WatermarkStates, Name = STATE_WatermarkHidden)]
     public class SearchBox : TextBox
     {
         #region private fields
 
-        private const string VISUAL_STATE_SEARCH_BUTTONS_VISIBLE = "SearchOptionVisible";
-        private const string VISUAL_STATE_WATERMARK_HIDDEN = "WatermarkHidden";
-        private const string VISUAL_STATE_WATERMARK_STATES = "WatermarkStates";
-        private const string VISUAL_STATE_WATERMARK_VISIBLE = "WatermarkVisible";
-        private const string PART_CLEAR_BUTTON = "PART_ClearButton";
-
+        private const string STATE_WatermarkDismiss = "WatermarkDismiss";
+        private const string STATE_WatermarkHidden = "WatermarkHidden";
+        private const string STATEGROUP_WatermarkStates = "WatermarkStates";
+        private const string STATE_WatermarkVisible = "WatermarkVisible";
+        private const string PART_ClearButton = "PART_ClearButton";
 
         private ButtonBase _clearButton;
-        private int _millisecondsDelay = 300;
         private readonly DispatcherTimer _textTransferTimer = new DispatcherTimer();
+
+        #endregion
+
+        #region CornerRadiusProperty
+
+        public static readonly DependencyProperty CornerRadiusProperty =
+            DependencyProperty.Register(nameof(CornerRadius),
+                                        typeof(CornerRadius),
+                                        typeof(SearchBox),
+                                        new PropertyMetadata(default(CornerRadius)));
+        public CornerRadius CornerRadius
+        {
+            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
+            set { SetValue(CornerRadiusProperty, value); }
+        }
 
         #endregion
 
         #region SearchTextProperty
 
-        /// <summary>
-        /// 
-        /// </summary>
         public static readonly DependencyProperty SearchTextProperty =
-            DependencyProperty.Register("SearchText", typeof(string), typeof(SearchBox),
-                new FrameworkPropertyMetadata(string.Empty, new PropertyChangedCallback(searchTextPropertyChanged)));
+            DependencyProperty.Register(nameof(SearchText),
+                                        typeof(string),
+                                        typeof(SearchBox),
+                                        new FrameworkPropertyMetadata(string.Empty, new PropertyChangedCallback(searchTextPropertyChanged)));
 
-        /// <summary>
-        /// 
-        /// </summary>
         public string SearchText
         {
             get
             {
-                return (string)base.GetValue(SearchTextProperty);
+                return (string)GetValue(SearchTextProperty);
             }
             set
             {
-                base.SetValue(SearchTextProperty, value);
+                SetValue(SearchTextProperty, value);
             }
         }
 
@@ -66,12 +75,42 @@ namespace Leen.Windows.Controls
 
         #endregion
 
+        #region SearchDelayProperty
+
+        public double SearchDelay
+        {
+            get { return (double)GetValue(SearchDelayProperty); }
+            set { SetValue(SearchDelayProperty, value); }
+        }
+
+        public static readonly DependencyProperty SearchDelayProperty =
+            DependencyProperty.Register(nameof(SearchDelay),
+                                        typeof(double),
+                                        typeof(SearchBox),
+                                        new PropertyMetadata(300d, SearchDelayPropertyChanged));
+
+        private static void SearchDelayPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var searchBox = d as SearchBox;
+            searchBox.OnSearchDelayChanged((double)e.NewValue);
+        }
+
+        protected void OnSearchDelayChanged(double newValue)
+        {
+            _textTransferTimer.Interval = TimeSpan.FromMilliseconds(newValue);
+        }
+
+        #endregion
+
         #region WatermarkTextProperty
 
         /// <summary>
         /// 
         /// </summary>
-        public static readonly DependencyProperty WatermarkTextProperty = DependencyProperty.Register("WatermarkText", typeof(string), typeof(SearchBox));
+        public static readonly DependencyProperty WatermarkTextProperty = 
+            DependencyProperty.Register(nameof(WatermarkText),
+                                        typeof(string),
+                                        typeof(SearchBox));
 
         /// <summary>
         /// 
@@ -80,43 +119,29 @@ namespace Leen.Windows.Controls
         {
             get
             {
-                return (string)base.GetValue(WatermarkTextProperty);
+                return (string)GetValue(WatermarkTextProperty);
             }
             set
             {
-                base.SetValue(WatermarkTextProperty, value);
+                SetValue(WatermarkTextProperty, value);
             }
         }
 
         #endregion
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public int MillisecondsDelay
-        {
-            get
-            {
-                return _millisecondsDelay;
-            }
-            set
-            {
-                if (_millisecondsDelay != value)
-                {
-                    _millisecondsDelay = value;
-                    _textTransferTimer.Interval = TimeSpan.FromMilliseconds(_millisecondsDelay);
-                }
-            }
-        }
-
         #region 构造函数
 
         public SearchBox()
         {
-            _textTransferTimer.Interval = TimeSpan.FromMilliseconds(_millisecondsDelay);
+            _textTransferTimer.Interval = TimeSpan.FromMilliseconds(SearchDelay);
             IsKeyboardFocusWithinChanged += new DependencyPropertyChangedEventHandler(SearchBox_IsKeyboardFocusWithinChanged);
             Loaded += new RoutedEventHandler(SearchBox_Loaded);
             Unloaded += SearchBox_Unloaded;
+        }
+
+        static SearchBox()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(SearchBox), new FrameworkPropertyMetadata(typeof(SearchBox)));
         }
 
         #endregion
@@ -128,7 +153,7 @@ namespace Leen.Windows.Controls
             {
                 _clearButton.Click -= new RoutedEventHandler(_clearTextBoxElement_Click);
             }
-            _clearButton = GetTemplateChild("PART_ClearButton") as ButtonBase;
+            _clearButton = GetTemplateChild(PART_ClearButton) as ButtonBase;
             if (_clearButton != null)
             {
                 _clearButton.Click += new RoutedEventHandler(_clearTextBoxElement_Click);
@@ -152,7 +177,7 @@ namespace Leen.Windows.Controls
 
         private void _textTransferTimer_Tick(object sender, EventArgs e)
         {
-            SetCurrentValue(SearchTextProperty, base.Text);
+            SetCurrentValue(SearchTextProperty, Text);
             _textTransferTimer.Stop();
         }
 
@@ -180,17 +205,17 @@ namespace Leen.Windows.Controls
 
         private void UpdateVisualState()
         {
-            if (string.IsNullOrEmpty(base.Text) && !base.IsKeyboardFocusWithin)
+            if (string.IsNullOrEmpty(Text) && !IsKeyboardFocusWithin)
             {
-                VisualStateManager.GoToState(this, VISUAL_STATE_WATERMARK_VISIBLE, true);
+                VisualStateManager.GoToState(this, STATE_WatermarkVisible, true);
             }
-            else if (string.IsNullOrEmpty(base.Text))
+            else if (string.IsNullOrEmpty(Text))
             {
-                VisualStateManager.GoToState(this, VISUAL_STATE_WATERMARK_HIDDEN, true);
+                VisualStateManager.GoToState(this, STATE_WatermarkHidden, true);
             }
             else
             {
-                VisualStateManager.GoToState(this, VISUAL_STATE_SEARCH_BUTTONS_VISIBLE, true);
+                VisualStateManager.GoToState(this, STATE_WatermarkDismiss, true);
             }
         }
 

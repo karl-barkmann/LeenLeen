@@ -19,7 +19,10 @@ namespace Leen.Windows.Controls.Helper
         /// 按下Enter键更新TextBox控件Text绑定源。
         /// </summary>
         public static readonly DependencyProperty EnterUpdatesTextSourceProperty =
-            DependencyProperty.RegisterAttached("EnterUpdatesTextSource", typeof(bool), typeof(TextBoxHelper), new PropertyMetadata(false, EnterUpdatesTextSourcePropertyChanged));
+            DependencyProperty.RegisterAttached("EnterUpdatesTextSource",
+                                                typeof(bool),
+                                                typeof(TextBoxHelper),
+                                                new PropertyMetadata(false, EnterUpdatesTextSourcePropertyChanged));
 
         /// <summary>
         /// 获取值。
@@ -45,8 +48,7 @@ namespace Leen.Windows.Controls.Helper
 
         private static void EnterUpdatesTextSourcePropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
-            var sender = obj as UIElement;
-            if (sender != null)
+            if (obj is UIElement sender)
             {
                 if ((bool)e.NewValue)
                 {
@@ -63,17 +65,17 @@ namespace Leen.Windows.Controls.Helper
 
         static void UpdatesTextSourceOnMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            var textBox = sender as TextBox;
-            if (textBox == null)
-                return;
-            //在控件内按下鼠标则不更新，因为用户正在可能需要编辑文本
-            if (textBox.InputHitTest(e.MouseDevice.GetPosition(textBox)) != null)
-                return;
-            if (GetEnterUpdatesTextSource((DependencyObject)sender))
+            if (sender is TextBox textBox)
             {
-                BindingExpression bindingExpresssion = BindingOperations.GetBindingExpression((DependencyObject)sender, TextBox.TextProperty);
-                if (bindingExpresssion != null)
-                    bindingExpresssion.UpdateSource();
+                //在控件内按下鼠标则不更新，因为用户正在可能需要编辑文本
+                if (textBox.InputHitTest(e.MouseDevice.GetPosition(textBox)) != null)
+                    return;
+                if (GetEnterUpdatesTextSource((DependencyObject)sender))
+                {
+                    BindingExpression bindingExpresssion = BindingOperations.GetBindingExpression((DependencyObject)sender, TextBox.TextProperty);
+                    if (bindingExpresssion != null)
+                        bindingExpresssion.UpdateSource();
+                }
             }
         }
 
