@@ -50,6 +50,9 @@
     <Compile Include="Aspect.cs" />
     <Compile Include="AsyncResultImplemention.cs" />
     <Compile Include="ConcurrentGenericList.cs" />
+    <Compile Include="IDataEntity.cs" />
+    <Compile Include="INamedDataEntity.cs" />
+    <Compile Include="OperationResult.cs" />
     <Compile Include="ServiceLocatorExtensions.cs" />
     <Compile Include="Utils\DumpHelper.cs" />
     <Compile Include="Xml\DynamicXml.cs" />

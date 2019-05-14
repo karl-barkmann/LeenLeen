@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Windows.Controls", "Le
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Windows.Crawler", "Demo.Windows\Demo.Windows.Crawler.csproj", "{C5FCE168-7968-4D9F-B33A-9653E269EE5E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Practices.OrganizationTree", "Leen.Practices.OrganizationTree\Leen.Practices.OrganizationTree.csproj", "{32C647B2-835D-40F0-BB64-AD8AEC42EC4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{C5FCE168-7968-4D9F-B33A-9653E269EE5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5FCE168-7968-4D9F-B33A-9653E269EE5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5FCE168-7968-4D9F-B33A-9653E269EE5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32C647B2-835D-40F0-BB64-AD8AEC42EC4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32C647B2-835D-40F0-BB64-AD8AEC42EC4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32C647B2-835D-40F0-BB64-AD8AEC42EC4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32C647B2-835D-40F0-BB64-AD8AEC42EC4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
