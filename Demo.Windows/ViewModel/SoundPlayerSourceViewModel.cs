@@ -1,13 +1,8 @@
-﻿using GalaSoft.MvvmLight;
+﻿using Leen.Practices.Mvvm;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -18,7 +13,7 @@ namespace Demo.Windows
         public SoundPlayerSourceViewModel(string request)
         {
             RequestUrl = request;
-            PlayCommand = new GalaSoft.MvvmLight.Command.RelayCommand(Play);
+            PlayCommand = new RelayCommand(Play);
         }
 
         private void Play()
@@ -58,7 +53,7 @@ namespace Demo.Windows
                 if (value != requestUrl)
                 {
                     requestUrl = value;
-                    this.RaisePropertyChanged();
+                    RaisePropertyChanged(() => RequestUrl);
                 }
             }
         }
@@ -68,10 +63,10 @@ namespace Demo.Windows
             get { return soundStreamUri; }
             set
             {
-                if(value!=soundStreamUri)
+                if (value != soundStreamUri)
                 {
                     soundStreamUri = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(() => SoundStreamUri);
                 }
             }
         }

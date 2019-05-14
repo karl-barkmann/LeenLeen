@@ -1,9 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using Leen.Practices.Mvvm;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Demo.Windows.ViewModel
 {
@@ -21,7 +17,7 @@ namespace Demo.Windows.ViewModel
                 if (value != sectionIndex)
                 {
                     sectionIndex = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(nameof(SectionIndex));
                 }
             }
         }
@@ -34,7 +30,7 @@ namespace Demo.Windows.ViewModel
                 if (value != sectionName)
                 {
                     sectionName = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(nameof(SectionName));
                 }
             }
         }
@@ -47,7 +43,7 @@ namespace Demo.Windows.ViewModel
                 if (value != streamRequestUri)
                 {
                     streamRequestUri = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(nameof(StreamRequstUri));
                 }
             }
         }

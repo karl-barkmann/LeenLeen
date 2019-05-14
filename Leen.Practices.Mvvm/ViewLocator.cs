@@ -43,11 +43,9 @@ namespace Leen.Practices.Mvvm
         {
             if (DesignerProperties.GetIsInDesignMode(d)) return;
 
-            var view = d as IView;
-            if (view == null)
+            if (!(d is IView view))
             {
-                // TODO: Improve exception
-                throw new Exception(string.Format("Your view '{0}' must implement IView interface", view.GetType()));
+                throw new Exception(string.Format("Your view '{0}' must implement IView interface", d.GetType()));
             }
 
             if ((bool)e.NewValue)

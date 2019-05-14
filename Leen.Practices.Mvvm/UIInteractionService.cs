@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.ComponentModel.Composition;
 
 namespace Leen.Practices.Mvvm
 {

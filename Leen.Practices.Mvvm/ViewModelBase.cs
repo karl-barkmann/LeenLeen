@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Leen.Common;
 using CommonServiceLocator;
+using System.Runtime.CompilerServices;
 
 namespace Leen.Practices.Mvvm
 {
@@ -159,16 +160,11 @@ namespace Leen.Practices.Mvvm
         /// <summary>
         /// 通知属性值已更改。
         /// </summary>
-        /// <param name="propertyName">默认为自动解析属性名称，亦可指定属性名称。</param>
+        /// <param name="propertyName">指定属性名称。</param>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
         SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        [Obsolete("不要再使用此方法，至少在我们将目标框架更改为4.5之前。此方法是依赖调用堆栈来获取属性名称，然而依赖调用堆栈是不可靠的，因为在代码优化后某些堆栈将不可见。")]
-        protected override void RaisePropertyChanged(string propertyName = "")
+        protected override void RaisePropertyChanged(string propertyName)
         {
-            if(string.IsNullOrEmpty(propertyName))
-            {
-                propertyName = ExtractCallMemberName();
-            }
             base.RaisePropertyChanged(propertyName);
             AnyPropertyChanged = editing & true && propertyName != "IsEditing";
         }

@@ -1,8 +1,9 @@
 using Abot.Crawler;
 using Abot.Poco;
-using GalaSoft.MvvmLight;
+using Leen.Practices.Mvvm;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Composition;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -11,46 +12,27 @@ using System.Windows.Input;
 
 namespace Demo.Windows.ViewModel
 {
-    /// <summary>
-    /// This class contains properties that the main View can data bind to.
-    /// <para>
-    /// Use the <strong>mvvminpc</strong> snippet to add bindable properties to this ViewModel.
-    /// </para>
-    /// <para>
-    /// You can also use Blend to data bind with the tool's support.
-    /// </para>
-    /// <para>
-    /// See http://www.galasoft.ch/mvvm
-    /// </para>
-    /// </summary>
-    public class MainViewModel : ViewModelBase
+    [Export(typeof(MainWindowViewModel))]
+    public class MainWindowViewModel : ViewModelBase
     {
         private ObservableCollection<SoundPlayerSourceViewModel> sources = new ObservableCollection<SoundPlayerSourceViewModel>();
         private ObservableCollection<BookViewModel> books = new ObservableCollection<BookViewModel>();
         private readonly object lockObject = new object();
         private readonly object booksLockObject = new object();
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private string nextUrl;
+        private int _state;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public MainViewModel()
+        public MainWindowViewModel()
         {
-            ////if (IsInDesignMode)
-            ////{
-            ////    // Code runs in Blend --> create design time data.
-            ////}
-            ////else
-            ////{
-            ////    // Code runs "for real"
-            ////}
-
             BindingOperations.EnableCollectionSynchronization(sources, lockObject);
             BindingOperations.EnableCollectionSynchronization(books, booksLockObject);
-
-            CrawlCommand = new GalaSoft.MvvmLight.Command.RelayCommand(Crawl);
-            StopCrawlingCommand = new GalaSoft.MvvmLight.Command.RelayCommand(StopCrawling);
+            State = 1;
+            CrawlCommand = new RelayCommand(Crawl);
+            StopCrawlingCommand = new RelayCommand(StopCrawling);
         }
 
         private void StopCrawling()
@@ -66,7 +48,7 @@ namespace Demo.Windows.ViewModel
                 if (value != sources)
                 {
                     sources = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(() => Sources);
                 }
             }
         }
@@ -79,7 +61,7 @@ namespace Demo.Windows.ViewModel
                 if (value != books)
                 {
                     books = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(() => Books);
                 }
             }
         }
@@ -92,8 +74,17 @@ namespace Demo.Windows.ViewModel
                 if (nextUrl != value)
                 {
                     nextUrl = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(() => NextUrl);
                 }
+            }
+        }
+
+        public int State
+        {
+            get { return _state; }
+            set
+            {
+                SetProperty(ref _state, value, () => State);
             }
         }
 

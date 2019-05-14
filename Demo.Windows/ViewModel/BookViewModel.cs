@@ -1,16 +1,12 @@
 ﻿using CsQuery;
-using GalaSoft.MvvmLight;
+using Leen.Practices.Mvvm;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace Demo.Windows.ViewModel
 {
@@ -51,7 +47,7 @@ namespace Demo.Windows.ViewModel
                 if (value != author)
                 {
                     author = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(() => Author);
                 }
             }
         }
@@ -64,7 +60,7 @@ namespace Demo.Windows.ViewModel
                 if (value != actor)
                 {
                     actor = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(() => Actor);
                 }
             }
         }
@@ -77,7 +73,7 @@ namespace Demo.Windows.ViewModel
                 if (value != category)
                 {
                     category = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(() => Category);
                 }
             }
         }
@@ -93,7 +89,7 @@ namespace Demo.Windows.ViewModel
                 if (value != name)
                 {
                     name = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(() => Name);
                 }
             }
         }
@@ -106,7 +102,7 @@ namespace Demo.Windows.ViewModel
                 if (value != lastUpdateDate)
                 {
                     lastUpdateDate = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(() => LastUpdateDate);
                 }
             }
         }
@@ -119,7 +115,7 @@ namespace Demo.Windows.ViewModel
                 if (value != sections)
                 {
                     sections = value;
-                    RaisePropertyChanged();
+                    RaisePropertyChanged(() => Sections);
                 }
             }
         }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Leen.Practices.Mvvm
 {
@@ -45,8 +46,7 @@ namespace Leen.Practices.Mvvm
             {
                 throw new ArgumentNullException("propertyExpression");
             }
-            MemberExpression expression = propertyExpression.Body as MemberExpression;
-            if (expression == null)
+            if (!(propertyExpression.Body is MemberExpression expression))
             {
                 throw new ArgumentException("expression is not a member access expression.", "propertyExpression");
             }
@@ -68,16 +68,22 @@ namespace Leen.Practices.Mvvm
         /// <summary>
         /// 通知属性值已更改。
         /// </summary>
-        /// <param name="propertyName">默认为自动解析属性名称，亦可指定属性名称。</param>
+        /// <param name="propertyName">属性名称。</param>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
         SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        [Obsolete("不要再使用此方法，至少在我们将目标框架更改为4.5之前。此方法是依赖调用堆栈来获取属性名称，然而依赖调用堆栈是不可靠的，因为在代码优化后某些堆栈将不可见。")]
-        protected virtual void RaisePropertyChanged(string propertyName = null)
+        protected virtual void RaisePropertyChanged(string propertyName)
         {
-            if (String.IsNullOrWhiteSpace(propertyName))
-            {
-                propertyName = ExtractCallMemberName();
-            }
+            OnRaisePropertyChanged(propertyName);
+        }
+
+        /// <summary>
+        /// 通知属性值正在更改。
+        /// </summary>
+        /// <param name="propertyName">属性名称。</param>
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
+        SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
+        protected virtual void RaisePropertyChanging(string propertyName)
+        {
             OnRaisePropertyChanged(propertyName);
         }
 
@@ -89,22 +95,6 @@ namespace Leen.Practices.Mvvm
         protected virtual void RaisePropertyChangedWith(string propertyName)
         {
             OnRaisePropertyChanged(propertyName);
-        }
-
-        /// <summary>
-        /// 通知属性值正在更改。
-        /// </summary>
-        /// <param name="propertyName">默认为自动解析属性名称，亦可指定属性名称。</param>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
-        SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        [Obsolete("不要再使用此方法，至少在我们将目标框架更改为4.5之前。此方法是依赖调用堆栈来获取属性名称，然而依赖调用堆栈是不可靠的，因为在代码优化后某些堆栈将不可见。")]
-        protected virtual void RaisePropertyChanging(string propertyName = null)
-        {
-            if (String.IsNullOrWhiteSpace(propertyName))
-            {
-                propertyName = ExtractCallMemberName();
-            }
-            OnRaisePropertyChanging(propertyName);
         }
 
         /// <summary>
@@ -158,13 +148,10 @@ namespace Leen.Practices.Mvvm
         /// <returns> True if the value was changed, false if the existing value matched the desired value.</returns>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
         SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
-        [Obsolete("不要再使用此方法，至少在我们将目标框架更改为4.5之前。此方法是依赖调用堆栈来获取属性名称，然而依赖调用堆栈是不可靠的，因为在代码优化后某些堆栈将不可见。")]
-        protected virtual bool SetProperty<T>(ref T storage, T value, string propertyName = null)
+        protected virtual bool SetProperty<T>(ref T storage, T value, string propertyName)
         {
             if (!Object.Equals(storage, value))
             {
-                propertyName = ExtractCallMemberName();
-
                 OnRaisePropertyChanging(propertyName);
                 storage = value;
                 OnRaisePropertyChanged(propertyName);
@@ -225,22 +212,6 @@ namespace Leen.Practices.Mvvm
             }
         }
 
-        /// <summary>
-        /// 提取属性名称。
-        /// </summary>
-        /// <returns></returns>
-        [Obsolete("不要使用此方法，此方法是依赖调用堆栈来获取属性名称。然而依赖调用堆栈是不可靠的，因为在代码优化后某些堆栈是不可见的。")]
-        protected string ExtractCallMemberName()
-        {
-            StackFrame frame = new StackFrame(2);
-            string name = frame.GetMethod().Name;
-            if (name.Contains("set_"))
-            {
-                name = name.Replace("set_", "");
-            }
-            return name;
-        }
-
         #region private helpers
 
         /// <summary>
@@ -253,12 +224,7 @@ namespace Leen.Practices.Mvvm
             {
                 throw new ArgumentException("'propertyName' can not be null or empty", "propertyName");
             }
-            var handler = PropertyChanged;
-            
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>
@@ -272,11 +238,7 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentException("'propertyName' can not be null or empty", "propertyName");
             }
 
-            var handler = PropertyChanging;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangingEventArgs(propertyName));
-            }
+            PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
         }
 
         #endregion
