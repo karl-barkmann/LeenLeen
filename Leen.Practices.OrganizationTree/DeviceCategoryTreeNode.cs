@@ -1,5 +1,5 @@
 ﻿
-namespace DCCS.Client.Infrastructure.OrganizationTree
+namespace  Leen.Practices.OrganizationTree
 {
     /// <summary>
     /// 定义组织机构和设备树上的设备分类节点。

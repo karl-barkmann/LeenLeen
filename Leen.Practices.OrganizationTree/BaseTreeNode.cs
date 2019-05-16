@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace DCCS.Client.Infrastructure.OrganizationTree
+namespace Leen.Practices.OrganizationTree
 {
     /// <summary>
     /// 定义组织结构和设备树节点。

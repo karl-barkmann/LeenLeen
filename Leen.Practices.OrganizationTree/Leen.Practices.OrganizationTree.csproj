@@ -7,8 +7,8 @@
     <ProjectGuid>{32C647B2-835D-40F0-BB64-AD8AEC42EC4C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DCCS.Client.OrganizationTree</RootNamespace>
-    <AssemblyName>DCCS.Client.OrganizationTree</AssemblyName>
+    <RootNamespace>Leen.Practices.OrganizationTree</RootNamespace>
+    <AssemblyName>Leen.Practices.OrganizationTree</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -21,12 +21,12 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\binr\</OutputPath>
+    <OutputPath>..\Bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>..\binr\DCCS.Client.OrganizationTree.xml</DocumentationFile>
+    <DocumentationFile>..\Bin\Leen.Practices.OrganizationTree.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

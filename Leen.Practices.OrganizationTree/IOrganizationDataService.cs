@@ -1,7 +1,7 @@
 ﻿using Leen.Common;
 using System.Collections.Generic;
 
-namespace DCCS.Client.Infrastructure.OrganizationTree
+namespace  Leen.Practices.OrganizationTree
 {
     /// <summary>
     /// 提供获取组织机构业务实体的数据接口。

@@ -646,14 +646,18 @@ namespace Leen.Practices.Mvvm
             {
                 throw new InvalidOperationException("In most cases, this is because you are trying to close the same view twice.");
             }
-            if (ComponentDispatcher.IsThreadModal)
+            var interopHelper = new WindowInteropHelper(dialog);
+            if (interopHelper.Handle != InteropService.Shell.Handle)
             {
-                dialog.DialogResult = dialogResult;
-            }
-            else
-            {
-                throw new InvalidOperationException(
-                    string.Format($"Only modal window can set dialog result. If you need a dialog result , try {nameof(ShowDialog)} function instead of {nameof(Show)}."));
+                if (ComponentDispatcher.IsThreadModal)
+                {
+                    dialog.DialogResult = dialogResult;
+                }
+                else
+                {
+                    throw new InvalidOperationException(
+                        string.Format($"Only modal window can set dialog result. If you need a dialog result , try {nameof(ShowDialog)} function instead of {nameof(Show)}."));
+                }
             }
 
             dialog.Close();

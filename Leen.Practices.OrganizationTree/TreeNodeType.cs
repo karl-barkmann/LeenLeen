@@ -1,6 +1,6 @@
-﻿
-using System.ComponentModel;
-namespace DCCS.Client.Infrastructure.OrganizationTree
+﻿using System.ComponentModel;
+
+namespace  Leen.Practices.OrganizationTree
 {
     /// <summary>
     /// 组织机构和设备树节点的类型。

@@ -293,6 +293,9 @@ namespace Leen.Practices.Mvvm
                 view.DataContext = viewModel;
             }
 
+            if (!views.Contains(view))
+                views.Add(view);
+
             return view;
         }
 
@@ -312,8 +315,10 @@ namespace Leen.Practices.Mvvm
 
             if (view == null && ensureView)
             {
-                throw new ArgumentException($"Can not find any view's datacontext matching with {viewModel}." +
-                    $"Either you are not passing a valid view modle or the view related to view model has been closed.",
+                throw new ArgumentException($"Can not find any view's datacontext matching with {viewModel}.Here is some clue：\r\n" +
+                    $"1、You are not passing a valid view model ;" +
+                    $"2、The view that's related to view model has been closed；" +
+                    $"3、The view type does not implement {nameof(IView)} interaface;",
                     nameof(viewModel));
             }
 

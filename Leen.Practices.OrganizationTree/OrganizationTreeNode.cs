@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DCCS.Client.Infrastructure.OrganizationTree
+namespace  Leen.Practices.OrganizationTree
 {
     /// <summary>
     /// 定义组织机构和设备树上的组织机构节点。
