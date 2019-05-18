@@ -1,5 +1,7 @@
-﻿
-namespace  Leen.Practices.OrganizationTree
+﻿using Leen.Common;
+using System;
+
+namespace Leen.Practices.OrganizationTree
 {
     /// <summary>
     /// 定义组织机构和设备树上的设备节点。
@@ -9,15 +11,23 @@ namespace  Leen.Practices.OrganizationTree
         /// <summary>
         /// 构造 <see cref="DeviceTreeNode"/> 的实例。
         /// </summary>
-        public DeviceTreeNode(string deviceId) : base(false)
+        public DeviceTreeNode(string deviceId) : base(deviceId, false)
         {
-            DeviceId = deviceId;
             NodeType = TreeNodeType.Device;
         }
 
         /// <summary>
-        /// 获取设备Id。
+        /// 构造 <see cref="DeviceTreeNode"/> 的实例。
         /// </summary>
-        public string DeviceId { get; private set; }
+        /// <param name="entity">此设备节点对应的设备实体。</param>
+        public DeviceTreeNode(INamedDataEntity entity) : this(entity.Id)
+        {
+            Entity = entity ?? throw new ArgumentNullException(nameof(entity));
+        }
+
+        /// <summary>
+        /// 获取节点实体对象。
+        /// </summary>
+        public INamedDataEntity Entity { get; }
     }
 }

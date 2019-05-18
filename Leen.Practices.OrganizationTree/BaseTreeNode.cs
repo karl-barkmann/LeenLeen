@@ -27,6 +27,7 @@ namespace Leen.Practices.OrganizationTree
         internal static readonly ObservableCollection<BaseTreeNode> PlaceHolderChildren = new ObservableCollection<BaseTreeNode>(new List<BaseTreeNode>(1) { Placeholder });
         private readonly static TaskCompletionSource<IEnumerable<BaseTreeNode>> s_TaskCompletionSource = 
             new TaskCompletionSource<IEnumerable<BaseTreeNode>>();
+        private readonly bool _initializeWithPlaceholder;
 
         internal const byte IsCheckedMask = 0x01;
         internal const byte CheckableMask = 0x02;
@@ -40,20 +41,21 @@ namespace Leen.Practices.OrganizationTree
         private ObservableCollection<BaseTreeNode> _children;
         private bool _hasChildren;
         private TreeNodeType _nodeType;
+        private int _level;
+        private int _childrenCount;
+
         //private bool? _isChecked;
         //private bool _isSelected;
         //private bool _checkable = false;
         //private bool _selectable = true;
         //private bool _isExpanded;
         //private bool _isLoadingChildren;
-        private int _level;
-        private int _childrenCount;
+
         private readonly RelayCommand _expandCommand;
         private readonly RelayCommand _collapseCommand;
         private readonly RelayCommand _expandAllCommand;
         private readonly RelayCommand _collapseAllCommand;
         private readonly RelayCommand _toggleCommand;
-        private readonly bool _initializeWithPlaceholder;
 
         #endregion
 
@@ -67,19 +69,20 @@ namespace Leen.Practices.OrganizationTree
         /// <summary>
         /// 构造<see cref="BaseTreeNode"/>的实例。
         /// </summary>
-        protected BaseTreeNode(bool initializeWithPlaceholder)
+        protected BaseTreeNode(string nodeId, bool initializeWithPlaceholder)
         {
+            NodeId = nodeId;
             _initializeWithPlaceholder = initializeWithPlaceholder;
             if (initializeWithPlaceholder)
             {
                 Children = PlaceHolderChildren;
             }
-            _toggleCommand = new RelayCommand(Toggle, CanToggle);
-            _expandCommand = new RelayCommand(InternalExpand, CanExpand);
-            _expandAllCommand = new RelayCommand(async()=> await InternalExpandAll(), CanExpand);
-            _collapseCommand = new RelayCommand(InternalCollapse, CanCollapse);
-            _collapseAllCommand = new RelayCommand(CollapseAll, CanCollapse);
-            this._initializeWithPlaceholder = initializeWithPlaceholder;
+            //_toggleCommand = new RelayCommand(Toggle, CanToggle);
+            //_expandCommand = new RelayCommand(InternalExpand, CanExpand);
+            //_expandAllCommand = new RelayCommand(async () => await InternalExpandAll(), CanExpand);
+            //_collapseCommand = new RelayCommand(InternalCollapse, CanCollapse);
+            //_collapseAllCommand = new RelayCommand(CollapseAll, CanCollapse);
+            _initializeWithPlaceholder = initializeWithPlaceholder;
         }
 
         #endregion
@@ -143,7 +146,7 @@ namespace Leen.Practices.OrganizationTree
             get { return _childrenCount; }
             private set
             {
-                SetPropertyWith(ref _childrenCount, value, "ChildrenCount");
+                SetPropertyWith(ref _childrenCount, value, nameof(ChildrenCount));
             }
         }
 
@@ -155,7 +158,7 @@ namespace Leen.Practices.OrganizationTree
             get { return _level; }
             internal set
             {
-                SetPropertyWith(ref _level, value, "Level");
+                SetPropertyWith(ref _level, value, nameof(Level));
             }
         }
 
@@ -255,6 +258,11 @@ namespace Leen.Practices.OrganizationTree
         }
 
         /// <summary>
+        /// 获取此节点的标识。
+        /// </summary>
+        public string NodeId { get; }
+
+        /// <summary>
         /// 获取或设置节点类型。
         /// </summary>
         public TreeNodeType NodeType
@@ -262,7 +270,7 @@ namespace Leen.Practices.OrganizationTree
             get { return _nodeType; }
             protected set
             {
-                SetPropertyWith(ref _nodeType, value, "NodeType");
+                SetProperty(ref _nodeType, value, nameof(NodeType));
             }
         }
 
@@ -274,7 +282,7 @@ namespace Leen.Practices.OrganizationTree
             get { return _nodeName; }
             set
             {
-                SetPropertyWith(ref _nodeName, value, "Children");
+                SetProperty(ref _nodeName, value, nameof(NodeName));
             }
         }
 
@@ -304,7 +312,7 @@ namespace Leen.Practices.OrganizationTree
                 {
                     value.CollectionChanged -= Value_CollectionChanged;
                 }
-                if (SetPropertyWith(ref _children, value, "Children"))
+                if (SetPropertyWith(ref _children, value, nameof(Children)))
                 {
                     if (value != null)
                     {
@@ -335,6 +343,68 @@ namespace Leen.Practices.OrganizationTree
         #endregion
 
         #region public methods
+
+        /// <summary>
+        /// 获取已选中的子节点。
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<BaseTreeNode> GetSelectedNodes()
+        {
+            return Children?.Where(x => x.IsSelected);
+        }
+
+        /// <summary>
+        /// 获取已选中的子节点，包括子节点的子节点。
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<BaseTreeNode> GetSelectedNodesRecursive()
+        {
+            var nodes = new List<BaseTreeNode>();
+            var selectedNodes = GetSelectedNodes();
+            if (selectedNodes != null)
+            {
+                nodes.AddRange(selectedNodes);
+
+                foreach (var node in selectedNodes)
+                {
+                    var subSelectedNodes = node.GetSelectedNodesRecursive();
+                    if (subSelectedNodes != null)
+                        nodes.AddRange(subSelectedNodes);
+                }
+            }
+            return selectedNodes;
+        }
+
+        /// <summary>
+        /// 获取指定节点标识的子节点。
+        /// </summary>
+        /// <param name="nodeId">节点标识。</param>
+        /// <returns></returns>
+        public virtual BaseTreeNode GetNode(string nodeId)
+        {
+            return Children?.Where(x => x.NodeId == nodeId).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// 获取指定节点标识的子节点，查找包括子节点的子节点。
+        /// </summary>
+        /// <param name="nodeId">节点标识</param>
+        /// <returns></returns>
+        public virtual BaseTreeNode GetNodeRecursive(string nodeId)
+        {
+            var node = GetNode(nodeId);
+            if (node != null)
+                return node;
+
+            foreach (var child in Children)
+            {
+                node = GetNodeRecursive(nodeId);
+                if (node != null)
+                    return node;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// 清理资源，退订事件。
@@ -380,15 +450,14 @@ namespace Leen.Practices.OrganizationTree
         /// <returns></returns>
         public bool Equals(BaseTreeNode other)
         {
-            if (object.ReferenceEquals(this, other))
+            if (ReferenceEquals(this, other))
                 return true;
 
-            if (other == null)
+            if (other is null)
                 return false;
 
             return GetHashCode() == other.GetHashCode();
         }
-
 
         /// <summary>
         /// 比较两个节点是否是否相等。
@@ -564,6 +633,7 @@ namespace Leen.Practices.OrganizationTree
             {
                 return y is null;
             }
+
             return !x.Equals(y);
         }
 

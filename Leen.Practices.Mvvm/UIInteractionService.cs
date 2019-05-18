@@ -1,13 +1,13 @@
-﻿using Microsoft.Win32;
-using Leen.Native;
+﻿using Leen.Native;
 using Leen.Windows.Interaction;
+using Microsoft.Win32;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.ComponentModel.Composition;
 
 namespace Leen.Practices.Mvvm
 {
@@ -41,24 +41,35 @@ namespace Leen.Practices.Mvvm
         /// <summary>
         /// 显示消息对话框，如果需要将委托到UI线程上执行。
         /// </summary>
-        /// <param name="message">消息内容，使用@NewLine代表换行，接口将自动替换。</param>
+        /// <param name="message">消息内容，使用@NewLine代表换行，实现自动替换。</param>
         /// <param name="title">消息对话框的标题。</param>
         /// <param name="buttons">消息对话框按钮。</param>
         /// <param name="icon">消息对话框图标。</param>
+        /// <param name="ownerViewModel">父视图模型。</param>
         /// <returns>对话框返回值。</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
-        public virtual MessageBoxResult ShowMessage(string message, string title,
-            MessageBoxButton buttons = MessageBoxButton.OK,
-            MessageBoxImage icon = MessageBoxImage.Information)
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        public virtual MessageBoxResult ShowMessage(string message,
+                                                    string title,
+                                                    MessageBoxButton buttons = MessageBoxButton.OK,
+                                                    MessageBoxImage icon = MessageBoxImage.Information,
+                                                    object ownerViewModel = null)
         {
             StringBuilder content = new StringBuilder(message);
             content = content.Replace("@NewLine", Environment.NewLine);
             content = content.Replace("@newline", Environment.NewLine);
             content = content.Replace("@NEWLINE", Environment.NewLine);
 
-            MessageBoxResult result = InvokeIfNeeded(() => MessageBox.Show(content.ToString(), title, buttons, icon));
-
-            return result;
+            Window owner = ownerViewModel == null ? null : ViewLocationProvider.FindOwnerWindow(ownerViewModel);
+            if (owner == null)
+            {
+                MessageBoxResult result = InvokeIfNeeded(() => MessageBox.Show(content.ToString(), title, buttons, icon));
+                return result;
+            }
+            else
+            {
+                MessageBoxResult result = InvokeIfNeeded(() => MessageBox.Show(owner, content.ToString(), title, buttons, icon));
+                return result;
+            }
         }
 
         /// <summary>
@@ -97,7 +108,7 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentNullException(nameof(func));
             }
 
-            if(viewModel == null)
+            if (viewModel == null)
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
@@ -139,7 +150,7 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentNullException(nameof(action));
             }
 
-            if(viewModel == null)
+            if (viewModel == null)
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
@@ -249,7 +260,7 @@ namespace Leen.Practices.Mvvm
             {
                 throw new ArgumentNullException(nameof(action));
             }
-            
+
             var application = Application.Current;
             if (application == null)
             {
@@ -295,10 +306,11 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            Action showCallback = () => {
+            void showCallback()
+            {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel);
                 Show(viewModel, view, ownerViewModel);
-            };
+            }
 
             if (ownerViewModel != null)
             {
@@ -334,10 +346,11 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentException($"{nameof(viewAlias)} can not be null or empty", nameof(viewAlias));
             }
 
-            Action showCallback = () => {
+            void showCallback()
+            {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel);
                 Show(viewModel, view, ownerViewModel);
-            };
+            }
 
             if (ownerViewModel != null)
             {
@@ -369,10 +382,11 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            Func<bool?> showCallback = () => {
+            bool? showCallback()
+            {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel);
                 return ShowDialog(viewModel, view, ownerViewModel);
-             };
+            }
 
             if (ownerViewModel != null)
             {
@@ -409,11 +423,11 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentException($"{nameof(viewAlias)} can not be null or empty", nameof(viewAlias));
             }
 
-            Func<bool?> showCallback = () =>
+            bool? showCallback()
             {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel, viewAlias);
                 return ShowDialog(viewModel, view, ownerViewModel);
-            };
+            }
 
             if (ownerViewModel != null)
             {
@@ -715,7 +729,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="view">子视图。</param>
         /// <param name="ownerViewModel">父窗体的视图模型。</param>
         /// <returns>窗体对话框的返回值。</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         protected virtual bool? ShowDialog(
             object viewModel,
             IView view,
@@ -753,7 +767,7 @@ namespace Leen.Practices.Mvvm
         {
             if (!dispatcher.CheckAccess())
             {
-                T result = default(T);
+                T result = default;
 
                 dispatcher.Invoke(new Action(() =>
                 {
@@ -880,6 +894,16 @@ namespace Leen.Practices.Mvvm
             if (title != WindowPopupBehavior.ContainerWindowTitleProperty.DefaultMetadata.DefaultValue)
             {
                 dialog.Title = title as string;
+            }
+
+            if (title == null || (title is string strTile) && string.IsNullOrEmpty(strTile) && string.IsNullOrWhiteSpace(strTile))
+            {
+                void ViewLoaded(object s, EventArgs e)
+                {
+                    RetrieveWindowTitle(view, dialog);
+                    view.ActualView.Loaded -= ViewLoaded;
+                }
+                view.ActualView.Loaded += ViewLoaded;
             }
         }
     }

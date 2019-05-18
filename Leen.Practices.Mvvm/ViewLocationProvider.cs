@@ -19,8 +19,8 @@ namespace Leen.Practices.Mvvm
     /// </summary>
     public static class ViewLocationProvider
     {
-        private static Dictionary<Type, Type> viewViewModelMappings = new Dictionary<Type, Type>();
-        private static Dictionary<object, Type> viewAliasMapping = new Dictionary<object, Type>();
+        private static readonly Dictionary<Type, Type> viewViewModelMappings = new Dictionary<Type, Type>();
+        private static readonly Dictionary<object, Type> viewAliasMapping = new Dictionary<object, Type>();
         private static Func<Type, IView> defaultViewFactory = type => (IView)Activator.CreateInstance(type);
         private static readonly HashSet<IView> views = new HashSet<IView>();
 
@@ -294,7 +294,9 @@ namespace Leen.Practices.Mvvm
             }
 
             if (!views.Contains(view))
-                views.Add(view);
+            {
+                Register(view);
+            }
 
             return view;
         }

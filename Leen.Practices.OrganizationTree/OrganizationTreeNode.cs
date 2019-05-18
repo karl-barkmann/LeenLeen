@@ -1,8 +1,10 @@
-﻿using Microsoft.Practices.ServiceLocation;
+﻿using CommonServiceLocator;
+using Leen.Common;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace  Leen.Practices.OrganizationTree
+namespace Leen.Practices.OrganizationTree
 {
     /// <summary>
     /// 定义组织机构和设备树上的组织机构节点。
@@ -12,16 +14,24 @@ namespace  Leen.Practices.OrganizationTree
         /// <summary>
         /// 构造<see cref="OrganizationTreeNode"/>的实例。
         /// </summary>
-        public OrganizationTreeNode(string organizationId):base(true)
+        public OrganizationTreeNode(string organizationId) : base(organizationId, true)
         {
             NodeType = TreeNodeType.Organization;
-            OrganizationId = organizationId;
         }
 
         /// <summary>
-        /// 获取组织结构节点Id。
+        /// 构造<see cref="OrganizationTreeNode"/>的实例。
         /// </summary>
-        public string OrganizationId { get; private set; }
+        /// <param name="entity">此组织结构节点对应的组织机构实体。</param>
+        public OrganizationTreeNode(INamedDataEntity entity) : this(entity.Id)
+        {
+            Entity = entity ?? throw new ArgumentNullException(nameof(entity));
+        }
+
+        /// <summary>
+        /// 获取节点实体对象。
+        /// </summary>
+        public INamedDataEntity Entity { get; }
 
         /// <summary>
         /// 加载子节点。
@@ -34,23 +44,35 @@ namespace  Leen.Practices.OrganizationTree
                 List<BaseTreeNode> children = new List<BaseTreeNode>();
 
                 var organizationDataService = ServiceLocator.Current.GetInstance<IOrganizationDataService>();
-                var organizations = organizationDataService.GetOrganizations(OrganizationId);
+                var organizations = organizationDataService.GetOrganizations(NodeId);
                 if (organizations != null)
                 {
                     foreach (var organization in organizations)
                     {
-                        var node = new OrganizationTreeNode(organization.Id) { Checkable=true, NodeName = organization.Name, IsChecked = IsChecked };
+                        var node = new OrganizationTreeNode(organization)
+                        {
+                            Checkable = Checkable,
+                            Selectable = Selectable,
+                            NodeName = organization.Name,
+                            IsChecked = IsChecked
+                        };
                         children.Add(node);
                     }
                 }
 
                 var deviceDataService = ServiceLocator.Current.GetInstance<IDeviceDataService>();
-                var devices = deviceDataService.GetDevices(OrganizationId);
+                var devices = deviceDataService.GetDevices(NodeId);
                 if (devices != null)
                 {
                     foreach (var device in devices)
                     {
-                        var node = new DeviceTreeNode(device.Id) { Checkable = true, NodeName = device.Name, IsChecked = IsChecked };
+                        var node = new DeviceTreeNode(device)
+                        {
+                            Checkable = Checkable,
+                            Selectable = Selectable,
+                            NodeName = device.Name,
+                            IsChecked = IsChecked
+                        };
                         children.Add(node);
                     }
                 }

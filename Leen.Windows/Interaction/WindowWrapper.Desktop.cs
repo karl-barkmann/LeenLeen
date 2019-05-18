@@ -30,7 +30,7 @@ namespace Leen.Windows.Interaction
         /// <param name="window">³ÐÔØ´°¿Ú¡£</param>
         public WindowWrapper(Window window)
         {
-            _window = window ?? throw new ArgumentNullException("window");
+            _window = window ?? throw new ArgumentNullException(nameof(window));
             _interopHelper = new WindowInteropHelper(_window);
             _window.CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, CloseWindowExcuted, CanCloseWindowExcuted));
             _window.CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand, MaximizeWindowExcuted, CanMaximizeWindowExcuted));

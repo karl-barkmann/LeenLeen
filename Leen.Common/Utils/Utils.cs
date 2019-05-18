@@ -6,13 +6,21 @@ using System.Reflection;
 
 namespace Leen.Common.Utils
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class Utils
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static string MapPath(string path)
         {
-            var assembly = Assembly.GetExecutingAssembly();
+            var assembly = Assembly.GetEntryAssembly();
             var baseDir = Path.GetDirectoryName(assembly.Location);
-            string fullPath = null;
+            string fullPath;
             if (path.StartsWith("~/"))
             {
                 fullPath = Path.Combine(baseDir, path.Substring(2, path.Length - 2).Replace('/', '\\'));
@@ -24,6 +32,10 @@ namespace Leen.Common.Utils
             return fullPath;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="searchPath"></param>
         public static void AddEnvironmentPath(IEnumerable<string> searchPath)
         {
             string pathVar = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
@@ -34,6 +46,10 @@ namespace Leen.Common.Utils
             Environment.SetEnvironmentVariable("PATH", pathVar);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="searchPath"></param>
         public static void AddEnvironmentPath(string searchPath)
         {
             string pathVar = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
@@ -41,6 +57,11 @@ namespace Leen.Common.Utils
             Environment.SetEnvironmentVariable("PATH", pathVar);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
         public static bool IsFibonacciNumber(int n)
         {
             double n1 = Math.Pow(n, 2) * 5 + 4;

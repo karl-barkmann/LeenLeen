@@ -1,5 +1,5 @@
 ﻿
-namespace  Leen.Practices.OrganizationTree
+namespace Leen.Practices.OrganizationTree
 {
     /// <summary>
     /// 定义组织机构和设备树上的设备分类节点。
@@ -10,7 +10,7 @@ namespace  Leen.Practices.OrganizationTree
         /// 构造 <see cref="DeviceCategoryTreeNode"/> 的实例。
         /// </summary>
         /// <param name="deviceType"></param>
-        public DeviceCategoryTreeNode(int deviceType) : base(true)
+        public DeviceCategoryTreeNode(int deviceType) : base(deviceType.ToString(), true)
         {
             Value = deviceType;
             NodeType = TreeNodeType.DeviceCategory;

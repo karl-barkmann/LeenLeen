@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 
 namespace Leen.Windows.Interaction
@@ -21,21 +22,24 @@ namespace Leen.Windows.Interaction
         /// <summary>
         /// 显示消息对话框，如果需要将委托到UI线程上执行。
         /// </summary>
-        /// <param name="message">消息内容，使用@NewLine代表换行，接口将自动替换。</param>
+        /// <param name="message">消息内容，使用@NewLine代表换行，实现自动替换。</param>
         /// <param name="title">消息对话框的标题。</param>
         /// <param name="buttons">消息对话框按钮。</param>
         /// <param name="icon">消息对话框图标。</param>
+        /// <param name="ownerViewModel">父视图模型。</param>
         /// <returns>对话框返回值。</returns>
-        MessageBoxResult ShowMessage(string message, string title,
-            MessageBoxButton buttons = MessageBoxButton.OK,
-            MessageBoxImage icon = MessageBoxImage.Information);
+        MessageBoxResult ShowMessage(string message,
+                                     string title,
+                                     MessageBoxButton buttons = MessageBoxButton.OK,
+                                     MessageBoxImage icon = MessageBoxImage.Information,
+                                     object ownerViewModel = null);
 
         /// <summary>
         /// 在指定的父视图模型对应视图上显示指定的视图模型对应的视图，如果需要将委托到UI线程上执行。
         /// </summary>
         /// <param name="ownerViewModel">父视图模型。当该值为 null 时，降采用应用程序主窗体作为父视图。</param>
         /// <param name="viewModel">子视图模型。</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         void Show(object viewModel, object ownerViewModel);
 
         /// <summary>
@@ -52,7 +56,7 @@ namespace Leen.Windows.Interaction
         /// <param name="viewModel">子视图模型。</param>
         /// <param name="ownerViewModel">父视图模型。当该值为 null 时，降采用应用程序主窗体作为父视图。</param>
         /// <returns>对话框返回值。</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         bool? ShowDialog(object viewModel, object ownerViewModel);
 
         /// <summary>
@@ -69,7 +73,7 @@ namespace Leen.Windows.Interaction
         /// </summary>
         /// <param name="viewModel">已显示的视图模型。</param>
         /// <param name="dialogResult">关闭时的返回值。</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         void Close(object viewModel, bool? dialogResult = null);
 
         /// <summary>
@@ -168,7 +172,7 @@ namespace Leen.Windows.Interaction
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"), SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
         bool? OpenSaveFileDialog(ref string fileName, string defaultExit = ".*", string filter = "*.*");
 
         /// <summary>
@@ -179,7 +183,7 @@ namespace Leen.Windows.Interaction
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"), SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
         bool? OpenSaveFileDialog(ref string fileName, string title, string defaultExit = ".*", string filter = "*.*");
 
         /// <summary>
@@ -191,7 +195,7 @@ namespace Leen.Windows.Interaction
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"), SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
         bool? OpenSaveFileDialog(ref string fileName, string title, string initialDirectory, string defaultExit = ".*", string filter = "*.*");
     }
 }
