@@ -26,6 +26,7 @@ namespace Leen.Practices.OrganizationTree
         public OrganizationTreeNode(INamedDataEntity entity) : this(entity.Id)
         {
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
+            NodeName = entity.Name;
         }
 
         /// <summary>

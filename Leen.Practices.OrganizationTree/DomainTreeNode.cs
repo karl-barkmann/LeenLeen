@@ -1,4 +1,6 @@
-﻿namespace Leen.Practices.OrganizationTree
+﻿using System;
+
+namespace Leen.Practices.OrganizationTree
 {
     /// <summary>
     /// 定义组织机构和设备树上的域节点。
@@ -8,7 +10,7 @@
         /// <summary>
         /// 构造 <see cref="DomainTreeNode"/> 的实例。
         /// </summary>
-        public DomainTreeNode() : base(string.Empty, true)
+        public DomainTreeNode() : base(Guid.NewGuid().ToString(), true)
         {
             NodeType = TreeNodeType.Domain;
         }

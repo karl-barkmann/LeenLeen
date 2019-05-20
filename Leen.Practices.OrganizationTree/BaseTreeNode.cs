@@ -71,6 +71,8 @@ namespace Leen.Practices.OrganizationTree
         /// </summary>
         protected BaseTreeNode(string nodeId, bool initializeWithPlaceholder)
         {
+            if (string.IsNullOrEmpty(nodeId))
+                throw new ArgumentException("节点标识不应为空", nameof(nodeId));
             NodeId = nodeId;
             _initializeWithPlaceholder = initializeWithPlaceholder;
             if (initializeWithPlaceholder)
@@ -420,7 +422,7 @@ namespace Leen.Practices.OrganizationTree
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return NodeType.GetHashCode() * NodeName.GetHashCode();
+            return NodeId.GetHashCode();
         }
 
 

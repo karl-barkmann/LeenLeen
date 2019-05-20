@@ -139,7 +139,7 @@
       <Version>1.2.3.1031</Version>
     </PackageReference>
     <PackageReference Include="CommonServiceLocator">
-      <Version>1.3.0</Version>
+      <Version>2.0.4</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
