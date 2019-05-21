@@ -374,7 +374,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="viewModel">子窗体的视图模型。</param>
         /// <param name="ownerViewModel">父窗体的视图模型。当该值为 null 时，降采用应用程序主窗体作为父视图。</param>
         /// <returns>窗体对话框返回值。</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? ShowDialog(object viewModel, object ownerViewModel)
         {
             if (viewModel == null)
@@ -450,7 +450,7 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="viewModel">窗体的视图模型。</param>
         /// <param name="dialogResult">窗体关闭时的对话框返回值。</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public void Close(object viewModel, bool? dialogResult = null)
         {
             if (viewModel == null)
@@ -527,7 +527,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenSaveFileDialog(ref string fileName, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new SaveFileDialog
@@ -556,7 +556,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenSaveFileDialog(ref string fileName, string title, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new SaveFileDialog
@@ -587,7 +587,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenSaveFileDialog(ref string fileName, string title, string initialDirectory, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new SaveFileDialog
@@ -611,12 +611,101 @@ namespace Leen.Practices.Mvvm
         }
 
         /// <summary>
+        /// 打开文件浏览对话框，如果需要将委托到UI线程上执行。
+        /// </summary>
+        /// <param name="fileName">默认文件名。</param>
+        /// <param name="defaultExit">默认文件扩展。</param>
+        /// <param name="filter">文件扩展过滤。</param>
+        /// <returns></returns>
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        public bool? OpenFileBrowserDialog(ref string fileName, string defaultExit = ".*", string filter = "*.*")
+        {
+            var dlg = new OpenFileDialog
+            {
+                FileName = fileName,
+                DefaultExt = defaultExit,
+                Filter = filter,
+                CheckPathExists = true,
+                AddExtension = true,
+                ValidateNames = true
+            };
+
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                fileName = dlg.FileName;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 打开文件浏览对话框，如果需要将委托到UI线程上执行。
+        /// </summary>
+        /// <param name="fileName">默认文件名。</param>
+        /// <param name="title">对话框标题栏名称。</param>
+        /// <param name="defaultExit">默认文件扩展。</param>
+        /// <param name="filter">文件扩展过滤。</param>
+        /// <returns></returns>
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        public bool? OpenFileBrowserDialog(ref string fileName, string title, string defaultExit = ".*", string filter = "*.*")
+        {
+            var dlg = new OpenFileDialog
+            {
+                FileName = fileName,
+                DefaultExt = defaultExit,
+                Filter = filter,
+                CheckPathExists = true,
+                AddExtension = true,
+                ValidateNames = true,
+                Title = title,
+            };
+
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                fileName = dlg.FileName;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 打开文件浏览对话框，如果需要将委托到UI线程上执行。
+        /// </summary>
+        /// <param name="fileName">默认文件名。</param>
+        /// <param name="title">对话框标题栏名称。</param>
+        /// <param name="initialDirectory">默认保存目录。</param>
+        /// <param name="defaultExit">默认文件扩展。</param>
+        /// <param name="filter">文件扩展过滤。</param>
+        /// <returns></returns>
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        public bool? OpenFileBrowserDialog(ref string fileName, string title, string initialDirectory, string defaultExit = ".*", string filter = "*.*")
+        {
+            var dlg = new OpenFileDialog
+            {
+                FileName = fileName,
+                DefaultExt = defaultExit,
+                Filter = filter,
+                CheckPathExists = true,
+                AddExtension = true,
+                ValidateNames = true,
+                Title = title,
+                InitialDirectory = initialDirectory
+            };
+
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                fileName = dlg.FileName;
+            }
+            return result;
+        }
+        /// <summary>
         /// 在指定的父视图模型对应视图上显示指定的视图模型对应的非模式对话框视图，如果需要将委托到UI线程上执行。
         /// </summary>
         /// <param name="viewModel">子窗体的视图模型。</param>
         /// <param name="view">子视图。</param>
         /// <param name="ownerViewModel">父窗体的视图模型。</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         protected virtual void Show(object viewModel,
             IView view,
             object ownerViewModel = null)
