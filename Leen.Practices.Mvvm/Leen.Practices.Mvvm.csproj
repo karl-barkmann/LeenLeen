@@ -64,6 +64,7 @@
     <Compile Include="Interactivity\DataGridColumnAdjustableBehavior.cs" />
     <Compile Include="Interactivity\DragBehavior.cs" />
     <Compile Include="Interactivity\DropBehavior.cs" />
+    <Compile Include="Interactivity\IMouseAwareBomb.cs" />
     <Compile Include="Interactivity\IncrementalLoadingBehavior.cs" />
     <Compile Include="Interactivity\RichTextBoxBindingBehavior.cs" />
     <Compile Include="Interactivity\SupportMultSelectionBehavior.cs" />

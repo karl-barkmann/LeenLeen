@@ -72,15 +72,10 @@ namespace System.Windows.Interactivity
                 var data = GetProperDroppingData(e.Data);
                 if (Command != null && (Command.CanExecute(data) || Command.CanExecute(CommandParameter)))
                 {
-                    if (CommandParameter != null)
-                    {
-                        Command.Execute(CommandParameter);
-                    }
-                    else
-                    {
-                        Command.Execute(data);
-                    }
-
+                    var bomb = CommandParameter ?? data;
+                    if (bomb is IMouseAwareBomb mouseAwareBomb)
+                        mouseAwareBomb.SetMousePosition(e.GetPosition(AssociatedObject));
+                    Command.Execute(bomb);
                     e.Handled = true;
                 }
             }

@@ -26,7 +26,7 @@ namespace System.Windows.Interactivity
         /// 拖拽时的自定义数据。
         /// </summary>
         public static readonly DependencyProperty BombProperty =
-            DependencyProperty.Register("Bomb", typeof(object), typeof(DragBehavior), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(Bomb), typeof(object), typeof(DragBehavior), new PropertyMetadata(null));
 
         #endregion
 
@@ -68,6 +68,44 @@ namespace System.Windows.Interactivity
 
         #endregion
 
+        #region PreviewProperty
+
+        /// <summary>
+        /// 获取或设置拖拽预览。
+        /// </summary>
+        public object Preview
+        {
+            get { return (object)GetValue(PreviewProperty); }
+            set { SetValue(PreviewProperty, value); }
+        }
+
+        /// <summary>
+        /// 获取拖拽预览的依赖属性。
+        /// </summary>
+        public static readonly DependencyProperty PreviewProperty =
+            DependencyProperty.Register(nameof(Preview), typeof(object), typeof(DragBehavior), new PropertyMetadata(null));
+
+        #endregion
+
+        #region KeepRelativeMousePositionProperty
+
+        /// <summary>
+        /// 获取或设置一个值，指示鼠标预览时是否保留启动拖拽时的鼠标位置。
+        /// </summary>
+        public bool KeepRelativeMousePosition
+        {
+            get { return (bool)GetValue(KeepRelativeMousePositionProperty); }
+            set { SetValue(KeepRelativeMousePositionProperty, value); }
+        }
+
+        /// <summary>
+        /// KeepRelativeMousePosition 依赖属性。
+        /// </summary>
+        public static readonly DependencyProperty KeepRelativeMousePositionProperty =
+            DependencyProperty.Register(nameof(KeepRelativeMousePosition), typeof(bool), typeof(DragBehavior), new PropertyMetadata(true));
+
+        #endregion
+
         private Point? _lastMouseDown;
         private DragAdorner _adorner;
 
@@ -88,6 +126,8 @@ namespace System.Windows.Interactivity
         /// <returns>返回当前附加的目标元素。</returns>
         protected virtual UIElement FindProperDraggingElement(MouseEventArgs e)
         {
+            if (Preview is UIElement preview)
+                return preview;
             return AssociatedObject;
         }
 
@@ -154,7 +194,10 @@ namespace System.Windows.Interactivity
                                     adornerLayer = adornerDecorator.AdornerLayer;
                                     if (adornerLayer != null)
                                     {
-                                        _adorner = new DragAdorner(draggingElement, e.GetPosition(AssociatedObject));
+                                        var offset = e.GetPosition(AssociatedObject);
+                                        if (!KeepRelativeMousePosition)
+                                            offset = new Point(0, 0);
+                                        _adorner = new DragAdorner(draggingElement, offset);
                                         adornerLayer.Add(_adorner);
                                     }
                                 }
@@ -196,7 +239,7 @@ namespace System.Windows.Interactivity
 
         private class DragAdorner : Adorner
         {
-            private Brush vbrush;
+            private readonly Brush vbrush;
 
             private Point location;
 
@@ -216,8 +259,7 @@ namespace System.Windows.Interactivity
             public void UpdatePosition(Point location)
             {
                 this.location = location;
-                var adornerLayer = Parent as AdornerLayer;
-                if (adornerLayer != null)
+                if (Parent is AdornerLayer adornerLayer)
                 {
                     adornerLayer.Update(AdornedElement);
                 }
@@ -243,8 +285,7 @@ namespace System.Windows.Interactivity
         /// <returns>返回鼠标按下处的行。</returns>
         protected override UIElement FindProperDraggingElement(MouseEventArgs e)
         {
-            var dataGrid = AssociatedObject as DataGrid;
-            if (dataGrid == null)
+            if (!(AssociatedObject is DataGrid dataGrid))
             {
                 throw new ArgumentException("AssociatedObject is not a type of 'DataGrid'!");
             }
