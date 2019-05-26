@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace Leen.Common.Utils
@@ -51,10 +52,9 @@ namespace Leen.Common.Utils
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <param name="xmlFilePath"></param>
-        public static void ObjectToXmlFile<T>(object obj, string xmlFilePath)
+        public static void ObjectToXmlFile(object obj, string xmlFilePath)
         {
             if (string.IsNullOrEmpty(xmlFilePath))
                 return;
@@ -65,6 +65,27 @@ namespace Leen.Common.Utils
                 using (var writer = new StreamWriter(fileStream, Encoding.UTF8))
                 {
                     writer.Write(xml);
+                    writer.Flush();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="xmlFilePath"></param>
+        public static async Task ObjectToXmlFileAsync(object obj, string xmlFilePath)
+        {
+            if (string.IsNullOrEmpty(xmlFilePath))
+                return;
+
+            var xml = ObjectToXml(obj);
+            using (var fileStream = File.Create(xmlFilePath))
+            {
+                using (var writer = new StreamWriter(fileStream, Encoding.UTF8))
+                {
+                    await writer.WriteAsync(xml);
                 }
             }
         }
@@ -85,6 +106,28 @@ namespace Leen.Common.Utils
                 using (var reader = new StreamReader(fileStream, Encoding.UTF8))
                 {
                     var xml = reader.ReadToEnd();
+
+                    return XmlToObject<T>(xml);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="xmlFilePath"></param>
+        /// <returns></returns>
+        public static async Task<T> XmlFileToObjectAsync<T>(string xmlFilePath)
+        {
+            if (string.IsNullOrEmpty(xmlFilePath) || !File.Exists(xmlFilePath))
+                return default;
+
+            using (var fileStream = File.OpenRead(xmlFilePath))
+            {
+                using (var reader = new StreamReader(fileStream, Encoding.UTF8))
+                {
+                    var xml = await reader.ReadToEndAsync();
 
                     return XmlToObject<T>(xml);
                 }

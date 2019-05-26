@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Leen.Practices.Mvvm</RootNamespace>
     <AssemblyName>Leen.Practices.Mvvm</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -66,6 +66,7 @@
     <Compile Include="Interactivity\DropBehavior.cs" />
     <Compile Include="Interactivity\IMouseAwareBomb.cs" />
     <Compile Include="Interactivity\IncrementalLoadingBehavior.cs" />
+    <Compile Include="Interactivity\RenderSizeReportBehavior.cs" />
     <Compile Include="Interactivity\RichTextBoxBindingBehavior.cs" />
     <Compile Include="Interactivity\SupportMultSelectionBehavior.cs" />
     <Compile Include="Interactivity\SupportSelectionBehavior.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="RelayCommand.cs" />
     <Compile Include="RelayCommandGeneric.cs" />
     <Compile Include="UIInteractionService.cs" />
+    <Compile Include="UIInteractionServiceExtensions.cs" />
     <Compile Include="ViewLocationProvider.cs" />
     <Compile Include="ViewLocator.cs" />
     <Compile Include="ViewModelBase.cs" />

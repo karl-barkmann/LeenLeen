@@ -1,14 +1,14 @@
-﻿using Leen.Logging;
+﻿using CommonServiceLocator;
+using Leen.Common;
+using Leen.Logging;
 using Leen.Windows.Interaction;
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
-using Leen.Common;
-using CommonServiceLocator;
-using System.Runtime.CompilerServices;
 
 namespace Leen.Practices.Mvvm
 {
@@ -22,6 +22,8 @@ namespace Leen.Practices.Mvvm
     public class ViewModelBase : BindableBase
     {
         private bool editing;
+        private bool _isBusy;
+        private string _busyMessage;
         private bool anyPropertyChanged;
         private readonly static TaskCompletionSource<bool> s_TaskCompletionSource = new TaskCompletionSource<bool>();
 
@@ -84,7 +86,7 @@ namespace Leen.Practices.Mvvm
 
                 anyPropertyChanged = value;
 
-                RaisePropertyChangedWith("AnyPropertyChanged");
+                RaisePropertyChanged(nameof(AnyPropertyChanged));
             }
         }
 
@@ -101,7 +103,31 @@ namespace Leen.Practices.Mvvm
 
                 editing = value;
 
-                RaisePropertyChangedWith("IsEditing");
+                RaisePropertyChanged(nameof(IsEditing));
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置一个值指示当前视图是否正在忙碌状态。
+        /// </summary>
+        public bool IsBusy
+        {
+            get { return _isBusy; }
+            set
+            {
+                SetProperty(ref _isBusy, value, () => IsBusy);
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置忙碌状态提示。
+        /// </summary>
+        public string BusyMessage
+        {
+            get { return _busyMessage; }
+            set
+            {
+                SetProperty(ref _busyMessage, value, () => BusyMessage);
             }
         }
 
@@ -163,20 +189,9 @@ namespace Leen.Practices.Mvvm
         /// <param name="propertyName">指定属性名称。</param>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
         SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        protected override void RaisePropertyChanged(string propertyName)
+        protected override void RaisePropertyChanged([CallerMemberName]string propertyName = null)
         {
             base.RaisePropertyChanged(propertyName);
-            AnyPropertyChanged = editing & true && propertyName != "IsEditing";
-        }
-
-        /// <summary>
-        /// 通知属性值已更改。
-        /// </summary>
-        /// <param name="propertyName">默认为自动解析属性名称，亦可指定属性名称。</param>
-        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        protected override void RaisePropertyChangedWith(string propertyName)
-        {
-            base.RaisePropertyChangedWith(propertyName);
             AnyPropertyChanged = editing & true && propertyName != "IsEditing";
         }
     }

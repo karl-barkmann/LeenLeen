@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -71,7 +70,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="propertyName">属性名称。</param>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
         SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        protected virtual void RaisePropertyChanged(string propertyName)
+        protected virtual void RaisePropertyChanged([CallerMemberName]string propertyName = null)
         {
             OnRaisePropertyChanged(propertyName);
         }
@@ -82,29 +81,9 @@ namespace Leen.Practices.Mvvm
         /// <param name="propertyName">属性名称。</param>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
         SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        protected virtual void RaisePropertyChanging(string propertyName)
+        protected virtual void RaisePropertyChanging([CallerMemberName]string propertyName = null)
         {
             OnRaisePropertyChanged(propertyName);
-        }
-
-        /// <summary>
-        /// 通知属性值已更改。
-        /// </summary>
-        /// <param name="propertyName">可指定属性名称。</param>
-        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        protected virtual void RaisePropertyChangedWith(string propertyName)
-        {
-            OnRaisePropertyChanged(propertyName);
-        }
-
-        /// <summary>
-        /// 通知属性值正在更改。
-        /// </summary>
-        /// <param name="propertyName">指定属性名称。</param>
-        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        protected virtual void RaisePropertyChangingWith(string propertyName)
-        {
-            OnRaisePropertyChanging(propertyName);
         }
 
         /// <summary>
@@ -148,7 +127,7 @@ namespace Leen.Practices.Mvvm
         /// <returns> True if the value was changed, false if the existing value matched the desired value.</returns>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
         SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
-        protected virtual bool SetProperty<T>(ref T storage, T value, string propertyName)
+        protected virtual bool SetProperty<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
         {
             if (!Object.Equals(storage, value))
             {
@@ -187,38 +166,13 @@ namespace Leen.Practices.Mvvm
             }
         }
 
-        /// <summary>
-        /// Checks if a property already matches a desired value. Sets the property and
-        ///     notifies listeners only when necessary.
-        /// </summary>
-        /// <typeparam name="T">Type of the property.</typeparam>
-        /// <param name="storage">Reference to a property with both getter and setter.</param>
-        /// <param name="value">Desired value for the property.</param>
-        /// <param name="propertyName">Name of the property used to notify listeners. </param>
-        /// <returns> True if the value was changed, false if the existing value matched the desired value.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
-        protected virtual bool SetPropertyWith<T>(ref T storage, T value, string propertyName)
-        {
-            if (!Equals(storage, value))
-            {
-                OnRaisePropertyChanging(propertyName);
-                storage = value;
-                OnRaisePropertyChanged(propertyName);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         #region private helpers
 
         /// <summary>
         /// 引发属性已变更事件。
         /// </summary>
         /// <param name="propertyName">变更的属性名称。</param>
-        protected virtual void OnRaisePropertyChanged(string propertyName)
+        private void OnRaisePropertyChanged(string propertyName)
         {
             if (string.IsNullOrWhiteSpace(propertyName))
             {
@@ -231,7 +185,7 @@ namespace Leen.Practices.Mvvm
         /// 引发属性正在变更事件。
         /// </summary>
         /// <param name="propertyName">正在变更的属性名称。</param>
-        protected virtual void OnRaisePropertyChanging(string propertyName)
+        private void OnRaisePropertyChanging(string propertyName)
         {
             if (string.IsNullOrWhiteSpace(propertyName))
             {

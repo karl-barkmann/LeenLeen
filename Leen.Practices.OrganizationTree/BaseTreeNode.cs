@@ -148,7 +148,7 @@ namespace Leen.Practices.OrganizationTree
             get { return _childrenCount; }
             private set
             {
-                SetPropertyWith(ref _childrenCount, value, nameof(ChildrenCount));
+                SetProperty(ref _childrenCount, value, nameof(ChildrenCount));
             }
         }
 
@@ -160,7 +160,7 @@ namespace Leen.Practices.OrganizationTree
             get { return _level; }
             internal set
             {
-                SetPropertyWith(ref _level, value, nameof(Level));
+                SetProperty(ref _level, value, nameof(Level));
             }
         }
 
@@ -314,7 +314,7 @@ namespace Leen.Practices.OrganizationTree
                 {
                     value.CollectionChanged -= Value_CollectionChanged;
                 }
-                if (SetPropertyWith(ref _children, value, nameof(Children)))
+                if (SetProperty(ref _children, value, nameof(Children)))
                 {
                     if (value != null)
                     {
@@ -860,7 +860,7 @@ namespace Leen.Practices.OrganizationTree
                 _internalFlags ^= mask;
             }
 
-            RaisePropertyChangedWith(propertyName);
+            RaisePropertyChanged(propertyName);
 
             return true;
         }

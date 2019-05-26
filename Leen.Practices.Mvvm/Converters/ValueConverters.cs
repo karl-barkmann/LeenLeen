@@ -4,6 +4,7 @@ using Leen.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
@@ -545,27 +546,37 @@ namespace Leen.Practices.Mvvm
             if (value == null)
                 return null;
 
-            Uri sourceUri = value as Uri;
-            if (sourceUri == null)
+            Uri sourceUri = null;
+            Stream sourceStream = null;
+            switch (value)
             {
-                try
-                {
-                    sourceUri = new Uri(value as string);
-                }
-                catch (UriFormatException)
-                {
-                    sourceUri = DefaultSource;
-                }
+                case string sourceStr:
+                    try
+                    {
+                        sourceUri = new Uri(sourceStr);
+                    }
+                    catch (UriFormatException)
+                    {
+                        sourceUri = DefaultSource;
+                    }
+                    break;
+                case Uri uri:
+                    sourceUri = uri;
+                    break;
+                case Stream stream:
+                    sourceStream = stream;
+                    break;
             }
 
-            if (sourceUri != null)
+            if (sourceUri != null || sourceStream != null)
             {
                 var source = new BitmapImage();
                 source.BeginInit();
                 source.UriSource = sourceUri;
-                if (this.DecodeWidth >= 0)
+                source.StreamSource = sourceStream;
+                if (DecodeWidth >= 0)
                     source.DecodePixelWidth = DecodeWidth;
-                if (this.DecodeHeight >= 0)
+                if (DecodeHeight >= 0)
                     source.DecodePixelHeight = DecodeHeight;
                 source.CacheOption = CacheOption;
                 source.CreateOptions = CreateOptions;
