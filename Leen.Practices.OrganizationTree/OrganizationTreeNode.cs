@@ -40,46 +40,42 @@ namespace Leen.Practices.OrganizationTree
         /// <returns></returns>
         protected override async Task<IEnumerable<BaseTreeNode>> LoadChildrenAsync()
         {
-            return await Task.Run(() =>
+            var children = new List<BaseTreeNode>();
+            var organizationDataService = ServiceLocator.Current.GetInstance<IOrganizationDataService>();
+            var organizations = await organizationDataService.GetOrganizations(NodeId);
+            if (organizations != null)
             {
-                List<BaseTreeNode> children = new List<BaseTreeNode>();
-
-                var organizationDataService = ServiceLocator.Current.GetInstance<IOrganizationDataService>();
-                var organizations = organizationDataService.GetOrganizations(NodeId);
-                if (organizations != null)
+                foreach (var organization in organizations)
                 {
-                    foreach (var organization in organizations)
+                    var node = new OrganizationTreeNode(organization)
                     {
-                        var node = new OrganizationTreeNode(organization)
-                        {
-                            Checkable = Checkable,
-                            Selectable = Selectable,
-                            NodeName = organization.Name,
-                            IsChecked = IsChecked
-                        };
-                        children.Add(node);
-                    }
+                        Checkable = Checkable,
+                        Selectable = Selectable,
+                        NodeName = organization.Name,
+                        IsChecked = IsChecked
+                    };
+                    children.Add(node);
                 }
+            }
 
-                var deviceDataService = ServiceLocator.Current.GetInstance<IDeviceDataService>();
-                var devices = deviceDataService.GetDevices(NodeId);
-                if (devices != null)
+            var deviceDataService = ServiceLocator.Current.GetInstance<IDeviceDataService>();
+            var devices = await deviceDataService.GetDevices(NodeId);
+            if (devices != null)
+            {
+                foreach (var device in devices)
                 {
-                    foreach (var device in devices)
+                    var node = new DeviceTreeNode(device)
                     {
-                        var node = new DeviceTreeNode(device)
-                        {
-                            Checkable = Checkable,
-                            Selectable = Selectable,
-                            NodeName = device.Name,
-                            IsChecked = IsChecked
-                        };
-                        children.Add(node);
-                    }
+                        Checkable = Checkable,
+                        Selectable = Selectable,
+                        NodeName = device.Name,
+                        IsChecked = IsChecked
+                    };
+                    children.Add(node);
                 }
+            }
 
-                return children;
-            });
+            return children;
         }
     }
 }

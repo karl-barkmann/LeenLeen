@@ -56,6 +56,8 @@
     <Compile Include="INamedDataEntity.cs" />
     <Compile Include="OperationResult.cs" />
     <Compile Include="ServiceLocatorExtensions.cs" />
+    <Compile Include="Utils\CsvReader.cs" />
+    <Compile Include="Utils\CsvWriter.cs" />
     <Compile Include="Utils\DumpHelper.cs" />
     <Compile Include="Xml\DynamicXml.cs" />
     <Compile Include="DynamicXmlExtensions.cs" />

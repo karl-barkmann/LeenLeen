@@ -1,7 +1,8 @@
 ﻿using Leen.Common;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace  Leen.Practices.OrganizationTree
+namespace Leen.Practices.OrganizationTree
 {
     /// <summary>
     /// 提供获取域数据接口。
@@ -12,6 +13,6 @@ namespace  Leen.Practices.OrganizationTree
         /// 获取域数据集合。
         /// </summary>
         /// <returns></returns>
-        IEnumerable<INamedDataEntity> GetDomains();
+        Task<IEnumerable<INamedDataEntity>> GetDomains();
     }
 }

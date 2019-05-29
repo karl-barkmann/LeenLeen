@@ -66,6 +66,26 @@ namespace Leen.Practices.Mvvm
         public virtual ILogger Logger { get; set; }
 
         /// <summary>
+        /// 获取指定类型的已注册接口。
+        /// </summary>
+        /// <typeparam name="T">接口类型。</typeparam>
+        /// <returns></returns>
+        public T GetInstance<T>()
+        {
+            return ServiceLocator.Current.GetInstance<T>();
+        }
+
+        /// <summary>
+        /// 获取指定类型及名称的已注册接口。
+        /// </summary>
+        /// <typeparam name="T">接口类型。</typeparam>
+        /// <returns></returns>
+        public T GetInstance<T>(string serviceName)
+        {
+            return ServiceLocator.Current.GetInstance<T>(serviceName);
+        }
+
+        /// <summary>
         /// 获取一个值，指示当前视图模型是否是在设计器中加载（Microsoft Visual Studio XAML UI Designer or Blend）。
         /// </summary>
         public static bool IsInDesignMode
