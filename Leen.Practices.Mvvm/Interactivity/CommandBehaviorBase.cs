@@ -90,13 +90,11 @@ namespace System.Windows.Interactivity
         /// <param name="newValue"></param>
         protected virtual void OnCommandChanged(object oldValue, object newValue)
         {
-            ICommand oldCommand = oldValue as ICommand;
-            ICommand newCommand = newValue as ICommand;
-            if (oldCommand != null)
+            if (oldValue is ICommand oldCommand)
             {
                 oldCommand.CanExecuteChanged -= this.commandCanExecuteChangedHandler;
             }
-            if (newCommand != null)
+            if (newValue is ICommand newCommand)
             {
                 newCommand.CanExecuteChanged += this.commandCanExecuteChangedHandler;
                 UpdateEnabledState();

@@ -24,7 +24,7 @@ namespace Leen.Windows.Controls
         bool mouseDown;
         Point mouseLast;//上一次的鼠标位置
         Point mouseFirst;//第一鼠标点下的坐标
-        private static List<MouseWheelEventArgs> _reentrantList = new List<MouseWheelEventArgs>();
+        private readonly List<MouseWheelEventArgs> _reentrantList = new List<MouseWheelEventArgs>();
 
         #endregion
 
@@ -46,15 +46,11 @@ namespace Leen.Windows.Controls
         #endregion
 
         #region 公开属性
+        #endregion
 
         #region 依赖属性
 
         #region SwitchPageWidth;
-
-        /// <summary>
-        /// The <see cref="SwitchPageLength" /> dependency property's name.
-        /// </summary>
-        public const string SwitchPageLengthPropertyName = "SwitchPageLength";
 
         /// <summary>
         /// 获取或设置拖放到达多少宽度时，切换面板的宽度。（如果小于1，则表示按呈现宽度的百分之比。大于1则按实际数据为单位）
@@ -75,7 +71,7 @@ namespace Leen.Windows.Controls
         /// Identifies the <see cref="SwitchPageLength" /> dependency property.
         /// </summary>
         public static readonly DependencyProperty SwitchPageLengthProperty = DependencyProperty.Register(
-            SwitchPageLengthPropertyName,
+            nameof(SwitchPageLength),
             typeof(double),
             typeof(SlidablePanel),
             new PropertyMetadata(0.2));
@@ -83,11 +79,6 @@ namespace Leen.Windows.Controls
         #endregion
 
         #region EnableDrag
-
-        /// <summary>
-        /// The <see cref="EnableDrag" /> dependency property's name.
-        /// </summary>
-        public const string EnableDragPropertyName = "EnableDrag";
 
         /// <summary>
         /// 获取或设置 是否允许拖放
@@ -108,7 +99,7 @@ namespace Leen.Windows.Controls
         /// Identifies the <see cref="EnableDrag" /> dependency property.
         /// </summary>
         public static readonly DependencyProperty EnableDragProperty = DependencyProperty.Register(
-            EnableDragPropertyName,
+            nameof(EnableDrag),
             typeof(bool),
             typeof(SlidablePanel),
             new PropertyMetadata(true, new PropertyChangedCallback(EnableDragPropertyChangedCallback)));
@@ -126,11 +117,6 @@ namespace Leen.Windows.Controls
         #endregion
 
         #region Orientation
-
-        /// <summary>
-        /// The <see cref="Orientation" /> dependency property's name.
-        /// </summary>
-        public const string OrientationPropertyName = "Orientation";
 
         /// <summary>
         /// 获取或设置 控件布局的方向
@@ -151,7 +137,7 @@ namespace Leen.Windows.Controls
         /// Identifies the <see cref="Orientation" /> dependency property.
         /// </summary>
         public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register(
-            OrientationPropertyName,
+            nameof(Orientation),
             typeof(Orientation),
             typeof(SlidablePanel),
             new PropertyMetadata(Orientation.Horizontal, new PropertyChangedCallback(OrientationPropertyChangedCallback)));
@@ -246,11 +232,6 @@ namespace Leen.Windows.Controls
         #region SelectedIndex
 
         /// <summary>
-        /// The <see cref="SelectedIndex" /> dependency property's name.
-        /// </summary>
-        public const string SelectedIndexPropertyName = "SelectedIndex";
-
-        /// <summary>
         /// 获取或设置当前选中页面
         /// </summary>
         public int SelectedIndex
@@ -269,7 +250,7 @@ namespace Leen.Windows.Controls
         /// Identifies the <see cref="SelectedIndex" /> dependency property.
         /// </summary>
         public static readonly DependencyProperty SelectedIndexProperty = DependencyProperty.Register(
-            SelectedIndexPropertyName,
+            nameof(SelectedIndex),
             typeof(int),
             typeof(SlidablePanel),
             new PropertyMetadata(0, new PropertyChangedCallback(SelectedIndexPropertyChangedCallback), new CoerceValueCallback(SelectedIndexCoerceValueCallback)));
@@ -282,7 +263,6 @@ namespace Leen.Windows.Controls
         /// <returns></returns>
         static object SelectedIndexCoerceValueCallback(DependencyObject d, object baseValue)
         {
-            SlidablePanel control = d as SlidablePanel;
             int count = (int)baseValue;
             if (count < 0) return 0;
 
@@ -308,11 +288,6 @@ namespace Leen.Windows.Controls
         #region Duration
 
         /// <summary>
-        /// The <see cref="Duration" /> dependency property's name.
-        /// </summary>
-        public const string DurationPropertyName = "Duration";
-
-        /// <summary>
         /// 获取或设置 动画时间
         /// </summary>
         public double Duration
@@ -331,7 +306,7 @@ namespace Leen.Windows.Controls
         /// Identifies the <see cref="Duration" /> dependency property.
         /// </summary>
         public static readonly DependencyProperty DurationProperty = DependencyProperty.Register(
-            DurationPropertyName,
+            nameof(Duration),
             typeof(double),
             typeof(SlidablePanel),
             new PropertyMetadata(300d));
@@ -340,14 +315,20 @@ namespace Leen.Windows.Controls
 
         #region ItemTempalte
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DataTemplate ItemTemplate
         {
             get { return (DataTemplate)GetValue(ItemTemplateProperty); }
             set { SetValue(ItemTemplateProperty, value); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly DependencyProperty ItemTemplateProperty =
-            DependencyProperty.Register("ItemTemplate", typeof(DataTemplate), typeof(SlidablePanel),
+            DependencyProperty.Register(nameof(ItemTemplate), typeof(DataTemplate), typeof(SlidablePanel),
             new PropertyMetadata(null, new PropertyChangedCallback(OnItemTemplatePropertyChanged)));
 
         private static void OnItemTemplatePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -360,14 +341,20 @@ namespace Leen.Windows.Controls
 
         #region ItemsSource
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IEnumerable ItemsSource
         {
             get { return (IEnumerable)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly DependencyProperty ItemsSourceProperty =
-            DependencyProperty.Register("ItemsSource", typeof(IEnumerable), typeof(SlidablePanel),
+            DependencyProperty.Register(nameof(ItemsSource), typeof(IEnumerable), typeof(SlidablePanel),
             new PropertyMetadata(null, new PropertyChangedCallback(OnItemsSourcePropertyChanged)));
 
         private static void OnItemsSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -382,14 +369,20 @@ namespace Leen.Windows.Controls
 
         #region ItemTemplateSelector
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DataTemplateSelector ItemTemplateSelector
         {
             get { return (DataTemplateSelector)GetValue(ItemTemplateSelectorProperty); }
             set { SetValue(ItemTemplateSelectorProperty, value); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly DependencyProperty ItemTemplateSelectorProperty =
-            DependencyProperty.Register("ItemTemplateSelector", typeof(DataTemplateSelector), typeof(SlidablePanel),
+            DependencyProperty.Register(nameof(ItemTemplateSelector), typeof(DataTemplateSelector), typeof(SlidablePanel),
             new PropertyMetadata(null, new PropertyChangedCallback(OnItemTemplateSelectorPropertyChanged)));
 
         private static void OnItemTemplateSelectorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -397,8 +390,6 @@ namespace Leen.Windows.Controls
             SlidablePanel sp = d as SlidablePanel;
             sp.OnItemsSourceChanged(null, sp.ItemsSource);
         }
-
-        #endregion
 
         #endregion
 
@@ -431,12 +422,11 @@ namespace Leen.Windows.Controls
 
         void NewSliderPanel_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            var sliderPanel = sender as SlidablePanel;
-            if (sliderPanel != null && !e.Handled && _reentrantList.Contains(e))
+            if (sender is SlidablePanel sliderPanel && !e.Handled && _reentrantList.Contains(e))
             {
                 var previewEventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
                 {
-                    RoutedEvent = UIElement.PreviewMouseWheelEvent,
+                    RoutedEvent = PreviewMouseWheelEvent,
                     Source = sender
                 };
                 var originalSource = e.OriginalSource as UIElement;
@@ -484,14 +474,13 @@ namespace Leen.Windows.Controls
 
             int targetIndex = 0;
 
-            bool isLeftOrDown = false;
+            bool isLeftOrDown;
             if (Orientation == Orientation.Horizontal)
                 isLeftOrDown = mouseFinal.X - mouseFirst.X > 0;
             else
                 isLeftOrDown = mouseFinal.Y - mouseFirst.Y > 0;
-
-            double switchPageWidth = 0;
-            double switchPageHeight = 0;
+            double switchPageWidth;
+            double switchPageHeight;
             if (SwitchPageLength < 1)
             {
                 switchPageWidth = RenderSize.Width * SwitchPageLength;
@@ -536,7 +525,7 @@ namespace Leen.Windows.Controls
             //移动所有子元素
             for (int i = 0; i < Children.Count; i++)
             {
-                TranslateTransform transform = null;
+                TranslateTransform transform;
                 if (Orientation == Orientation.Horizontal)
                     transform = new TranslateTransform(Children[i].RenderTransform.Value.OffsetX + (mouseNow.X - mouseLast.X), 0);
                 else
@@ -550,6 +539,44 @@ namespace Leen.Windows.Controls
         #endregion
 
         #region 重写
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="oldValue"></param>
+        /// <param name="newValue"></param>
+        protected virtual void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+        {
+            Children.Clear();
+            if (newValue != null)
+            {
+                foreach (var item in newValue)
+                {
+                    DataTemplate dataTemplate = null;
+
+                    // get data template
+                    if (this.ItemTemplateSelector != null)
+                    {
+                        dataTemplate = this.ItemTemplateSelector.SelectTemplate(item, this);
+                    }
+                    if (dataTemplate == null && this.ItemTemplate != null)
+                    {
+                        dataTemplate = this.ItemTemplate;
+                    }
+
+                    // load data template content
+                    if (dataTemplate != null)
+                    {
+                        if (dataTemplate.LoadContent() is FrameworkElement child)
+                        {
+                            // set data context
+                            child.DataContext = item;
+                            Children.Add(child);
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// 在 <see cref="T:System.Windows.Controls.Panel"/> 元素的呈现处理过程中，绘制 <see cref="T:System.Windows.Media.DrawingContext"/> 对象的内容。
@@ -594,15 +621,11 @@ namespace Leen.Windows.Controls
         /// <returns>所用的实际大小。</returns>
         protected override Size ArrangeOverride(Size finalSize)
         {
-            //Clip = new RectangleGeometry(new Rect(0, 0, 20, DesiredSize.Height));
-
             for (int i = 0; i < InternalChildren.Count; i++)
             {
                 var child = InternalChildren[i];
-
-                Rect rect = new Rect();
-
-                if (Orientation == System.Windows.Controls.Orientation.Horizontal)
+                Rect rect;
+                if (Orientation == Orientation.Horizontal)
                     rect = ArrangeHorizontal(child, i, finalSize);
                 else
                     rect = ArrangeVertical(child, i, finalSize);
@@ -616,40 +639,6 @@ namespace Leen.Windows.Controls
         #endregion
 
         #region 私有方法
-
-        protected virtual void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
-        {
-            Children.Clear();
-            if (newValue != null)
-            {
-                foreach (var item in newValue)
-                {
-                    DataTemplate dataTemplate = null;
-
-                    // get data template
-                    if (this.ItemTemplateSelector != null)
-                    {
-                        dataTemplate = this.ItemTemplateSelector.SelectTemplate(item, this);
-                    }
-                    if (dataTemplate == null && this.ItemTemplate != null)
-                    {
-                        dataTemplate = this.ItemTemplate;
-                    }
-
-                    // load data template content
-                    if (dataTemplate != null)
-                    {
-                        FrameworkElement child = dataTemplate.LoadContent() as FrameworkElement;
-                        if (child != null)
-                        {
-                            // set data context
-                            child.DataContext = item;
-                            Children.Add(child);
-                        }
-                    }
-                }
-            }
-        }
 
         private void RegisterEvent()
         {
@@ -672,9 +661,7 @@ namespace Leen.Windows.Controls
             if (index < 0)
                 index = 0;
 
-            //double from = GetTargetX(fromIndex);
-            double to = 0;
-
+            double to;
             if (Orientation == Orientation.Horizontal)
             {
                 to = -GetTargetX(index);
@@ -705,12 +692,11 @@ namespace Leen.Windows.Controls
 
         private Rect ArrangeVertical(UIElement child, int childIndex, Size finalSize)
         {
-            Rect result = new Rect();
             //if (ShowNeighbor)
             //{ }
             //else
             //{
-            result = new Rect(new Point(0, GetTargetY(childIndex)), finalSize);
+            Rect result = new Rect(new Point(0, GetTargetY(childIndex)), finalSize);
             //}
 
             return result;
@@ -718,12 +704,11 @@ namespace Leen.Windows.Controls
 
         private Rect ArrangeHorizontal(UIElement child, int childIndex, Size finalSize)
         {
-            Rect result = new Rect();
             //if (ShowNeighbor)
             //{ }
             //else
             //{
-            result = new Rect(new Point(GetTargetX(childIndex), 0), finalSize);
+            Rect result = new Rect(new Point(GetTargetX(childIndex), 0), finalSize);
             //}
             return result;
         }

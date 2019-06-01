@@ -6,7 +6,7 @@ using System.Windows.Media.Animation;
 namespace Leen.Windows.Controls
 {
     /// <summary>
-    /// 自动动画到实际高度大小的面板，初始高度为MinHeight
+    /// 支持展开动画的内容控件。
     /// </summary>
     public class HeightExpander : ContentControl
     {

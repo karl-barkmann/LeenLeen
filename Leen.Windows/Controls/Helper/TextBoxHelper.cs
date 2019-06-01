@@ -11,7 +11,7 @@ using System.Windows.Data;
 namespace Leen.Windows.Controls.Helper
 {
     /// <summary>
-    /// TextBox控件绑定帮助类。
+    /// TextBox控件绑定帮助类，支持按下Enter键时更新绑定源。
     /// </summary>
     public static class TextBoxHelper
     {

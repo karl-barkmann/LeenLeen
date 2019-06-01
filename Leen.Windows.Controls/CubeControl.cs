@@ -1,5 +1,6 @@
 ﻿//zhongying 2012.9.7
 
+using Leen.Practices.Mvvm;
 using System;
 using System.Windows;
 using System.Windows.Controls;

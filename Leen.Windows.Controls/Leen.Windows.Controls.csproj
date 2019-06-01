@@ -42,8 +42,19 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnimatedUniformGrid.cs" />
+    <Compile Include="AnimateWindow.cs" />
+    <Compile Include="AutoClosePopup.cs" />
+    <Compile Include="CubeControl.cs" />
+    <Compile Include="HeightExpander.cs" />
+    <Compile Include="NonTopMostPopup.cs" />
+    <Compile Include="Primitives\Arrow.cs" />
+    <Compile Include="Primitives\CurvedArrow.cs" />
+    <Compile Include="RangeRule.cs" />
     <Compile Include="SearchBox.cs" />
+    <Compile Include="SlidablePanel.cs" />
     <Compile Include="UIThreadHostControl.cs" />
+    <Compile Include="UpDownDatePicker.cs" />
     <Compile Include="VisualTargetPresentationSource.cs" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -83,6 +94,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Leen.Practices.Mvvm\Leen.Practices.Mvvm.csproj">
+      <Project>{4DB7758A-9434-4230-8B69-7DDD39898E4B}</Project>
+      <Name>Leen.Practices.Mvvm</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Leen.Windows\Leen.Windows.csproj">
       <Project>{9d717a92-e9a4-4dc7-92a3-c376c99aa0c6}</Project>
       <Name>Leen.Windows</Name>
