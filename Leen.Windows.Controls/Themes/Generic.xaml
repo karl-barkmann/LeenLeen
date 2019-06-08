@@ -34,7 +34,7 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}">
                         <Grid x:Name="Layout" Background="Transparent">
-                            <ScrollViewer x:Name="PART_ContentHost" Margin="0" />
+                            <ScrollViewer x:Name="PART_ContentHost" />
                             <Button x:Name="PART_ClearButton"
                                     Margin="5,0"
                                     HorizontalAlignment="Right"
@@ -45,9 +45,8 @@
                                     Content="清除"
                                     Visibility="Collapsed" />
                             <TextBlock x:Name="Watermark"
-                                       Margin="5,0,0,0"
                                        VerticalAlignment="Center"
-                                       Foreground="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
+                                       Foreground="{TemplateBinding WatermarkForeground}"
                                        Text="{TemplateBinding WatermarkText}"
                                        TextAlignment="Left"
                                        Visibility="Collapsed" />

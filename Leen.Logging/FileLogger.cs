@@ -78,8 +78,7 @@ namespace Leen.Logging
         /// <param name="priority">描述日志内容的优先级。</param>
         public void Log(string message, LogLevel level, LogPriority priority)
         {
-            Write(string.Format("{0}[{1}]:{2}", Thread.CurrentThread.Name, Thread.CurrentThread.ManagedThreadId,
-                String.Format(message)));
+            Write($"{Thread.CurrentThread.Name}[{Thread.CurrentThread.ManagedThreadId}]:{message}");
         }
 
         private void Write(string message)

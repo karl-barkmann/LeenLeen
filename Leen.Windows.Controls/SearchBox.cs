@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace Leen.Windows.Controls
@@ -68,7 +69,7 @@ namespace Leen.Windows.Controls
             SearchBox box = sender as SearchBox;
             if (box.Text != box.SearchText)
             {
-                box.SetCurrentValue(TextBox.TextProperty, e.NewValue);
+                box.SetCurrentValue(TextProperty, e.NewValue);
                 box.SelectionStart = box.Text.Length;
             }
         }
@@ -126,6 +127,19 @@ namespace Leen.Windows.Controls
                 SetValue(WatermarkTextProperty, value);
             }
         }
+
+        #endregion
+
+        #region WatermarkForegroundProperty
+
+        public Brush WatermarkForeground
+        {
+            get { return (Brush)GetValue(WatermarkForegroundProperty); }
+            set { SetValue(WatermarkForegroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty WatermarkForegroundProperty =
+            DependencyProperty.Register(nameof(WatermarkForeground), typeof(Brush), typeof(SearchBox), new PropertyMetadata(Brushes.DimGray));
 
         #endregion
 

@@ -5,11 +5,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace Leen.Windows.Controls
 {
@@ -25,6 +27,7 @@ namespace Leen.Windows.Controls
         Point mouseLast;//上一次的鼠标位置
         Point mouseFirst;//第一鼠标点下的坐标
         private readonly List<MouseWheelEventArgs> _reentrantList = new List<MouseWheelEventArgs>();
+        DispatcherTimer _autoScrollTimer;
 
         #endregion
 
@@ -38,7 +41,8 @@ namespace Leen.Windows.Controls
             RegisterEvent();
             ClipToBounds = true;
             Loaded += new RoutedEventHandler(NewSliderPanel_Loaded);
-            SizeChanged += new SizeChangedEventHandler(NewSliderPanel_Loaded);
+            Unloaded += SlidablePanel_Unloaded;
+            SizeChanged += new SizeChangedEventHandler(NewSliderPanel_SizeChanged);
             MouseWheel += NewSliderPanel_MouseWheel;
             PreviewMouseWheel += NewSliderPanel_PreviewMouseWheel;
         }
@@ -280,36 +284,53 @@ namespace Leen.Windows.Controls
         static void SelectedIndexPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             SlidablePanel control = d as SlidablePanel;
-            control.Animation((int)e.NewValue, control.Duration);
+            control.Animation((int)e.NewValue, control.ScrollDuration);
         }
 
         #endregion
 
-        #region Duration
+        #region ScrollDuration
 
         /// <summary>
         /// 获取或设置 动画时间
         /// </summary>
-        public double Duration
+        public double ScrollDuration
         {
             get
             {
-                return (double)GetValue(DurationProperty);
+                return (double)GetValue(ScrollDurationProperty);
             }
             set
             {
-                SetValue(DurationProperty, value);
+                SetValue(ScrollDurationProperty, value);
             }
         }
 
         /// <summary>
         /// Identifies the <see cref="Duration" /> dependency property.
         /// </summary>
-        public static readonly DependencyProperty DurationProperty = DependencyProperty.Register(
-            nameof(Duration),
-            typeof(double),
-            typeof(SlidablePanel),
-            new PropertyMetadata(300d));
+        public static readonly DependencyProperty ScrollDurationProperty = 
+            DependencyProperty.Register(nameof(ScrollDuration),
+                                        typeof(double),
+                                        typeof(SlidablePanel),
+                                        new PropertyMetadata(300d, ScrollDurationPropertyChanged, CoerceScrollDurationProperty));
+
+        private static void ScrollDurationPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+        }
+
+        private static object CoerceScrollDurationProperty(DependencyObject d, object baseValue)
+        {
+            if (baseValue is double duration)
+            {
+                if (duration <= 0)
+                    return 300d;
+
+                return duration;
+            }
+
+            return 300d;
+        }
 
         #endregion
 
@@ -393,6 +414,115 @@ namespace Leen.Windows.Controls
 
         #endregion
 
+        #region EnableAutoScroll
+
+        /// <summary>
+        /// Gets or sets the <see cref="EnableAutoScroll"/> value.
+        /// </summary>
+        public bool EnableAutoScroll
+        {
+            get { return (bool)GetValue(EnableAutoScrollProperty); }
+            set { SetValue(EnableAutoScrollProperty, value); }
+        }
+
+        /// <summary>
+        /// Dependency property for <see cref="EnableAutoScroll"/> property.
+        /// </summary>
+        public static readonly DependencyProperty EnableAutoScrollProperty =
+            DependencyProperty.Register(
+                                nameof(EnableAutoScroll),
+                                typeof(bool),
+                                typeof(SlidablePanel),
+                                new PropertyMetadata(false, EnableAutoScrollPropertyChanged));
+
+        private static void EnableAutoScrollPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((SlidablePanel)d).OnEnableAutoScrollChanged((bool)e.OldValue, (bool)e.NewValue);
+        }
+
+        /// <summary>
+        /// Called when <see cref="EnableAutoScroll"/> changed.
+        /// </summary>
+        /// <param name="oldValue">Old value of <see cref="EnableAutoScroll"/>.</param>
+        /// <param name="newValue">New value of <see cref="EnableAutoScroll"/>.</param>
+        protected virtual void OnEnableAutoScrollChanged(bool oldValue, bool newValue)
+        {
+            if (newValue && IsLoaded)
+            {
+                if (_autoScrollTimer == null)
+                {
+                    _autoScrollTimer = new DispatcherTimer(DispatcherPriority.Render);
+                }
+                _autoScrollTimer.Interval = TimeSpan.FromMilliseconds(ScrollInterval);
+                _autoScrollTimer.Tick += _autoScrollTimer_Tick;
+                _autoScrollTimer.Start();
+            }
+            else
+            {
+                if (_autoScrollTimer != null)
+                {
+                    _autoScrollTimer.Tick -= _autoScrollTimer_Tick;
+                    _autoScrollTimer.Stop();
+                }
+            }
+        }
+
+        private void _autoScrollTimer_Tick(object sender, EventArgs e)
+        {
+            if (SelectedIndex < (Children.Count - 1))
+            {
+                SelectedIndex += 1;
+            }
+            else if (SelectedIndex == Children.Count - 1)
+            {
+                SelectedIndex = 0;
+            }
+        }
+
+        #endregion
+
+        #region ScrollInterval
+
+        public double ScrollInterval
+        {
+            get { return (double)GetValue(ScrollIntervalProperty); }
+            set { SetValue(ScrollIntervalProperty, value); }
+        }
+
+        public static readonly DependencyProperty ScrollIntervalProperty =
+            DependencyProperty.Register(nameof(ScrollInterval),
+                                        typeof(double),
+                                        typeof(SlidablePanel),
+                                        new PropertyMetadata(3000d, ScrollIntervalPropertyChanged, CoerceScrollIntervalProperty));
+
+        private static void ScrollIntervalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((SlidablePanel)d).OnScrollIntervalChanged((double)e.OldValue, (double)e.NewValue);
+        }
+
+        protected virtual void OnScrollIntervalChanged(double oldValue, double newValue)
+        {
+            if (_autoScrollTimer != null)
+            {
+                _autoScrollTimer.Interval = TimeSpan.FromMilliseconds(newValue);
+            }
+        }
+
+        private static object CoerceScrollIntervalProperty(DependencyObject d, object baseValue)
+        {
+            if (baseValue is double interval)
+            {
+                if (interval <= 0)
+                    return 300d;
+
+                return interval;
+            }
+
+            return 300d;
+        }
+
+        #endregion
+
         #endregion
 
         #region 回调
@@ -433,7 +563,7 @@ namespace Leen.Windows.Controls
                 _reentrantList.Add(previewEventArg);
                 originalSource.RaiseEvent(previewEventArg);
                 _reentrantList.Remove(previewEventArg);
-                // at this point if no one else handled the event in our children, we do our job
+                // If children element have not handled the event, we should do our job.
                 if (!previewEventArg.Handled && ((e.Delta <= 0 && (SelectedIndex == Children.Count - 1)) ||
                     (e.Delta > 0 && SelectedIndex == 0)))
                 {
@@ -450,6 +580,31 @@ namespace Leen.Windows.Controls
         }
 
         void NewSliderPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            //第一次加载后 应用选中坐标
+            Animation(SelectedIndex, 0);
+            if (EnableAutoScroll)
+            {
+                if (_autoScrollTimer == null)
+                {
+                    _autoScrollTimer = new DispatcherTimer(DispatcherPriority.Render);
+                }
+                _autoScrollTimer.Interval = TimeSpan.FromMilliseconds(ScrollInterval);
+                _autoScrollTimer.Tick += _autoScrollTimer_Tick;
+                _autoScrollTimer.Start();
+            }
+        }
+
+        private void SlidablePanel_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (EnableAutoScroll)
+            {
+                _autoScrollTimer.Tick -= _autoScrollTimer_Tick;
+                _autoScrollTimer.Stop();
+            }
+        }
+
+        void NewSliderPanel_SizeChanged(object sender, RoutedEventArgs e)
         {
             //第一次加载后 应用选中坐标
             Animation(SelectedIndex, 0);
@@ -508,7 +663,7 @@ namespace Leen.Windows.Controls
                     targetIndex = 0;
                 else if (targetIndex >= InternalChildren.Count)
                     targetIndex = InternalChildren.Count - 1;
-                Animation(targetIndex, Duration);
+                Animation(targetIndex, ScrollDuration);
             }
 
             SelectedIndex = targetIndex;
@@ -547,34 +702,109 @@ namespace Leen.Windows.Controls
         /// <param name="newValue"></param>
         protected virtual void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
-            Children.Clear();
+            InternalChildren.Clear();
+            if (oldValue is INotifyCollectionChanged oldCollection)
+            {
+                oldCollection.CollectionChanged -= OnCollectionChanged;
+            }
+
+            if(newValue is INotifyCollectionChanged newCollection)
+            {
+                newCollection.CollectionChanged += OnCollectionChanged;
+            }
+
             if (newValue != null)
             {
                 foreach (var item in newValue)
                 {
-                    DataTemplate dataTemplate = null;
+                    CreateChild(item);
+                }
+            }
+        }
 
-                    // get data template
-                    if (this.ItemTemplateSelector != null)
-                    {
-                        dataTemplate = this.ItemTemplateSelector.SelectTemplate(item, this);
-                    }
-                    if (dataTemplate == null && this.ItemTemplate != null)
-                    {
-                        dataTemplate = this.ItemTemplate;
-                    }
+        private void CreateChild(object item)
+        {
+            DataTemplate dataTemplate = GetItemTemplate(item);
+            if (dataTemplate != null)
+            {
+                if (dataTemplate.LoadContent() is FrameworkElement child)
+                {
+                    child.DataContext = item;
+                    Children.Add(child);
+                }
+            }
+        }
 
-                    // load data template content
-                    if (dataTemplate != null)
+        private DataTemplate GetItemTemplate(object item)
+        {
+            DataTemplate dataTemplate = null;
+
+            if (ItemTemplateSelector != null)
+            {
+                dataTemplate = ItemTemplateSelector.SelectTemplate(item, this);
+            }
+            if (dataTemplate == null && ItemTemplate != null)
+            {
+                dataTemplate = ItemTemplate;
+            }
+
+            return dataTemplate;
+        }
+
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    if (e.NewItems != null)
                     {
-                        if (dataTemplate.LoadContent() is FrameworkElement child)
+                        foreach (var item in e.NewItems)
                         {
-                            // set data context
-                            child.DataContext = item;
-                            Children.Add(child);
+                            CreateChild(item);
                         }
                     }
-                }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    if (e.OldItems != null)
+                    {
+                        InternalChildren.RemoveRange(e.OldStartingIndex, e.OldItems.Count);
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                    if (e.OldItems != null)
+                    {
+                        InternalChildren.RemoveRange(e.OldStartingIndex, e.OldItems.Count);
+                    }
+                    if (e.NewItems != null)
+                    {
+                        foreach (var item in e.NewItems)
+                        {
+                            CreateChild(item);
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    var oldChildrens = new Dictionary<object, UIElement>();
+                    if (e.OldItems != null)
+                    {
+                        for (int i = e.OldStartingIndex; i < e.OldItems.Count; i++)
+                        {
+                            oldChildrens.Add(e.OldItems[i - e.OldStartingIndex], InternalChildren[i]);
+                        }
+                        InternalChildren.RemoveRange(e.OldStartingIndex, e.OldItems.Count);
+                    }
+                    if (e.NewItems != null)
+                    {
+                        for (int i = e.NewStartingIndex; i < e.NewItems.Count; i++)
+                        {
+                            var item = e.NewItems[i - e.NewStartingIndex];
+                            InternalChildren.Insert(i, oldChildrens[item]);
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    InternalChildren.Clear();
+                    break;
             }
         }
 
@@ -675,7 +905,7 @@ namespace Leen.Windows.Controls
             {
                 DoubleAnimation doubleAnimation = new DoubleAnimation(to, new Duration(TimeSpan.FromMilliseconds(duration)));
 
-                if (Orientation == System.Windows.Controls.Orientation.Horizontal)
+                if (Orientation == Orientation.Horizontal)
                 {
                     TranslateTransform transform = new TranslateTransform(Children[i].RenderTransform.Value.OffsetX, 0);
                     Children[i].RenderTransform = transform;

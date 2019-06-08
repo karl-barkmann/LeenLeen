@@ -153,6 +153,23 @@ namespace Leen.Practices.Mvvm
     }
 
     /// <summary>
+    /// 判断value是否为空或 <see cref="DependencyProperty.UnsetValue"/> 并转换为控件可见枚举的值转换器。
+    /// </summary>
+    public class NotNullToVisiblityConverter : MarkupAccessibleValueConverter<NotNullToVisiblityConverter>, IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool result= value != null && value != DependencyProperty.UnsetValue;
+            return result ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
     /// 比较 value 和 parameter 是否相等，并返回Boolean值。
     /// </summary>
     public class EqualityToBooleanConverter : IValueConverter

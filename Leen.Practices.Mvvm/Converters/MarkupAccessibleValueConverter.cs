@@ -18,7 +18,7 @@ namespace Leen.Practices.Mvvm
     public abstract class MarkupAccessibleValueConverter<T> : MarkupExtension where T : IValueConverter, new()
     {
         //only one instance should initialize through markup extension.
-        private static T _converter = default(T);
+        private static T _converter = default;
 
         /// <summary>
         /// 返回值转换器的唯一实例。
@@ -50,7 +50,7 @@ namespace Leen.Practices.Mvvm
     public abstract class MarkupAccessibleMultiValueConverter<T> : MarkupExtension where T : IMultiValueConverter, new()
     {
         //only one instance should initialize through markup extension.
-        private static T _converter = default(T);
+        private static T _converter = default;
 
         /// <summary>
         /// 返回值转换器的唯一实例。

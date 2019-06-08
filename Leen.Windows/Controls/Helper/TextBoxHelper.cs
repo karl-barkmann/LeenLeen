@@ -70,9 +70,11 @@ namespace Leen.Windows.Controls.Helper
                 //在控件内按下鼠标则不更新，因为用户正在可能需要编辑文本
                 if (textBox.InputHitTest(e.MouseDevice.GetPosition(textBox)) != null)
                     return;
-                if (GetEnterUpdatesTextSource((DependencyObject)sender))
+                if (GetEnterUpdatesTextSource(textBox))
                 {
-                    BindingExpression bindingExpresssion = BindingOperations.GetBindingExpression((DependencyObject)sender, TextBox.TextProperty);
+                    var bindingExpresssion = BindingOperations.GetBindingExpression(
+                        textBox,
+                        TextBox.TextProperty);
                     if (bindingExpresssion != null)
                         bindingExpresssion.UpdateSource();
                 }
@@ -85,7 +87,9 @@ namespace Leen.Windows.Controls.Helper
             {
                 if (GetEnterUpdatesTextSource((DependencyObject)sender))
                 {
-                    BindingExpression bindingExpresssion = BindingOperations.GetBindingExpression((DependencyObject)sender, TextBox.TextProperty);
+                    var bindingExpresssion = BindingOperations.GetBindingExpression(
+                        (DependencyObject)sender,
+                        TextBox.TextProperty);
                     if (bindingExpresssion != null)
                         bindingExpresssion.UpdateSource();
                 }

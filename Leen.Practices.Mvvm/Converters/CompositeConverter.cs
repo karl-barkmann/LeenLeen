@@ -15,7 +15,7 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         public CompositeConverter()
         {
-            Converters = new List<IValueConverter>(3);
+            Converters = new List<IValueConverter>();
         }
 
         /// <summary>

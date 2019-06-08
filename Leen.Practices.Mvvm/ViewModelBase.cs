@@ -3,6 +3,7 @@ using Leen.Common;
 using Leen.Logging;
 using Leen.Windows.Interaction;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
@@ -73,6 +74,16 @@ namespace Leen.Practices.Mvvm
         public T GetInstance<T>()
         {
             return ServiceLocator.Current.GetInstance<T>();
+        }
+
+        /// <summary>
+        /// 获取指定类型的已注册接口。
+        /// </summary>
+        /// <typeparam name="T">接口类型。</typeparam>
+        /// <returns></returns>
+        public IEnumerable<T> GetInstances<T>()
+        {
+            return ServiceLocator.Current.GetAllInstances<T>();
         }
 
         /// <summary>
