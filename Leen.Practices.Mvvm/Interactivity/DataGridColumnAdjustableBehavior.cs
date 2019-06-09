@@ -39,9 +39,9 @@ namespace System.Windows.Interactivity
             double fixWidth = AssociatedObject.Columns.Where(c => !c.Width.IsStar).Sum(c => c.Width.DesiredValue);
             double starValue = AssociatedObject.Columns.Where(c => c.Width.IsStar).Sum(c => c.Width.Value);
 
-            var verticalScrollbarVisibility = ScrollViewer.GetVerticalScrollBarVisibility(AssociatedObject);
+            var horizontalScrollbarVisibility = ScrollViewer.GetHorizontalScrollBarVisibility(AssociatedObject);
             /* REMAIN 2 PIXEL */
-            double eachWidth = (e.NewSize.Width - fixWidth - 2 - (verticalScrollbarVisibility == ScrollBarVisibility.Disabled? 0 : SystemParameters.ScrollWidth)) / starValue;
+            double eachWidth = (e.NewSize.Width - fixWidth - 0 - (horizontalScrollbarVisibility == ScrollBarVisibility.Disabled? 0 : SystemParameters.ScrollWidth)) / starValue;
 
             for (int i = 0; i < AssociatedObject.Columns.Count; i++)
             {
