@@ -47,6 +47,7 @@
     <Compile Include="AutoClosePopup.cs" />
     <Compile Include="CubeControl.cs" />
     <Compile Include="HeightExpander.cs" />
+    <Compile Include="NumericUpDown.cs" />
     <Compile Include="NonTopMostPopup.cs" />
     <Compile Include="Primitives\Arrow.cs" />
     <Compile Include="Primitives\CurvedArrow.cs" />

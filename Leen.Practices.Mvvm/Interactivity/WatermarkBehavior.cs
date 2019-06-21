@@ -283,6 +283,47 @@ namespace System.Windows.Interactivity
 
         #endregion
 
+        #region IsEnable
+
+        /// <summary>
+        /// 获取或设置一个值指示是否启用显示水印，设置这个值表示是否启用水印。
+        /// </summary>
+        public bool IsEnabled
+        {
+            get { return (bool)GetValue(IsEnabledProperty); }
+            set { SetValue(IsEnabledProperty, value); }
+        }
+
+        /// <summary>
+        /// Dependency property for <see cref="IsEnabled"/> property.
+        /// </summary>
+        public static readonly DependencyProperty IsEnabledProperty =
+            DependencyProperty.Register(
+                                nameof(IsEnabled),
+                                typeof(bool),
+                                typeof(WatermarkBehavior),
+                                new PropertyMetadata(true, IsEnabledPropertyChanged));
+
+        private static void IsEnabledPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((WatermarkBehavior)d).OnIsEnabledChanged((bool)e.OldValue, (bool)e.NewValue);
+        }
+
+        /// <summary>
+        /// Called when <see cref="IsEnabled"/> changed.
+        /// </summary>
+        /// <param name="oldValue">Old value of <see cref="IsEnabled"/>.</param>
+        /// <param name="newValue">New value of <see cref="IsEnabled"/>.</param>
+        protected virtual void OnIsEnabledChanged(bool oldValue, bool newValue)
+        {
+            if (newValue)
+                AddAdorner();
+            else
+                RemoveAdorner();
+        }
+
+        #endregion
+
         /// <summary>
         /// 当行为附加到控件时发生。
         /// </summary>
@@ -292,7 +333,8 @@ namespace System.Windows.Interactivity
 
             if (AssociatedObject.IsLoaded)
             {
-                AddAdorner();
+                if(IsEnabled)
+                    AddAdorner();
             }
             else
             {
@@ -312,7 +354,7 @@ namespace System.Windows.Interactivity
 
         private void AssociatedObject_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if ((bool)e.NewValue)
+            if ((bool)e.NewValue && IsEnabled)
             {
                 AddAdorner();
             }
@@ -324,7 +366,8 @@ namespace System.Windows.Interactivity
 
         private void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
         {
-            AddAdorner();
+            if(IsEnabled)
+                AddAdorner();
             AssociatedObject.Loaded -= AssociatedObject_Loaded;
             base.OnAttached();
         }
@@ -385,6 +428,9 @@ namespace System.Windows.Interactivity
                     break;
                 case PasswordBox passwordBox:
                     adorner = new PasswordBoxWatermarkAdorner(passwordBox, WatermarkText);
+                    break;
+                case ComboBox comboBox:
+                    adorner = new ComboBoxWatermarkAdorner(comboBox, WatermarkText);
                     break;
                 default:
                     adorner = new WatermarkAdorner(AssociatedObject, WatermarkText);
@@ -538,15 +584,47 @@ namespace System.Windows.Interactivity
             Target.PasswordChanged += Target_PasswordChanged;
         }
 
+        public override void UnHook()
+        {
+            base.UnHook();
+            Target.PasswordChanged -= Target_PasswordChanged;
+        }
+
         private void Target_PasswordChanged(object sender, RoutedEventArgs e)
         {
             InvalidateVisual();
+        }
+    }
+
+    class ComboBoxWatermarkAdorner : WatermarkAdorner
+    {
+        public ComboBoxWatermarkAdorner(ComboBox target, string watermark) : base(target, watermark)
+        {
+            Target = target;
+        }
+
+        public ComboBox Target { get; }
+
+        protected override bool CanRender()
+        {
+            return Target.SelectedItem == null && base.CanRender();
+        }
+
+        public override void Hook()
+        {
+            base.Hook();
+            Target.SelectionChanged += Target_SelectionChanged;
         }
 
         public override void UnHook()
         {
             base.UnHook();
-            Target.PasswordChanged -= Target_PasswordChanged;
+            Target.SelectionChanged -= Target_SelectionChanged;
+        }
+
+        private void Target_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            InvalidateVisual();
         }
     }
 }
