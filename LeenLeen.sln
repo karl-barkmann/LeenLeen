@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Practices.Wcf", "Leen.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Windows", "Leen.Windows\Leen.Windows.csproj", "{9D717A92-E9A4-4DC7-92A3-C376C99AA0C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "Demo\Demo.csproj", "{6BB5DD34-F863-4D7C-9825-8B0C19369661}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.DynamicXml.Benchmark", "Demo\Demo.DynamicXml.Benchmark.csproj", "{6BB5DD34-F863-4D7C-9825-8B0C19369661}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Logging", "Leen.Logging\Leen.Logging.csproj", "{BD5253E4-E4E4-459F-BF80-D6531E151BB6}"
 EndProject
