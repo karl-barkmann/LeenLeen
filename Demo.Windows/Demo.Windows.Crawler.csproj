@@ -55,8 +55,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="View\ChildWindow.xaml.cs">
-      <DependentUpon>ChildWindow.xaml</DependentUpon>
+    <Compile Include="ViewModel\NgaCrawlerWindowViewModel.cs" />
+    <Compile Include="ViewModel\TingCrawlerWindowViewModel.cs" />
+    <Compile Include="View\NgaCrawlerWindow.xaml.cs">
+      <DependentUpon>NgaCrawlerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\TingCrawlerWindow.xaml.cs">
+      <DependentUpon>TingCrawlerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="DefaultSectionStreamRequestUriService.cs" />
     <Compile Include="IKeySectionStreamRequstUriResponseParser.cs" />
@@ -68,7 +73,11 @@
     <Compile Include="ViewModel\BookSectionViewModel.cs" />
     <Compile Include="ViewModel\BookViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
-    <Page Include="View\ChildWindow.xaml">
+    <Page Include="View\NgaCrawlerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TingCrawlerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

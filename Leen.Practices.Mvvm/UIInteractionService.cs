@@ -385,7 +385,16 @@ namespace Leen.Practices.Mvvm
             bool? showCallback()
             {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel);
-                return ShowDialog(viewModel, view, ownerViewModel);
+                if (view is Window window)
+                {
+                    window.Owner = ViewLocationProvider.FindOwnerWindow(ownerViewModel);
+                    RetrieveWindowProperties(view, new WindowWrapper(window));
+                    return window.ShowDialog();
+                }
+                else
+                {
+                    return ShowDialog(viewModel, view, ownerViewModel);
+                }
             }
 
             if (ownerViewModel != null)

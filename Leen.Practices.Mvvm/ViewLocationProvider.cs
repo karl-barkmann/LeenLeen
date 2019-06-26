@@ -35,10 +35,21 @@ namespace Leen.Practices.Mvvm
                     int index = viewModelName.LastIndexOf("ViewModel");
                     viewModelName = viewModelName.Remove(index);
                 }
-                var viewModelAssemblyName = viewModelType.Assembly.FullName;
-                var viewName = String.Format(CultureInfo.InvariantCulture, "{0}View, {1}", viewModelName,
-                    viewModelAssemblyName);
-                return Type.GetType(viewName);
+
+                if (viewModelName.EndsWith("Window"))
+                {
+                    var viewModelAssemblyName = viewModelType.Assembly.FullName;
+                    var viewName = String.Format(CultureInfo.InvariantCulture, "{0}, {1}", viewModelName,
+                        viewModelAssemblyName);
+                    return Type.GetType(viewName);
+                }
+                else
+                {
+                    var viewModelAssemblyName = viewModelType.Assembly.FullName;
+                    var viewName = String.Format(CultureInfo.InvariantCulture, "{0}View, {1}", viewModelName,
+                        viewModelAssemblyName);
+                    return Type.GetType(viewName);
+                }
             };
 
         /// <summary>
@@ -356,8 +367,13 @@ namespace Leen.Practices.Mvvm
                 viewType = defaultViewModelTypeToViewTypeResolver(viewModelType);
                 if (viewType == null)
                 {
-                    throw new ArgumentException("viewModel", $"can not resolve view type by viewModel {viewModel.GetType()}");
+                    throw new ArgumentException($"can not resolve view type by {viewModel.GetType()}");
                 }
+            }
+
+            if (!typeof(IView).IsAssignableFrom(viewType))
+            {
+                throw new InvalidOperationException($"The view type \"{viewType}\" does not implement {nameof(IView)} interaface;");
             }
 
             return viewType;

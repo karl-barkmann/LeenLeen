@@ -82,5 +82,17 @@
                                SmallChange="1"
                                StringFormat="N2"
                                Style="{DynamicResource DoubleUpDownStyle1}" />
+        <Button Width="75"
+                Margin="10,10,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Command="{Binding ShowTingCrawlerCommand}"
+                Content="爬虫1" />
+        <Button Width="75"
+                Margin="108,10,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Command="{Binding ShowNgaCrawlerCommand}"
+                Content="爬虫2" />
     </Grid>
 </Window>

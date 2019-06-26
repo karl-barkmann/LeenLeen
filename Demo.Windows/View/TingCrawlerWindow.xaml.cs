@@ -1,14 +1,15 @@
 ﻿using Leen.Practices.Mvvm;
+using System;
 using System.Windows;
 
 namespace Demo.Windows.View
 {
     /// <summary>
-    /// MainWindow.xaml 的交互逻辑
+    /// ChildWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class MainWindow : Window, IView
+    public partial class ChildWindow : Window,IView
     {
-        public MainWindow()
+        public ChildWindow()
         {
             InitializeComponent();
         }
