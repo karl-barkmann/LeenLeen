@@ -378,6 +378,48 @@ namespace Leen.Practices.OrganizationTree
         }
 
         /// <summary>
+        /// 添加一个子节点到这个节点下。
+        /// </summary>
+        /// <param name="childNode">需要添加的子节点。</param>
+        public void AddNode(BaseTreeNode childNode)
+        {
+            if (childNode == null)
+            {
+                throw new ArgumentNullException(nameof(childNode));
+            }
+
+            if (IsExpanded)
+            {
+                if (Children == null)
+                    Children = new ObservableCollection<BaseTreeNode>(new BaseTreeNode[] { childNode });
+                else
+                    Children.Add(childNode);
+            }
+        }
+
+        /// <summary>
+        /// 从该节点删除指定的子节点。
+        /// </summary>
+        /// <param name="childNode">需要删除的子节点。</param>
+        public void RemoveNode(BaseTreeNode childNode)
+        {
+            if (childNode == null)
+            {
+                throw new ArgumentNullException(nameof(childNode));
+            }
+
+            if (IsExpanded && Children != null)
+            {
+                if (!Children.Remove(childNode))
+                {
+                    var existsNode = Children.FirstOrDefault(x => x.NodeId == childNode.NodeId);
+                    if (existsNode != null)
+                        Children.Remove(existsNode);
+                }
+            }
+        }
+
+        /// <summary>
         /// 获取指定节点标识的子节点。
         /// </summary>
         /// <param name="nodeId">节点标识。</param>
