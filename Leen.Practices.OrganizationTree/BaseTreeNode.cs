@@ -398,11 +398,14 @@ namespace Leen.Practices.OrganizationTree
             if (node != null)
                 return node;
 
-            foreach (var child in Children)
+            if (Children != null)
             {
-                node = GetNodeRecursive(nodeId);
-                if (node != null)
-                    return node;
+                foreach (var child in Children)
+                {
+                    node = child.GetNodeRecursive(nodeId);
+                    if (node != null)
+                        return node;
+                }
             }
 
             return null;
@@ -631,10 +634,11 @@ namespace Leen.Practices.OrganizationTree
         /// <returns></returns>
         public static bool operator !=(BaseTreeNode x, BaseTreeNode y)
         {
-            if (x is null)
-            {
-                return y is null;
-            }
+            if (ReferenceEquals(x, y))
+                return false;
+
+            if (ReferenceEquals(x, null))
+                return true;
 
             return !x.Equals(y);
         }

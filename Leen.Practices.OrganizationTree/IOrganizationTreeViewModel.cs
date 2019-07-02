@@ -25,6 +25,13 @@ namespace Leen.Practices.OrganizationTree
         IEnumerable<string> GetCheckedOrganizationIds();
 
         /// <summary>
+        /// 获取指定Id的树节点。
+        /// </summary>
+        /// <param name="nodeId">树节点Id。</param>
+        /// <returns></returns>
+        BaseTreeNode FindNode(string nodeId);
+
+        /// <summary>
         /// 获取指定Id的组织机构树节点。
         /// </summary>
         /// <param name="organizationId">组织机构Id。</param>
