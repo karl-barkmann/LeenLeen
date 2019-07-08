@@ -18,7 +18,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="buttons">消息对话框显示的按钮。</param>
         /// <param name="icon">消息对话框显示的图标。</param>
         /// <returns></returns>
-        public static MessageBoxResult ShowMessage(this IUIInteractionService interactionService,
+        public static MessageBoxResult ShowInfoMessage(this IUIInteractionService interactionService,
                                                    string message,
                                                    string title,
                                                    object ownnerViewModel,
