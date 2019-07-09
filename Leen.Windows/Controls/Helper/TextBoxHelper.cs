@@ -67,7 +67,7 @@ namespace Leen.Windows.Controls.Helper
         {
             if (sender is TextBox textBox)
             {
-                //在控件内按下鼠标则不更新，因为用户正在可能需要编辑文本
+                //在控件内按下鼠标则不更新，因为用户可能正需要编辑文本
                 if (textBox.InputHitTest(e.MouseDevice.GetPosition(textBox)) != null)
                     return;
                 if (GetEnterUpdatesTextSource(textBox))
