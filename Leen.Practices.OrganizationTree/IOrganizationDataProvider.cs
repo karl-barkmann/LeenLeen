@@ -7,7 +7,7 @@ namespace  Leen.Practices.OrganizationTree
     /// <summary>
     /// 提供获取组织机构业务实体的数据接口。
     /// </summary>
-    public interface IOrganizationDataService
+    public interface IOrganizationDataProvider
     {
         /// <summary>
         /// 获取所有组织结构数据实体。

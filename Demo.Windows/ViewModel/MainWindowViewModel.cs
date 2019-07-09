@@ -55,7 +55,7 @@ namespace Demo.Windows.ViewModel
 
         private void OnSearch(string keywords)
         {
-            UIService.ShowMessage($"搜索关键字：{keywords}", "提示", this);
+            UIService.ShowInfoMessage($"搜索关键字：{keywords}", "提示", this);
         }
     }
 }

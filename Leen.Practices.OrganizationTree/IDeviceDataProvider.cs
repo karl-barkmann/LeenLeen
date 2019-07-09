@@ -7,7 +7,7 @@ namespace  Leen.Practices.OrganizationTree
     /// <summary>
     /// 提供获取设备业务实体的数据接口。
     /// </summary>
-    public interface IDeviceDataService
+    public interface IDeviceDataProvider
     {
         /// <summary>
         /// 获取指定Id的设备业务实体。

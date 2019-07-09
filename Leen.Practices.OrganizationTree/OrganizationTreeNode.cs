@@ -41,7 +41,7 @@ namespace Leen.Practices.OrganizationTree
         protected override async Task<IEnumerable<BaseTreeNode>> LoadChildrenAsync()
         {
             var children = new List<BaseTreeNode>();
-            var organizationDataService = ServiceLocator.Current.GetInstance<IOrganizationDataService>();
+            var organizationDataService = ServiceLocator.Current.GetInstance<IOrganizationDataProvider>();
             var organizations = await organizationDataService.GetOrganizations(NodeId);
             if (organizations != null)
             {
@@ -58,7 +58,7 @@ namespace Leen.Practices.OrganizationTree
                 }
             }
 
-            var deviceDataService = ServiceLocator.Current.GetInstance<IDeviceDataService>();
+            var deviceDataService = ServiceLocator.Current.GetInstance<IDeviceDataProvider>();
             var devices = await deviceDataService.GetDevices(NodeId);
             if (devices != null)
             {

@@ -7,7 +7,7 @@ namespace Leen.Practices.OrganizationTree
     /// <summary>
     /// 提供获取域数据接口。
     /// </summary>
-    public interface IDomainDataService
+    public interface IDomainDataProvider
     {
         /// <summary>
         /// 获取域数据集合。
