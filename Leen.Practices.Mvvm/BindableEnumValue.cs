@@ -8,7 +8,7 @@ namespace Leen.Practices.Mvvm
     /// <summary>
     /// 定义一个绑定基类用于生成枚举集合。
     /// </summary>
-    public class BindableEnumValue<T> : BindableBase where T : struct, IConvertible
+    public class BindableEnumValue<T> : BindableBase where T : Enum, IConvertible
     {
         private int _value;
         private string _name;
@@ -73,7 +73,7 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <typeparam name="TEnum">枚举的类型。</typeparam>
         /// <returns>生成用于绑定枚举值集合。</returns>
-        public static IEnumerable<BindableEnumValue<TEnum>> BindableEnumValues<TEnum>(params TEnum[] skippValues) where TEnum : struct, IConvertible
+        public static IEnumerable<BindableEnumValue<TEnum>> BindableEnumValues<TEnum>(params TEnum[] skippValues) where TEnum : Enum, IConvertible
         {
             if (!typeof(TEnum).IsEnum)
             {

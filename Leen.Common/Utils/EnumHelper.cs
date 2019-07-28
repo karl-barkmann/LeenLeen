@@ -56,7 +56,7 @@ namespace Leen.Common.Utils
         /// <typeparam name="T">枚举类型</typeparam>
         /// <param name="value">枚举值</param>
         /// <returns>枚举对象</returns>
-        public static T Parse<T>(int value) where T : struct
+        public static T Parse<T>(int value) where T : Enum
         {
             T type = (T)Enum.Parse(typeof(T), value.ToString());
             if (Enum.IsDefined(typeof(T), type))
@@ -75,7 +75,7 @@ namespace Leen.Common.Utils
         /// <typeparam name="T">枚举类型</typeparam>
         /// <param name="type">枚举类型</param>
         /// <returns>枚举</returns>
-        public static int GetValue<T>(T type) where T : struct
+        public static int GetValue<T>(T type) where T : Enum
         {
             int value = type.GetHashCode();
             return value;
@@ -86,7 +86,7 @@ namespace Leen.Common.Utils
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static IEnumerable<T> GetValues<T>() where T : struct
+        public static IEnumerable<T> GetValues<T>() where T : Enum
         {
             foreach (var val in Enum.GetValues(typeof(T)))
             {
@@ -95,12 +95,24 @@ namespace Leen.Common.Utils
         }
 
         /// <summary>
+        /// 按位获取枚举值集合。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IEnumerable<T> GetValues<T>(T input) where T : Enum
+        {
+            foreach (T value in Enum.GetValues(input.GetType()))
+                if (input.HasFlag(value))
+                    yield return value;
+        }
+
+        /// <summary>
         /// 获取字符串对应的枚举值。
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static T Parse<T>(string value) where T : struct
+        public static T Parse<T>(string value) where T : Enum
         {
             return (T)Enum.Parse(typeof(T), value);
         }
