@@ -50,9 +50,9 @@
     <Compile Include="DeviceCategoryTreeNode.cs" />
     <Compile Include="DeviceTreeNode.cs" />
     <Compile Include="DomainTreeNode.cs" />
-    <Compile Include="IDeviceDataService.cs" />
-    <Compile Include="IDomainDataService.cs" />
-    <Compile Include="IOrganizationDataService.cs" />
+    <Compile Include="IDeviceDataProvider.cs" />
+    <Compile Include="IDomainDataProvider.cs" />
+    <Compile Include="IOrganizationDataProvider.cs" />
     <Compile Include="IOrganizationTreeViewModel.cs" />
     <Compile Include="OrganizationTreeNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

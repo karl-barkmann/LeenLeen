@@ -4,11 +4,9 @@
  * 描述：使TreeView的选中项可以双向绑定。
  * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interactivity;
 
-namespace Leen.Windows.Interactivity
+namespace System.Windows.Interactivity
 {
     /// <summary>
     /// 使TreeView的选中项可以双向绑定。
@@ -38,6 +36,9 @@ namespace Leen.Windows.Interactivity
 
         #region 私有方法
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected override void OnAttached()
         {
             base.OnAttached();
@@ -47,6 +48,9 @@ namespace Leen.Windows.Interactivity
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected override void OnDetaching()
         {
             base.OnDetaching();

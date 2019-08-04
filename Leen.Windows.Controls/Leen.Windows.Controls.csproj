@@ -33,6 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="System.Windows.Presentation" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
@@ -47,6 +48,7 @@
     <Compile Include="AutoClosePopup.cs" />
     <Compile Include="CubeControl.cs" />
     <Compile Include="HeightExpander.cs" />
+    <Compile Include="Interactivity\SearchBoxEnterBehavior.cs" />
     <Compile Include="NumericUpDown.cs" />
     <Compile Include="NonTopMostPopup.cs" />
     <Compile Include="Primitives\Arrow.cs" />

@@ -55,6 +55,8 @@
     <Compile Include="Converters\CompositeConverter.cs" />
     <Compile Include="Converters\MarkupAccessibleValueConverter.cs" />
     <Compile Include="Converters\ValueConverters.cs" />
+    <Compile Include="EventToCommand.cs" />
+    <Compile Include="IEventArgsConverter.cs" />
     <Compile Include="Input\GestureExtensions.cs" />
     <Compile Include="Input\ImprovedMouseGesture.cs" />
     <Compile Include="Input\InputAttach.cs" />

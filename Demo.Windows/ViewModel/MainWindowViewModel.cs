@@ -1,4 +1,5 @@
 using Leen.Practices.Mvvm;
+using System;
 using System.ComponentModel.Composition;
 using System.Windows.Input;
 
@@ -17,6 +18,7 @@ namespace Demo.Windows.ViewModel
             State = 1;
             ShowTingCrawlerCommand = new RelayCommand(OnShowTingCrawler);
             ShowNgaCrawlerCommand = new RelayCommand(OnShowNgaCrawler);
+            SearchCommand = new RelayCommand<string>(OnSearch,OnCanSerach);
         }
 
         public int State
@@ -27,6 +29,8 @@ namespace Demo.Windows.ViewModel
                 SetProperty(ref _state, value, () => State);
             }
         }
+
+        public ICommand SearchCommand { get; }
 
         public ICommand ShowTingCrawlerCommand { get; set; }
 
@@ -42,6 +46,16 @@ namespace Demo.Windows.ViewModel
         {
             var crawler = new NgaCrawlerWindowViewModel();
             UIService.ShowDialog(crawler, this);
+        }
+
+        private bool OnCanSerach(string keywords)
+        {
+            return true;
+        }
+
+        private void OnSearch(string keywords)
+        {
+            UIService.ShowInfoMessage($"ËÑË÷¹Ø¼ü×Ö£º{keywords}", "ÌáÊ¾", this);
         }
     }
 }
