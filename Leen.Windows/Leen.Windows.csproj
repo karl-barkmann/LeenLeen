@@ -49,6 +49,7 @@
     <Compile Include="Data\ByteToImageSourceConverter.cs" />
     <Compile Include="Data\DateTimeToZhCNStringConverter.cs" />
     <Compile Include="Data\IntegerToBooleanConverter.cs" />
+    <Compile Include="Data\RowToIndexConverter.cs" />
     <Compile Include="Data\ValueConverters.cs" />
     <Compile Include="Interaction\CrossProcessHwndSource.cs" />
     <Compile Include="Interaction\CrossProcessInteropService.cs" />
