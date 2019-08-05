@@ -1,4 +1,5 @@
 ﻿using Microsoft.Windows.Shell;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -116,7 +117,7 @@ namespace Leen.Windows
             _btnNo = GetTemplateChild("PART_BtnNo") as Button;
             if (_btnNo != null)
                 _btnNo.Click += OnBtnNoClick;
-            _btnCancel = GetTemplateChild("PARt_BtnCancel") as Button;
+            _btnCancel = GetTemplateChild("PART_BtnCancel") as Button;
             if (_btnCancel != null)
                 _btnCancel.Click += OnBtnCancel_Click;
         }
@@ -135,18 +136,19 @@ namespace Leen.Windows
             var dlg = new MessageDialog();
             dlg.Message = message;
             dlg.Title = title;
-
             if (owner == null)
             {
                 dlg.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
             else
             {
+                dlg.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 var interopHelper = new WindowInteropHelper(dlg);
                 interopHelper.EnsureHandle();
                 interopHelper.Owner = owner.Handle;
             }
-
+            ApplyStyle(dlg);
+            dlg.ApplyTemplate();
             ApplyButtons(buttons, dlg);
             ApplyImages(image, dlg);
             return dlg.ShowDialog();
@@ -167,6 +169,12 @@ namespace Leen.Windows
             dlg.Message = message;
             dlg.Title = title;
             dlg.Owner = owner;
+            if (owner == null)
+                dlg.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            else
+                dlg.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            ApplyStyle(dlg);
+            dlg.ApplyTemplate();
             ApplyButtons(buttons, dlg);
             ApplyImages(image, dlg);
             return dlg.ShowDialog();
@@ -243,6 +251,13 @@ namespace Leen.Windows
             }
         }
 
+
+        private static void ApplyStyle(MessageDialog dlg)
+        {
+            var style = Application.Current.TryFindResource(typeof(MessageDialog)) as Style;
+            dlg.Style = style;
+        }
+
         private static void ApplyImages(MessageBoxImage image, MessageDialog dlg)
         {
             if (dlg._pathIcon == null)
@@ -250,18 +265,37 @@ namespace Leen.Windows
             if (image == MessageBoxImage.Question)
             {
                 dlg._pathIcon.Data = Geometry.Parse(Question);
+                var color = (Color)ColorConverter.ConvertFromString("#325BF1");
+                var fill = new SolidColorBrush(color);
+                fill.Freeze();
+                dlg._pathIcon.Fill = fill;
             }
             else if (image == MessageBoxImage.Error || image == MessageBoxImage.Hand || image == MessageBoxImage.Stop)
             {
                 dlg._pathIcon.Data = Geometry.Parse(Error);
+                dlg._pathIcon.Data = Geometry.Parse(Error);
+                var color = (Color)ColorConverter.ConvertFromString("#F52C2C");
+                var fill = new SolidColorBrush(color);
+                fill.Freeze();
+                dlg._pathIcon.Fill = fill;
             }
             else if (image == MessageBoxImage.Warning || image == MessageBoxImage.Exclamation)
             {
                 dlg._pathIcon.Data = Geometry.Parse(Warning);
+                dlg._pathIcon.Data = Geometry.Parse(Warning);
+                var color = (Color)ColorConverter.ConvertFromString("#FFD814");
+                var fill = new SolidColorBrush(color);
+                fill.Freeze();
+                dlg._pathIcon.Fill = fill;
             }
             else if (image == MessageBoxImage.Information || image == MessageBoxImage.Asterisk)
             {
                 dlg._pathIcon.Data = Geometry.Parse(Info);
+                dlg._pathIcon.Data = Geometry.Parse(Info);
+                var color = (Color)ColorConverter.ConvertFromString("#39A225");
+                var fill = new SolidColorBrush(color);
+                fill.Freeze();
+                dlg._pathIcon.Fill = fill;
             }
         }
 

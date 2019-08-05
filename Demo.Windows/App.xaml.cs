@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Media;
 
 namespace Demo.Windows
 {
@@ -10,7 +11,6 @@ namespace Demo.Windows
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
             var bootstrapper = new Bootstrapper();
             bootstrapper.Run(e.Args);
         }
