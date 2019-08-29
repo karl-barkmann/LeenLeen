@@ -29,8 +29,7 @@ namespace Leen.Windows.Controls
 
         private static void OnIsBusyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var busyDecorator = d as BusyDecorator;
-            if (busyDecorator != null)
+            if (d is BusyDecorator busyDecorator)
             {
                 if (busyDecorator.IsBusy)
                 {
@@ -78,7 +77,7 @@ namespace Leen.Windows.Controls
 
                 if (adornerLayer != null)
                 {
-                    var parent = this.Parent as UIElement;
+                    var parent = Parent as UIElement;
                     busyAdorner = new BusyAdorner(parent);
                     busyAdorner.Cancel += busyAdorner_Cancel;
                     adornerLayer.Add(busyAdorner);

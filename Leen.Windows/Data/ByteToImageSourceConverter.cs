@@ -42,10 +42,7 @@ namespace Leen.Windows.Data
                     bool validDecodeWidth = false;
                     if (parameter != null)
                         validDecodeWidth = Int32.TryParse(parameter.ToString(), out targetDecodeWidth);
-                    //显示转换大小 减小内存使用率。默认解码宽度为120
-                    if (!validDecodeWidth)
-                        image.DecodePixelWidth = 120;
-                    else
+                    if (validDecodeWidth)
                         image.DecodePixelWidth = targetDecodeWidth;
                     image.StreamSource = memortyStream;
                     image.EndInit();
