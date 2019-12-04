@@ -456,6 +456,10 @@ namespace Leen.Practices.Mvvm
 
             Type enumType = value.GetType();
             string targetValue = parameter.ToString();
+
+            if (enumType != parameter.GetType())
+                return false;
+
             if (!targetValue.Contains("|") && (!enumType.IsEnum || !enumType.IsEnumDefined(parameter)))
             {
                 throw new InvalidOperationException("EnumEqualityToBooleanConverter can only used for comparing enum values!");
