@@ -18,6 +18,7 @@ namespace Demo.Windows.ViewModel
             State = 1;
             ShowTingCrawlerCommand = new RelayCommand(OnShowTingCrawler);
             ShowNgaCrawlerCommand = new RelayCommand(OnShowNgaCrawler);
+            ShowSimpleTraderCrawlerCommand = new RelayCommand(OnShowSimpleTraderCrawler);
             SearchCommand = new RelayCommand<string>(OnSearch,OnCanSerach);
         }
 
@@ -36,6 +37,8 @@ namespace Demo.Windows.ViewModel
 
         public ICommand ShowNgaCrawlerCommand { get; set; }
 
+        public ICommand ShowSimpleTraderCrawlerCommand { get; set; }
+
         private void OnShowTingCrawler()
         {
             var crawler = new TingCrawlerWindowViewModel();
@@ -45,6 +48,12 @@ namespace Demo.Windows.ViewModel
         private void OnShowNgaCrawler()
         {
             var crawler = new NgaCrawlerWindowViewModel();
+            UIService.ShowDialog(crawler, this);
+        }
+
+        private void OnShowSimpleTraderCrawler()
+        {
+            var crawler = new SimpleTraderCrawlerWindowViewModel();
             UIService.ShowDialog(crawler, this);
         }
 
