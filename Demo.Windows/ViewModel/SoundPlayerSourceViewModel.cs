@@ -8,9 +8,9 @@ using System.Windows.Input;
 
 namespace Demo.Windows
 {
-    public class SoundPlayerSourceViewModel : ViewModelBase
+    public class OpenTradeInfo : ViewModelBase
     {
-        public SoundPlayerSourceViewModel(string request)
+        public OpenTradeInfo(string request)
         {
             RequestUrl = request;
             PlayCommand = new RelayCommand(Play);

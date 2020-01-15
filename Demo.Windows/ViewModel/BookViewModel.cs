@@ -131,10 +131,10 @@ namespace Demo.Windows.ViewModel
             var content = sr.ReadToEnd();
             stream.Close();
 
-            var math = Regex.Match(content, "<a href=\"lei_(\\d+)_(\\d+).htm\" class=\"now\">*.*</a>");
-            if (math.Success)
+            var match = Regex.Match(content, "<a href=\"lei_(\\d+)_(\\d+).htm\" class=\"now\">*.*</a>");
+            if (match.Success)
             {
-                var value = math.Captures[0].Value;
+                var value = match.Captures[0].Value;
                 Category = CQ.CreateDocument(value).Text();
             }
         }

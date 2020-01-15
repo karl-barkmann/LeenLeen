@@ -2,6 +2,7 @@
 using Abot.Poco;
 using Leen.Practices.Mvvm;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -13,17 +14,17 @@ namespace Demo.Windows.ViewModel
 {
     class SimpleTraderCrawlerWindowViewModel : ViewModelBase
     {
-        private ObservableCollection<SoundPlayerSourceViewModel> sources = new ObservableCollection<SoundPlayerSourceViewModel>();
-        private ObservableCollection<BookViewModel> books = new ObservableCollection<BookViewModel>();
+        private ObservableCollection<OpenTradeInfo> sources = new ObservableCollection<OpenTradeInfo>();
+        private ObservableCollection<string> crawlingLogs = new ObservableCollection<string>();
         private readonly object lockObject = new object();
-        private readonly object booksLockObject = new object();
+        private readonly object logslockObject = new object();
         readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private string nextUrl;
 
         public SimpleTraderCrawlerWindowViewModel()
         {
             BindingOperations.EnableCollectionSynchronization(sources, lockObject);
-            BindingOperations.EnableCollectionSynchronization(books, booksLockObject);
+            BindingOperations.EnableCollectionSynchronization(crawlingLogs, logslockObject);
             CrawlCommand = new RelayCommand(Crawl);
             StopCrawlingCommand = new RelayCommand(StopCrawling);
         }
@@ -33,7 +34,7 @@ namespace Demo.Windows.ViewModel
             cancellationTokenSource.Cancel();
         }
 
-        public ObservableCollection<SoundPlayerSourceViewModel> Sources
+        public ObservableCollection<OpenTradeInfo> Sources
         {
             get { return sources; }
             set
@@ -46,15 +47,15 @@ namespace Demo.Windows.ViewModel
             }
         }
 
-        public ObservableCollection<BookViewModel> Books
+        public ObservableCollection<string> CrawlingLogs
         {
-            get { return books; }
+            get { return crawlingLogs; }
             set
             {
-                if (value != books)
+                if (value != crawlingLogs)
                 {
-                    books = value;
-                    RaisePropertyChanged(() => Books);
+                    crawlingLogs = value;
+                    RaisePropertyChanged(() => CrawlingLogs);
                 }
             }
         }
@@ -90,14 +91,16 @@ namespace Demo.Windows.ViewModel
                 {
                     CrawlDecision decision = new CrawlDecision();
                     var uri = crawledPage.Uri.ToString();
-                    if (crawledPage.IsRoot || uri.StartsWith("https://www.simpletrader.net/"))
+                    if (crawledPage.IsRoot || 
+                    uri.StartsWith("https://www.simpletrader.net/signal/") ||
+                    uri.StartsWith("https://www.simpletrader.net/forex-signals.html"))
                     {
                         decision.Allow = true;
                     }
                     else
                     {
                         decision.Allow = false;
-                        decision.Reason = "Just erge pages!";
+                        decision.Reason = "Just noise pages!";
                     }
                     return decision;
                 });
@@ -107,18 +110,18 @@ namespace Demo.Windows.ViewModel
                 if (result.ErrorOccurred)
                 {
                     NextUrl = result.ErrorException.Message;
-                    Console.WriteLine("Crawl of {0} completed with error: {1}", result.RootUri.AbsoluteUri, result.ErrorException.Message);
+                    CrawlingLogs.Add(string.Format("Crawl of {0} completed with error: {1}", result.RootUri.AbsoluteUri, result.ErrorException.Message));
                 }
                 else
-                    Console.WriteLine("Crawl of {0} completed without error.", result.RootUri.AbsoluteUri);
-                Console.ReadLine();
+                    CrawlingLogs.Add(string.Format("Crawl of {0} completed without error.", result.RootUri.AbsoluteUri));
+                CrawlingLogs.Add("Crawling complete!");
             }, null);
         }
         void crawler_ProcessPageCrawlStarting(object sender, PageCrawlStartingArgs e)
         {
             NextUrl = e.PageToCrawl.Uri.ToString();
             PageToCrawl pageToCrawl = e.PageToCrawl;
-            Console.WriteLine("About to crawl link {0} which was found on page {1}", pageToCrawl.Uri.AbsoluteUri, pageToCrawl.ParentUri.AbsoluteUri);
+            CrawlingLogs.Add(string.Format("About to crawl link {0} which was found on page {1}", pageToCrawl.Uri.AbsoluteUri, pageToCrawl.ParentUri.AbsoluteUri));
         }
 
         void crawler_ProcessPageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
@@ -127,30 +130,45 @@ namespace Demo.Windows.ViewModel
 
             var crawledPageUri = crawledPage.Uri.ToString();
             //Crawling signal
-            if (Regex.IsMatch(crawledPageUri, @"https://www.simpletrader.net/signal/(\d+)//signal/(\d+)/*.*.html.html"))
+            if (Regex.IsMatch(crawledPageUri, @"https://www.simpletrader.net/signal/(\d+)/*.*.html") ||
+                Regex.IsMatch(crawledPageUri, @"https://www.simpletrader.net/signal/(\d+)//signal/(\d+)/*.*.html.html"))
             {
-                int id = Int32.Parse(Regex.Match(crawledPageUri, @"(\d+)").Captures[0].Value);
-                lock (booksLockObject)
+                var openTradeDom = crawledPage.CsQueryDocument.Document.GetElementById("openTrades");
+                if (openTradeDom != null)
                 {
-                    var book = new BookViewModel(id, crawledPage.Uri);
-                    Books.Add(book);
-                }
-            }
+                    var signalId = int.Parse(Regex.Match(crawledPageUri, @"(\d+)").Captures[0].Value);
+                    var signalName = crawledPage.Uri.Segments[crawledPage.Uri.Segments.Length - 1].Replace(".html", "");
+                    var openTradeInfoHeaders = new List<OpenTradeInfoKeys>();
 
-            //Crawling signal
-            if (Regex.IsMatch(crawledPageUri, @"https://www.simpletrader.net/signal/(\d+)/*.*.html"))
-            {
-                var csQuery = crawledPage.CsQueryDocument.Find("iframe");
-                foreach (var query in csQuery)
-                {
-                    if (query.Name == "playmedia")
+                    foreach (var childElement in openTradeDom.ChildElements)
                     {
-                        var playSrc = query.GetAttribute("src");
-                        var request = String.Format("http://{0}{1}", crawledPage.Uri.Host, playSrc);
-
-                        lock (lockObject)
+                        if (childElement.NodeName.ToLower() == "thead")
                         {
-                            Sources.Add(new SoundPlayerSourceViewModel(request));
+                            foreach (var tr in childElement.ChildElements)
+                            {
+                                foreach (var th in tr.ChildElements)
+                                {
+                                    var header = th.InnerText.Replace(" ", "");
+                                    openTradeInfoHeaders.Add((OpenTradeInfoKeys)Enum.Parse(typeof(OpenTradeInfoKeys), header));
+                                }
+                            }
+                        }
+
+                        if (childElement.NodeName.ToLower() == "tbody")
+                        {
+                            foreach (var tr in childElement.ChildElements)
+                            {
+                                int index = 0;
+                                var openTradeInfos = new Dictionary<OpenTradeInfoKeys, string>();
+                                foreach (var td in tr.ChildElements)
+                                {
+                                    var header = openTradeInfoHeaders[index++];
+                                    openTradeInfos.Add(header, td.InnerText);
+                                }
+
+                                var opentradeInfo = new OpenTradeInfo(signalId, signalName, openTradeInfos);
+                                Sources.Add(opentradeInfo);
+                            }
                         }
                     }
                 }
@@ -168,13 +186,81 @@ namespace Demo.Windows.ViewModel
         void crawler_PageLinksCrawlDisallowed(object sender, PageLinksCrawlDisallowedArgs e)
         {
             CrawledPage crawledPage = e.CrawledPage;
-            Console.WriteLine("Did not crawl the links on page {0} due to {1}", crawledPage.Uri.AbsoluteUri, e.DisallowedReason);
+            CrawlingLogs.Add(string.Format("Did not crawl the links on page {0} due to {1}", crawledPage.Uri.AbsoluteUri, e.DisallowedReason));
         }
 
         void crawler_PageCrawlDisallowed(object sender, PageCrawlDisallowedArgs e)
         {
             PageToCrawl pageToCrawl = e.PageToCrawl;
-            Console.WriteLine("Did not crawl page {0} due to {1}", pageToCrawl.Uri.AbsoluteUri, e.DisallowedReason);
+            CrawlingLogs.Add(string.Format("Did not crawl page {0} due to {1}", pageToCrawl.Uri.AbsoluteUri, e.DisallowedReason));
+        }
+    }
+
+    enum OpenTradeInfoKeys
+    {
+        OpenTime,
+        OpenPrice,
+        Lots,
+        Type,
+        Pair,
+        Profit,
+        Pips,
+        Comment,
+    }
+
+    class OpenTradeInfo : BindableBase
+    {
+        private readonly Dictionary<OpenTradeInfoKeys, string> _infos;
+
+        public OpenTradeInfo(int id, string name, Dictionary<OpenTradeInfoKeys, string> infos)
+        {
+            SignalId = id;
+            SignalName = name;
+            _infos = infos;
+        }
+
+        public int SignalId { get; set; }
+
+        public string SignalName { get; set; }
+
+        public DateTime OpenTime
+        {
+            get { return DateTime.Parse(_infos[OpenTradeInfoKeys.OpenTime]); }
+        }
+
+        public double OpenPrice
+        {
+            get { return double.Parse(_infos[OpenTradeInfoKeys.OpenPrice]); }
+        }
+
+        public string Lots
+        {
+            get { return _infos[OpenTradeInfoKeys.Lots]; }
+        }
+
+        public string Type
+        {
+            get { return _infos[OpenTradeInfoKeys.Type]; }
+        }
+
+        public string Pair
+        {
+            get { return _infos[OpenTradeInfoKeys.Pair]; }
+        }
+
+        public double Profit
+        {
+            get { return double.Parse(_infos[OpenTradeInfoKeys.Profit]); }
+        }
+
+        public string Pips
+        {
+            get { return _infos[OpenTradeInfoKeys.Pips]; }
+        }
+
+        public string Comment
+        {
+            get { return _infos[OpenTradeInfoKeys.Comment]; }
         }
     }
 }

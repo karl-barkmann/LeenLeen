@@ -13,7 +13,7 @@ namespace Demo.Windows.ViewModel
 {
     class TingCrawlerWindowViewModel : ViewModelBase
     {
-        private ObservableCollection<SoundPlayerSourceViewModel> sources = new ObservableCollection<SoundPlayerSourceViewModel>();
+        private ObservableCollection<Windows.OpenTradeInfo> sources = new ObservableCollection<Windows.OpenTradeInfo>();
         private ObservableCollection<BookViewModel> books = new ObservableCollection<BookViewModel>();
         private readonly object lockObject = new object();
         private readonly object booksLockObject = new object();
@@ -33,7 +33,7 @@ namespace Demo.Windows.ViewModel
             cancellationTokenSource.Cancel();
         }
 
-        public ObservableCollection<SoundPlayerSourceViewModel> Sources
+        public ObservableCollection<Windows.OpenTradeInfo> Sources
         {
             get { return sources; }
             set
@@ -150,7 +150,7 @@ namespace Demo.Windows.ViewModel
 
                         lock (lockObject)
                         {
-                            Sources.Add(new SoundPlayerSourceViewModel(request));
+                            Sources.Add(new Windows.OpenTradeInfo(request));
                         }
                     }
                 }
