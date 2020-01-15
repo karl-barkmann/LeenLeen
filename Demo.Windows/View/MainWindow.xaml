@@ -101,5 +101,12 @@
                 VerticalAlignment="Top"
                 Command="{Binding ShowNgaCrawlerCommand}"
                 Content="爬虫2" />
+
+        <Button Width="75"
+                Margin="206,10,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Command="{Binding ShowSimpleTraderCrawlerCommand}"
+                Content="爬虫3" />
     </Grid>
 </Window>

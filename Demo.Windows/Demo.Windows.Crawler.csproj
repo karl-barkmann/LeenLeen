@@ -56,9 +56,13 @@
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="ViewModel\NgaCrawlerWindowViewModel.cs" />
+    <Compile Include="ViewModel\SimpleTraderCrawlerWindowViewModel.cs" />
     <Compile Include="ViewModel\TingCrawlerWindowViewModel.cs" />
     <Compile Include="View\NgaCrawlerWindow.xaml.cs">
       <DependentUpon>NgaCrawlerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\SimpleTraderCrawlerWindow.xaml.cs">
+      <DependentUpon>SimpleTraderCrawlerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TingCrawlerWindow.xaml.cs">
       <DependentUpon>TingCrawlerWindow.xaml</DependentUpon>
@@ -74,6 +78,10 @@
     <Compile Include="ViewModel\BookViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Page Include="View\NgaCrawlerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SimpleTraderCrawlerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -148,7 +156,7 @@
       <Version>1.2.3.1031</Version>
     </PackageReference>
     <PackageReference Include="CommonServiceLocator">
-      <Version>2.0.4</Version>
+      <Version>2.0.5</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
