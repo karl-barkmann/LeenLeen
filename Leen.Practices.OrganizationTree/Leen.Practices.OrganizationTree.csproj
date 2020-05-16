@@ -55,6 +55,7 @@
     <Compile Include="IOrganizationDataProvider.cs" />
     <Compile Include="IOrganizationTreeViewModel.cs" />
     <Compile Include="OrganizationTreeNode.cs" />
+    <Compile Include="PlaceholderNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TreeNodeDataTemplateSelector.cs" />
     <Compile Include="TreeNodeType.cs" />

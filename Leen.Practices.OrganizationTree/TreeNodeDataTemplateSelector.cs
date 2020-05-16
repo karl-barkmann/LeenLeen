@@ -1,13 +1,18 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace  Leen.Practices.OrganizationTree
+namespace Leen.Practices.OrganizationTree
 {
     /// <summary>
     /// 提供一种方式来根据树节点对象的具体类型和数据绑定元素选择树节点的数据模板。
     /// </summary>
     public class TreeNodeDataTemplateSelector : DataTemplateSelector
     {
+        /// <summary>
+        /// 获取或设置自定义节点数据模板。
+        /// </summary>
+        public DataTemplate DefaultTemplate { get; set; }
+
         /// <summary>
         /// 获取或设置组织结构节点数据模板。
         /// </summary>
@@ -29,6 +34,16 @@ namespace  Leen.Practices.OrganizationTree
         public DataTemplate CustomTemplate { get; set; }
 
         /// <summary>
+        /// 获取或设置自定义节点数据模板。
+        /// </summary>
+        public DataTemplate DomainTemplate { get; set; }
+
+        /// <summary>
+        /// 获取或设置自定义节点数据模板。
+        /// </summary>
+        public DataTemplate PlaceHolderTemplate { get; set; }
+
+        /// <summary>
         /// 在派生类中重写时，基于自定义逻辑返回 System.Windows.DataTemplate。
         /// </summary>
         /// <param name="item"> 要为其选择模板的数据对象。</param>
@@ -47,8 +62,14 @@ namespace  Leen.Practices.OrganizationTree
                         return DeviceCategoryTemplate;
                     case TreeNodeType.Organization:
                         return OrganizationTemplate;
+                    case TreeNodeType.Domain:
+                        return DomainTemplate;
                     case TreeNodeType.Custom:
                         return CustomTemplate;
+                    case TreeNodeType.PlaceHolder:
+                        return PlaceHolderTemplate;
+                    case TreeNodeType.None:
+                        return DefaultTemplate;
                 }
             }
 
