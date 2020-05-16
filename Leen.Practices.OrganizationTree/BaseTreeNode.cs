@@ -420,6 +420,50 @@ namespace Leen.Practices.OrganizationTree
         }
 
         /// <summary>
+        /// 替换该节点指定的子节点。
+        /// </summary>
+        /// <param name="oldChildNode">要替换的节点标识。</param>
+        /// <param name="newChildNode">要替换为的节点标识。</param>
+        public void ReplaceNode(BaseTreeNode oldChildNode, BaseTreeNode newChildNode)
+        {
+            if (oldChildNode == null)
+            {
+                throw new ArgumentNullException(nameof(oldChildNode));
+            }
+
+            if (newChildNode == null)
+            {
+                throw new ArgumentNullException(nameof(newChildNode));
+            }
+
+            if (string.IsNullOrEmpty(oldChildNode.NodeId) || string.IsNullOrEmpty(newChildNode.NodeId))
+            {
+                throw new ArgumentException("任意节点标识都不应为空", nameof(newChildNode));
+            }
+
+            if (oldChildNode.NodeId != newChildNode.NodeId)
+            {
+                throw new ArgumentException("节点标识应相同", nameof(newChildNode));
+            }
+
+            var index = Children.IndexOf(oldChildNode);
+            if (index < 0)
+            {
+                oldChildNode = GetNode(oldChildNode.NodeId);
+                if (oldChildNode != null)
+                    index = Children.IndexOf(oldChildNode);
+            }
+
+            if (index < 0)
+                return;
+
+            newChildNode.IsChecked = oldChildNode.IsChecked;
+            newChildNode.IsExpanded = oldChildNode.IsExpanded;
+            newChildNode.IsSelected = oldChildNode.IsSelected;
+            Children[index] = newChildNode;
+        }
+
+        /// <summary>
         /// 获取指定节点标识的子节点。
         /// </summary>
         /// <param name="nodeId">节点标识。</param>
