@@ -23,7 +23,7 @@ namespace Leen.Practices.OrganizationTree
         /// <summary>
         /// 一个占位节点，用于在父节点折叠时使其仍然显示展开符号。
         /// </summary>
-        internal static readonly DomainTreeNode Placeholder = new DomainTreeNode() { NodeName = "PlaceHolder" };
+        internal static readonly PlaceholderNode Placeholder = new PlaceholderNode();
         internal static readonly ObservableCollection<BaseTreeNode> PlaceHolderChildren = new ObservableCollection<BaseTreeNode>(new List<BaseTreeNode>(1) { Placeholder });
         private readonly static TaskCompletionSource<IEnumerable<BaseTreeNode>> s_TaskCompletionSource = 
             new TaskCompletionSource<IEnumerable<BaseTreeNode>>();

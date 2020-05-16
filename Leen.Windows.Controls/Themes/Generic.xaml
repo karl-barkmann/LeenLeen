@@ -103,6 +103,8 @@
 
     <Style TargetType="{x:Type local:ProgressRing}">
         <Setter Property="Background" Value="Black" />
+        <Setter Property="MinWidth" Value="75" />
+        <Setter Property="MinHeight" Value="75" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:ProgressRing}">
@@ -113,8 +115,8 @@
                                     Opacity="1"
                                     Orientation="Vertical">
                             <Viewbox x:Name="LoadProgressRing"
-                                     Width="75"
-                                     Height="75">
+                                     Width="{TemplateBinding MinWidth}"
+                                     Height="{TemplateBinding MinHeight}">
                                 <Canvas Width="50"
                                         Height="50"
                                         HorizontalAlignment="Left"
@@ -156,7 +158,8 @@
                                     </Path>
                                 </Canvas>
                             </Viewbox>
-                            <TextBlock Margin="0,5"
+                            <TextBlock x:Name="tbMessage"
+                                       Margin="0,5"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        Opacity="1"
@@ -256,6 +259,11 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="ActiveMessage" Value="">
+                            <Setter TargetName="tbMessage" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

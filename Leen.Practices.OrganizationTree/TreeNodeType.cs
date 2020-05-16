@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace  Leen.Practices.OrganizationTree
+namespace Leen.Practices.OrganizationTree
 {
     /// <summary>
     /// 组织机构和设备树节点的类型。
@@ -42,5 +42,11 @@ namespace  Leen.Practices.OrganizationTree
         /// </summary>
         [Description("自定义节点")]
         Custom = 0x1010,
+
+        /// <summary>
+        /// 占位节点，内部使用。
+        /// </summary>
+        [Description("占位节点")]
+        PlaceHolder = -1,
     }
 }

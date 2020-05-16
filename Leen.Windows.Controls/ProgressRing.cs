@@ -85,7 +85,6 @@ namespace Leen.Windows.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
             if (IsActive)
             {
                 VisualStateManager.GoToState(this, ActiveStateName, true);
