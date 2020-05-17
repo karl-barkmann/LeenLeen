@@ -52,7 +52,9 @@
     <Compile Include="Aspect.cs" />
     <Compile Include="AsyncResultImplemention.cs" />
     <Compile Include="ConcurrentGenericList.cs" />
+    <Compile Include="ICascadeDataEntity.cs" />
     <Compile Include="IDataEntity.cs" />
+    <Compile Include="INamedCascadeDataEntity.cs" />
     <Compile Include="INamedDataEntity.cs" />
     <Compile Include="OperationResult.cs" />
     <Compile Include="ServiceLocatorExtensions.cs" />
