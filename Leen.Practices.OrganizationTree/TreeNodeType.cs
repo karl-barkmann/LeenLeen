@@ -40,6 +40,9 @@ namespace Leen.Practices.OrganizationTree
         /// <summary>
         /// 任意自定义节点。
         /// </summary>
+        /// <remarks>
+        /// 该枚举值标记自定义节点类型的起点。
+        /// </remarks>
         [Description("自定义节点")]
         Custom = 0x1010,
 

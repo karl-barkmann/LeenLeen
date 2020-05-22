@@ -41,8 +41,8 @@ namespace Leen.Practices.OrganizationTree
         protected override async Task<IEnumerable<BaseTreeNode>> LoadChildrenAsync()
         {
             var children = new List<BaseTreeNode>();
-            var organizationDataService = ServiceLocator.Current.GetInstance<IOrganizationDataProvider>();
-            var organizations = await organizationDataService.GetOrganizations(NodeId);
+            var nodeDataProvier = ServiceLocator.Current.GetInstance<ITreeNodeDataProvider>();
+            var organizations = await nodeDataProvier.GetNodes(Entity);
             if (organizations != null)
             {
                 foreach (var organization in organizations)
@@ -52,23 +52,6 @@ namespace Leen.Practices.OrganizationTree
                         Checkable = Checkable,
                         Selectable = Selectable,
                         NodeName = organization.Name,
-                        IsChecked = IsChecked
-                    };
-                    children.Add(node);
-                }
-            }
-
-            var deviceDataService = ServiceLocator.Current.GetInstance<IDeviceDataProvider>();
-            var devices = await deviceDataService.GetDevices(NodeId);
-            if (devices != null)
-            {
-                foreach (var device in devices)
-                {
-                    var node = new DeviceTreeNode(device)
-                    {
-                        Checkable = Checkable,
-                        Selectable = Selectable,
-                        NodeName = device.Name,
                         IsChecked = IsChecked
                     };
                     children.Add(node);
