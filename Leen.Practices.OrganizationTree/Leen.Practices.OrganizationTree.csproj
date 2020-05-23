@@ -47,9 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseTreeNode.cs" />
-    <Compile Include="DeviceCategoryTreeNode.cs" />
-    <Compile Include="DeviceTreeNode.cs" />
-    <Compile Include="DomainTreeNode.cs" />
     <Compile Include="ITreeNodeDataProvider.cs" />
     <Compile Include="IOrganizationTreeViewModel.cs" />
     <Compile Include="OrganizationTreeNode.cs" />

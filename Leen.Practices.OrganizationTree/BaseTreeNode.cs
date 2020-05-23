@@ -27,7 +27,6 @@ namespace Leen.Practices.OrganizationTree
         internal static readonly ObservableCollection<BaseTreeNode> PlaceHolderChildren = new ObservableCollection<BaseTreeNode>(new List<BaseTreeNode>(1) { Placeholder });
         private readonly static TaskCompletionSource<IEnumerable<BaseTreeNode>> s_TaskCompletionSource = 
             new TaskCompletionSource<IEnumerable<BaseTreeNode>>();
-        private readonly bool _initializeWithPlaceholder;
 
         internal const byte IsCheckedMask = 0x01;
         internal const byte CheckableMask = 0x02;
@@ -35,11 +34,12 @@ namespace Leen.Practices.OrganizationTree
         internal const byte SelectableMask = 0x08;
         internal const byte IsExpandedMask = 0x10;
         internal const byte IsLoadingChilrenMask = 0x20;
+        internal const byte HasChildrenMask = 0x40;
+        internal const byte WithPlaceholderMask = 0x80;
 
         private byte _internalFlags = 0x00;
         private string _nodeName;
         private ObservableCollection<BaseTreeNode> _children;
-        private bool _hasChildren;
         private TreeNodeType _nodeType;
         private int _level;
         private int _childrenCount;
@@ -68,14 +68,18 @@ namespace Leen.Practices.OrganizationTree
 
         /// <summary>
         /// 构造<see cref="BaseTreeNode"/>的实例。
+        /// <paramref name="nodeId">节点唯一标识</paramref>。
+        /// <paramref name="nodeType">节点类型。</paramref>
+        /// <paramref name="withChildren">节点是否会包含子节点。</paramref>
         /// </summary>
-        protected BaseTreeNode(string nodeId, bool initializeWithPlaceholder)
+        protected BaseTreeNode(string nodeId, TreeNodeType nodeType, bool withChildren)
         {
             if (string.IsNullOrEmpty(nodeId))
                 throw new ArgumentException("节点标识不应为空", nameof(nodeId));
             NodeId = nodeId;
-            _initializeWithPlaceholder = initializeWithPlaceholder;
-            if (initializeWithPlaceholder)
+            NodeType = nodeType;
+            SetInternalFlag(withChildren, WithPlaceholderMask, null);
+            if (withChildren)
             {
                 Children = PlaceHolderChildren;
             }
@@ -84,7 +88,6 @@ namespace Leen.Practices.OrganizationTree
             //_expandAllCommand = new RelayCommand(async () => await InternalExpandAll(), CanExpand);
             //_collapseCommand = new RelayCommand(InternalCollapse, CanCollapse);
             //_collapseAllCommand = new RelayCommand(CollapseAll, CanCollapse);
-            _initializeWithPlaceholder = initializeWithPlaceholder;
         }
 
         #endregion
@@ -193,7 +196,7 @@ namespace Leen.Practices.OrganizationTree
                         ClearChildren();
                         //If there are no reserved children
                         //we should hold a placeholder to enable node toggling
-                        if ((Children == null || Children.Count < 1) && _initializeWithPlaceholder)
+                        if ((Children == null || Children.Count < 1) && GetInternalFlag(WithPlaceholderMask))
                         {
                             Children = PlaceHolderChildren;
                         }
@@ -270,7 +273,7 @@ namespace Leen.Practices.OrganizationTree
         public TreeNodeType NodeType
         {
             get { return _nodeType; }
-            protected set
+            private set
             {
                 SetProperty(ref _nodeType, value, nameof(NodeType));
             }
@@ -335,10 +338,10 @@ namespace Leen.Practices.OrganizationTree
         /// </summary>
         public bool HasChildren
         {
-            get { return _hasChildren; }
+            get { return GetInternalFlag(HasChildrenMask); }
             private set
             {
-                SetProperty(ref _hasChildren, value, () => HasChildren);
+                SetInternalFlag(value, HasChildrenMask);
             }
         }
 
@@ -809,7 +812,7 @@ namespace Leen.Practices.OrganizationTree
             if (CanExpand())
             {
                 await PopulateChildren();
-                SetInternalFlag(true, IsExpandedMask, "IsExpanded");
+                SetInternalFlag(true, IsExpandedMask, nameof(IsExpanded));
 
                 IsLoadingChildren = true;
 
@@ -950,7 +953,8 @@ namespace Leen.Practices.OrganizationTree
                 _internalFlags ^= mask;
             }
 
-            RaisePropertyChanged(propertyName);
+            if (propertyName != null)
+                RaisePropertyChanged(propertyName);
 
             return true;
         }
