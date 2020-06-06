@@ -20,7 +20,7 @@ namespace Leen.Practices.Mvvm
     /// </remarks>
     /// </summary>
     [Serializable]
-    public class ViewModelBase : BindableBase
+    public class ViewModelBase : ValidationBase
     {
         private bool editing;
         private bool _isBusy;

@@ -11,7 +11,7 @@ namespace Leen.Practices.Mvvm
     /// <summary>
     /// Implementation of <see cref="INotifyDataErrorInfo"/> to simplify models.
     /// </summary>
-    public class ValidationBase : INotifyDataErrorInfo
+    public class ValidationBase : BindableBase, INotifyDataErrorInfo
     {
         private readonly Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
         private readonly object _lock = new object();

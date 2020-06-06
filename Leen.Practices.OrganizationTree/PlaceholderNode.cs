@@ -2,13 +2,15 @@
 {
     internal class PlaceholderNode : BaseTreeNode
     {
-        public PlaceholderNode() : base("-1", TreeNodeType.PlaceHolder, true)
+        public PlaceholderNode() : this("-1")
         {
-            NodeName = "加载中...";
         }
 
-        public PlaceholderNode(string nodeId, bool initializeWithPlaceholder) : base(nodeId, TreeNodeType.PlaceHolder, initializeWithPlaceholder)
+        public PlaceholderNode(string nodeId) : base(nodeId, TreeNodeType.PlaceHolder)
         {
+            Selectable = false;
+            Checkable = false;
+            Expandable = false;
             NodeName = "加载中...";
         }
     }

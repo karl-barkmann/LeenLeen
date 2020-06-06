@@ -46,9 +46,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AllEnabledNodeBehavior.cs" />
     <Compile Include="BaseTreeNode.cs" />
     <Compile Include="ITreeNodeDataProvider.cs" />
     <Compile Include="IOrganizationTreeViewModel.cs" />
+    <Compile Include="ITreeNodeBehavior.cs" />
     <Compile Include="OrganizationTreeNode.cs" />
     <Compile Include="PlaceholderNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

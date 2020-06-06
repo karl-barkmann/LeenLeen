@@ -20,6 +20,7 @@ namespace Leen.Practices.OrganizationTree
     {
         #region fields
 
+        private static readonly AllEnabledNodeBehavior DefaultBehavior = new AllEnabledNodeBehavior();
         /// <summary>
         /// 一个占位节点，用于在父节点折叠时使其仍然显示展开符号。
         /// </summary>
@@ -29,15 +30,18 @@ namespace Leen.Practices.OrganizationTree
             new TaskCompletionSource<IEnumerable<BaseTreeNode>>();
 
         internal const byte IsCheckedMask = 0x01;
-        internal const byte CheckableMask = 0x02;
-        internal const byte IsSelectedMask = 0x04;
-        internal const byte SelectableMask = 0x08;
-        internal const byte IsExpandedMask = 0x10;
-        internal const byte IsLoadingChilrenMask = 0x20;
-        internal const byte HasChildrenMask = 0x40;
-        internal const byte WithPlaceholderMask = 0x80;
+        internal const byte IsSelectedMask = 0x02;
+        internal const byte IsExpandedMask = 0x04;
+        internal const byte IsLoadingChildrenMask = 0x08;
+        internal const byte HasChildrenMask = 0x10;
 
-        private byte _internalFlags = 0x00;
+        internal const byte SelectableMask = 0x01;
+        internal const byte CheckableMask = 0x02;
+        internal const byte ExpandableMask = 0x04;
+        internal const byte EnabledMask = 0x08;
+
+        private byte _internalStateFlags = 0x00;
+        private byte _internalBehaviorFlags = 0x00;
         private string _nodeName;
         private ObservableCollection<BaseTreeNode> _children;
         private TreeNodeType _nodeType;
@@ -70,19 +74,15 @@ namespace Leen.Practices.OrganizationTree
         /// 构造<see cref="BaseTreeNode"/>的实例。
         /// <paramref name="nodeId">节点唯一标识</paramref>。
         /// <paramref name="nodeType">节点类型。</paramref>
-        /// <paramref name="withChildren">节点是否会包含子节点。</paramref>
         /// </summary>
-        protected BaseTreeNode(string nodeId, TreeNodeType nodeType, bool withChildren)
+        protected BaseTreeNode(string nodeId, TreeNodeType nodeType)
         {
             if (string.IsNullOrEmpty(nodeId))
                 throw new ArgumentException("节点标识不应为空", nameof(nodeId));
             NodeId = nodeId;
             NodeType = nodeType;
-            SetInternalFlag(withChildren, WithPlaceholderMask, null);
-            if (withChildren)
-            {
-                Children = PlaceHolderChildren;
-            }
+            Behavior = DefaultBehavior;
+            Behave();
             //_toggleCommand = new RelayCommand(Toggle, CanToggle);
             //_expandCommand = new RelayCommand(InternalExpand, CanExpand);
             //_expandAllCommand = new RelayCommand(async () => await InternalExpandAll(), CanExpand);
@@ -93,6 +93,11 @@ namespace Leen.Practices.OrganizationTree
         #endregion
 
         #region properties
+
+        /// <summary>
+        /// 获取树节点行为描述接口。
+        /// </summary>
+        public ITreeNodeBehavior Behavior { get; private set; }
 
         /// <summary>
         /// 提供切换该节点的展开/收起的命令。
@@ -176,14 +181,54 @@ namespace Leen.Practices.OrganizationTree
         }
 
         /// <summary>
+        /// 获取或设置一个值，指示该节点是否启用。
+        /// </summary>
+        public bool IsEnabled
+        {
+            get { return GetInternalBehaviorFlag(EnabledMask); }
+            set
+            {
+                SetInternalBehaviorFlag(value, EnabledMask);
+            }
+        }
+
+        /// <summary>
+        /// 获取或设置一个值，指示该节点是否支持展开。
+        /// </summary>
+        public bool Expandable
+        {
+            get { return GetInternalBehaviorFlag(ExpandableMask); }
+            set
+            {
+                if (SetInternalBehaviorFlag(value, ExpandableMask))
+                {
+                    if (value)
+                    {
+                        //If there are no reserved children
+                        //we should hold a placeholder to enable node toggling
+                        if (Children == null || Children.Count < 1)
+                            Children = PlaceHolderChildren;
+                    }
+                    else
+                    {
+                        if (Children == PlaceHolderChildren)
+                            Children = null;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// 获取或设置一个值，指示该节点是否已展开。
         /// </summary>
         public bool IsExpanded
         {
-            get { return GetInternalFlag(IsExpandedMask); }
+            get { return GetInternalStateFlag(IsExpandedMask); }
             set
             {
-                if (SetInternalFlag(value, IsExpandedMask))
+                if (!IsEnabled || !Expandable)
+                    return;
+                if (SetInternalStateFlag(value, IsExpandedMask))
                 {
                     if (value)
                     {
@@ -196,7 +241,7 @@ namespace Leen.Practices.OrganizationTree
                         ClearChildren();
                         //If there are no reserved children
                         //we should hold a placeholder to enable node toggling
-                        if ((Children == null || Children.Count < 1) && GetInternalFlag(WithPlaceholderMask))
+                        if ((Children == null || Children.Count < 1) && GetInternalBehaviorFlag(ExpandableMask))
                         {
                             Children = PlaceHolderChildren;
                         }
@@ -210,10 +255,10 @@ namespace Leen.Practices.OrganizationTree
         /// </summary>
         public bool Selectable
         {
-            get { return GetInternalFlag(SelectableMask); }
+            get { return GetInternalBehaviorFlag(SelectableMask); }
             set
             {
-                SetInternalFlag(value, SelectableMask);
+                SetInternalBehaviorFlag(value, SelectableMask);
             }
         }
 
@@ -222,10 +267,10 @@ namespace Leen.Practices.OrganizationTree
         /// </summary>
         public bool Checkable
         {
-            get { return GetInternalFlag(CheckableMask); }
+            get { return GetInternalBehaviorFlag(CheckableMask); }
             set
             {
-                SetInternalFlag(value, CheckableMask);
+                SetInternalBehaviorFlag(value, CheckableMask);
             }
         }
 
@@ -234,10 +279,12 @@ namespace Leen.Practices.OrganizationTree
         /// </summary>
         public bool IsSelected
         {
-            get { return GetInternalFlag(IsSelectedMask); }
+            get { return GetInternalStateFlag(IsSelectedMask); }
             set
             {
-                SetInternalFlag(value, IsSelectedMask);
+                if (!IsEnabled || !Selectable)
+                    return;
+                SetInternalStateFlag(value, IsSelectedMask);
             }
         }
 
@@ -246,16 +293,18 @@ namespace Leen.Practices.OrganizationTree
         /// </summary>
         public bool? IsChecked
         {
-            get { return GetInternalFlag(IsCheckedMask); }
+            get { return GetInternalStateFlag(IsCheckedMask); }
             set
             {
-                if (SetInternalFlag(value, IsCheckedMask))
+                if (!IsEnabled || !Checkable)
+                    return;
+                if (SetInternalStateFlag(value, IsCheckedMask))
                 {
-                    if (Children != null)
+                    if (Children != null && Behavior.CanCheckedBeInherited)
                     {
                         for (int i = 0; i < Children.Count; i++)
                         {
-                            _children[i].IsChecked = value;
+                            Children[i].IsChecked = value;
                         }
                     }
                 }
@@ -296,10 +345,10 @@ namespace Leen.Practices.OrganizationTree
         /// </summary>
         public bool IsLoadingChildren
         {
-            get { return GetInternalFlag(IsLoadingChilrenMask); }
+            get { return GetInternalStateFlag(IsLoadingChildrenMask); }
             private set
             {
-                SetInternalFlag(value, IsLoadingChilrenMask);
+                SetInternalStateFlag(value, IsLoadingChildrenMask);
             }
         }
 
@@ -315,20 +364,20 @@ namespace Leen.Practices.OrganizationTree
             {
                 if (value != null)
                 {
-                    value.CollectionChanged -= Value_CollectionChanged;
+                    value.CollectionChanged -= OnChildrenCollectionChanged;
                 }
                 if (SetProperty(ref _children, value, nameof(Children)))
                 {
                     if (value != null)
                     {
-                        value.CollectionChanged += Value_CollectionChanged;
+                        value.CollectionChanged += OnChildrenCollectionChanged;
                     }
                     HasChildren = value != null && value.Count > 0;
                 }
             }
         }
 
-        private void Value_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void OnChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             HasChildren = Children != null && Children.Count > 0;
         }
@@ -338,16 +387,52 @@ namespace Leen.Practices.OrganizationTree
         /// </summary>
         public bool HasChildren
         {
-            get { return GetInternalFlag(HasChildrenMask); }
+            get { return GetInternalStateFlag(HasChildrenMask); }
             private set
             {
-                SetInternalFlag(value, HasChildrenMask);
+                SetInternalStateFlag(value, HasChildrenMask);
             }
         }
 
         #endregion
 
         #region public methods
+
+        /// <summary>
+        /// 设置树节点行为。
+        /// </summary>
+        /// <remarks>设置新行为时，将自动应用到当前节点。</remarks>
+        /// <param name="loadingBehavior">行为接口。</param>
+        public void SetBehavior(ITreeNodeBehavior loadingBehavior)
+        {
+            Behavior = loadingBehavior ?? throw new ArgumentNullException(nameof(loadingBehavior));
+            Behave();
+        }
+
+        /// <summary>
+        /// 使用已配置的 <see cref="ITreeNodeBehavior"/> 设置当前节点的行为。
+        /// </summary>
+        public void Behave()
+        {
+            Behave(this);
+        }
+
+        /// <summary>
+        /// 使用已配置的 <see cref="ITreeNodeBehavior"/> 设置节点的行为。
+        /// </summary>
+        /// <param name="node">指定的节点。</param>
+        public void Behave(BaseTreeNode node)
+        {
+            if (node is null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
+
+            node.Selectable = Behavior.CanNodeSelectable(node);
+            node.Checkable = Behavior.CanNodeCheckable(node);
+            node.IsEnabled = Behavior.IsNodeEnabled(node);
+            node.Expandable = Behavior.CanNodeExpandable(node);
+        }
 
         /// <summary>
         /// 获取已选中的子节点。
@@ -460,9 +545,7 @@ namespace Leen.Practices.OrganizationTree
             if (index < 0)
                 return;
 
-            newChildNode.IsChecked = oldChildNode.IsChecked;
-            newChildNode.IsExpanded = oldChildNode.IsExpanded;
-            newChildNode.IsSelected = oldChildNode.IsSelected;
+            newChildNode.SetBehavior(oldChildNode.Behavior);
             Children[index] = newChildNode;
         }
 
@@ -561,7 +644,7 @@ namespace Leen.Practices.OrganizationTree
         /// <returns></returns>
         public bool Equals(BaseTreeNode x, BaseTreeNode y)
         {
-            if (object.ReferenceEquals(x, y))
+            if (ReferenceEquals(x, y))
                 return true;
 
             if ((x == null && y != null) || (x != null && y == null))
@@ -726,7 +809,7 @@ namespace Leen.Practices.OrganizationTree
             if (ReferenceEquals(x, y))
                 return false;
 
-            if (ReferenceEquals(x, null))
+            if (x == null)
                 return true;
 
             return !x.Equals(y);
@@ -812,7 +895,8 @@ namespace Leen.Practices.OrganizationTree
             if (CanExpand())
             {
                 await PopulateChildren();
-                SetInternalFlag(true, IsExpandedMask, nameof(IsExpanded));
+                //仅更改属性并通知，因为上一步我们已经将子节点展开。
+                SetInternalStateFlag(true, IsExpandedMask, nameof(IsExpanded));
 
                 IsLoadingChildren = true;
 
@@ -876,27 +960,24 @@ namespace Leen.Practices.OrganizationTree
                     }
                     foreach (var child in children)
                     {
+                        if (Behavior.CanBehaviorBeInherited)
+                            child.SetBehavior(Behavior);
                         if (!Children.Contains(child))
                         {
-                            //child.PropertyChanged += child_PropertyChanged;
                             child.Level = Level + 1;
                             _children.Add(child);
-                            if (child.Checkable && IsChecked.HasValue && IsChecked.Value)
+                            if (child.Checkable && Behavior.CanCheckedBeInherited && IsChecked.HasValue && IsChecked.Value)
                             {
                                 child.IsChecked = true;
                             }
                         }
-                        else
-                        {
-                            //force to select previrous selected child node
-                            //TreeViewItem will lost selection when parent TreeViewItem collapsed
-                            var reserverdNode = Children.First(c => c == child);
-                            reserverdNode.IsSelected = true;
-                            if (reserverdNode.Checkable && IsChecked.HasValue && IsChecked.Value)
-                            {
-                                reserverdNode.IsChecked = true;
-                            }
-                        }
+                    }
+
+                    if (Behavior.SelectFirstChildOnExpanded && Children.Any(x => x.IsSelected))
+                    {
+                        var first = Children.First();
+                        if (first.Selectable && first.IsEnabled)
+                            first.IsSelected = true;
                     }
                 }
                 else
@@ -911,12 +992,14 @@ namespace Leen.Practices.OrganizationTree
         {
             if (Children != null)
             {
+                Children.CollectionChanged -= OnChildrenCollectionChanged;
                 for (int i = 0; i < Children.Count; i++)
                 {
                     if (_children[i] == Placeholder)
                         continue;
                     _children[i].IsExpanded = false;
 
+                    //已选中或勾选的设备将会被保留
                     if (!_children[i].IsSelected && _children[i].IsChecked.HasValue && !_children[i].IsChecked.Value)
                     {
                         ClearChild(_children[i]);
@@ -932,25 +1015,52 @@ namespace Leen.Practices.OrganizationTree
             _children.Remove(child);
         }
 
-        private bool GetInternalFlag(byte mask)
+        private bool GetInternalBehaviorFlag(byte mask)
         {
-            return (_internalFlags & mask) == mask;
+            return (_internalBehaviorFlags & mask) == mask;
         }
 
-        private bool SetInternalFlag(bool? value, byte mask, [CallerMemberName]string propertyName = null)
+        private bool SetInternalBehaviorFlag(bool? value, byte mask, [CallerMemberName]string propertyName = null)
         {
-            if (GetInternalFlag(mask) == value)
+            if (GetInternalBehaviorFlag(mask) == value)
             {
                 return false;
             }
 
             if (value.HasValue && value.Value)
             {
-                _internalFlags |= mask;
+                _internalBehaviorFlags |= mask;
             }
             else
             {
-                _internalFlags ^= mask;
+                _internalBehaviorFlags ^= mask;
+            }
+
+            if (propertyName != null)
+                RaisePropertyChanged(propertyName);
+
+            return true;
+        }
+
+        private bool GetInternalStateFlag(byte mask)
+        {
+            return (_internalStateFlags & mask) == mask;
+        }
+
+        private bool SetInternalStateFlag(bool? value, byte mask, [CallerMemberName]string propertyName = null)
+        {
+            if (GetInternalStateFlag(mask) == value)
+            {
+                return false;
+            }
+
+            if (value.HasValue && value.Value)
+            {
+                _internalStateFlags |= mask;
+            }
+            else
+            {
+                _internalStateFlags ^= mask;
             }
 
             if (propertyName != null)

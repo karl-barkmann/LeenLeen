@@ -11,7 +11,7 @@ namespace Leen.Practices.Mvvm
     /// Implementation of <see cref="INotifyPropertyChanged"/> and <see cref="INotifyPropertyChanging"/> to simplify models.
     /// </summary>
     [Serializable]
-    public class BindableBase : ValidationBase, INotifyPropertyChanged, INotifyPropertyChanging
+    public class BindableBase : INotifyPropertyChanged, INotifyPropertyChanging
     {
         /// <summary>
         /// 构造BindableBase的实例。

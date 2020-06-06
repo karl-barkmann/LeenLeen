@@ -15,8 +15,7 @@ namespace Leen.Practices.OrganizationTree
         /// 构造<see cref="OrganizationTreeNode"/>的实例。
         /// </summary>
         /// <param name="organizationId">机构节点标识。</param>
-        /// <param name="withChildren">节点是否会包含子节点。</param>
-        public OrganizationTreeNode(string organizationId, bool withChildren) : base(organizationId, TreeNodeType.Organization, withChildren)
+        public OrganizationTreeNode(string organizationId) : base(organizationId, TreeNodeType.Organization)
         {
         }
 
@@ -24,8 +23,7 @@ namespace Leen.Practices.OrganizationTree
         /// 构造<see cref="OrganizationTreeNode"/>的实例。
         /// </summary>
         /// <param name="entity">此组织结构节点对应的组织机构实体。</param>
-        /// <param name="withChildren">节点是否会包含子节点。</param>
-        public OrganizationTreeNode(INamedDataEntity entity, bool withChildren) : this(entity.Id, withChildren)
+        public OrganizationTreeNode(INamedDataEntity entity) : this(entity.Id)
         {
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
             NodeName = entity.Name;
@@ -49,12 +47,7 @@ namespace Leen.Practices.OrganizationTree
             {
                 foreach (var nodeData in nodeDatas)
                 {
-                    var node = new OrganizationTreeNode(nodeData, true)
-                    {
-                        Checkable = Checkable,
-                        Selectable = Selectable,
-                        IsChecked = IsChecked
-                    };
+                    var node = new OrganizationTreeNode(nodeData);
                     children.Add(node);
                 }
             }
