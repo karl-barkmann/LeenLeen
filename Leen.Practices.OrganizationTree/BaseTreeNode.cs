@@ -220,7 +220,11 @@ namespace Leen.Practices.OrganizationTree
 
         /// <summary>
         /// 获取或设置一个值，指示该节点是否已展开。
+        /// <para>
+        /// 此属性仅用于界面绑定，如需从代码中展开节点应调用<see cref="ExpandAsync"/>。
+        /// </para>
         /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public bool IsExpanded
         {
             get { return GetInternalStateFlag(IsExpandedMask); }
@@ -232,9 +236,7 @@ namespace Leen.Practices.OrganizationTree
                 {
                     if (value)
                     {
-#pragma warning disable 4014
-                        PopulateChildren();
-#pragma warning restore 4014
+                        _ = PopulateChildren();
                     }
                     else
                     {
@@ -564,8 +566,13 @@ namespace Leen.Practices.OrganizationTree
         /// </summary>
         /// <param name="nodeId">节点标识</param>
         /// <returns></returns>
-        public virtual BaseTreeNode GetNodeRecursive(string nodeId)
+        public async virtual Task<BaseTreeNode> GetNodeRecursiveAsync(string nodeId)
         {
+            if (!IsExpanded && Expandable)
+            {
+                await InternalExpandAsync();
+            }
+
             var node = GetNode(nodeId);
             if (node != null)
                 return node;
@@ -574,9 +581,60 @@ namespace Leen.Practices.OrganizationTree
             {
                 foreach (var child in Children)
                 {
-                    node = child.GetNodeRecursive(nodeId);
+                    node = await child.GetNodeRecursiveAsync(nodeId);
                     if (node != null)
                         return node;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 查找符合条件的第一个子节点。
+        /// </summary>
+        /// <param name="predicate">判断节点是否符合条件的方法。</param>
+        /// <returns></returns>
+        public virtual BaseTreeNode FindNode(Predicate<BaseTreeNode> predicate)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            return Children?.FirstOrDefault(x => predicate(x));
+        }
+
+        /// <summary>
+        /// 递归的查找符合条件的第一个子节点。
+        /// </summary>
+        /// <param name="predicate">判断节点是否符合条件的方法。</param>
+        /// <returns></returns>
+        public async virtual Task<BaseTreeNode> FindNodeRecursiveAsync(Predicate<BaseTreeNode> predicate)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (!IsExpanded && Expandable)
+            {
+                await InternalExpandAsync();
+            }
+
+            var node = FindNode(predicate);
+            if (node != null)
+                return node;
+
+            if (Children != null && Children.Any())
+            {
+                foreach (var child in Children)
+                {
+                    if (predicate(child))
+                        return child;
+                    var result = await child.FindNodeRecursiveAsync(predicate);
+                    if (result != null)
+                        return result;
                 }
             }
 
@@ -821,7 +879,10 @@ namespace Leen.Practices.OrganizationTree
         /// <returns></returns>
         public bool CanToggle()
         {
-            return !IsLoadingChildren;
+            if (IsExpanded)
+                return CanCollapse();
+            else
+                return CanExpand();
         }
 
         /// <summary>
@@ -839,7 +900,7 @@ namespace Leen.Practices.OrganizationTree
         /// <returns></returns>
         public bool CanExpand()
         {
-            return !IsExpanded && !IsLoadingChildren;
+            return !IsExpanded && !IsLoadingChildren && Expandable;
         }
 
         /// <summary>
@@ -856,23 +917,28 @@ namespace Leen.Practices.OrganizationTree
         /// <summary>
         /// 展开该节点。
         /// </summary>
-        public void Expand()
+        public async Task ExpandAsync()
         {
             if (CanExpand())
             {
-                InternalExpand();
+                await InternalExpandAsync();
             }
         }
 
         /// <summary>
         /// 切换节点展开或收拢。
         /// </summary>
-        public void Toggle()
+        public async Task ToggleAsync()
         {
-            if (CanToggle())
+            if (!CanToggle())
             {
-                IsExpanded = !IsExpanded;
+                return;
             }
+
+            if (IsExpanded)
+                Collapse();
+            else
+                await ExpandAsync();
         }
 
         /// <summary>
@@ -882,7 +948,7 @@ namespace Leen.Practices.OrganizationTree
         {
             if (CanCollapse())
             {
-                IsExpanded = false;
+                InternalCollapse();
             }
         }
 
@@ -890,25 +956,11 @@ namespace Leen.Practices.OrganizationTree
         /// 展开当前及全部递归子节点。
         /// </summary>
         /// <returns></returns>
-        public async Task ExpandAll()
+        public async Task ExpandAllAsync()
         {
             if (CanExpand())
             {
-                await PopulateChildren();
-                //仅更改属性并通知，因为上一步我们已经将子节点展开。
-                SetInternalStateFlag(true, IsExpandedMask, nameof(IsExpanded));
-
-                IsLoadingChildren = true;
-
-                if (Children != null)
-                {
-                    for (int i = 0; i < Children.Count; i++)
-                    {
-                        await _children[i].ExpandAll();
-                    }
-                }
-
-                IsLoadingChildren = false;
+                await InternalExpandAllAsync();
             }
         }
 
@@ -931,61 +983,72 @@ namespace Leen.Practices.OrganizationTree
             IsExpanded = false;
         }
 
-        private void InternalExpand()
+        private async Task InternalExpandAsync()
         {
-            IsExpanded = true;
+            await PopulateChildren();
+            //仅更改属性并通知，因为上一步我们已经将子节点展开。
+            SetInternalStateFlag(true, IsExpandedMask, nameof(IsExpanded));
         }
 
-        private async Task InternalExpandAll()
+        private async Task InternalExpandAllAsync()
         {
-            await ExpandAll();
+            await InternalExpandAsync();
+
+            IsLoadingChildren = true;
+
+            if (Children != null)
+            {
+                for (int i = 0; i < Children.Count; i++)
+                {
+                    await _children[i].ExpandAllAsync();
+                }
+            }
+
+            IsLoadingChildren = false;
         }
 
         private async Task PopulateChildren()
         {
             IsLoadingChildren = true;
-            await LoadChildrenAsync().ContinueWith((t) =>
+            IEnumerable<BaseTreeNode> children = await LoadChildrenAsync().ConfigureAwait(false);
+            if (children != null && children.Any())
             {
-                IEnumerable<BaseTreeNode> children = t.Result;
-
-                if (children != null && children.Any())
+                ChildrenCount = children.Count();
+                if (Children == PlaceHolderChildren)
                 {
-                    ChildrenCount = children.Count();
-                    if (Children == PlaceHolderChildren)
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        Application.Current.Dispatcher.Invoke(() => { 
-                            //initialize an asynchronous observable collection which allow cross-thread accessing
-                            Children = new AsyncObservableCollection<BaseTreeNode>();
-                        });
-                    }
-                    foreach (var child in children)
+                        //initialize an asynchronous observable collection which allow cross-thread accessing
+                        Children = new AsyncObservableCollection<BaseTreeNode>();
+                    });
+                }
+                foreach (var child in children)
+                {
+                    if (Behavior.CanBehaviorBeInherited)
+                        child.SetBehavior(Behavior);
+                    if (!Children.Contains(child))
                     {
-                        if (Behavior.CanBehaviorBeInherited)
-                            child.SetBehavior(Behavior);
-                        if (!Children.Contains(child))
+                        child.Level = Level + 1;
+                        _children.Add(child);
+                        if (child.Checkable && Behavior.CanCheckedBeInherited && IsChecked.HasValue && IsChecked.Value)
                         {
-                            child.Level = Level + 1;
-                            _children.Add(child);
-                            if (child.Checkable && Behavior.CanCheckedBeInherited && IsChecked.HasValue && IsChecked.Value)
-                            {
-                                child.IsChecked = true;
-                            }
+                            child.IsChecked = true;
                         }
                     }
+                }
 
-                    if (Behavior.SelectFirstChildOnExpanded && Children.Any(x => x.IsSelected))
-                    {
-                        var first = Children.First();
-                        if (first.Selectable && first.IsEnabled)
-                            first.IsSelected = true;
-                    }
-                }
-                else
+                if (Behavior.SelectFirstChildOnExpanded && Children.Any(x => x.IsSelected))
                 {
-                    Children = null;
+                    var first = Children.First();
+                    if (first.Selectable && first.IsEnabled)
+                        first.IsSelected = true;
                 }
-                IsLoadingChildren = false;
-            }).ConfigureAwait(false);
+            }
+            else
+            {
+                Children = null;
+            }
+            IsLoadingChildren = false;
         }
 
         private void ClearChildren()

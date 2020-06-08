@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Leen.Practices.OrganizationTree
 {
@@ -29,13 +30,13 @@ namespace Leen.Practices.OrganizationTree
         /// </summary>
         /// <param name="nodeId">树节点Id。</param>
         /// <returns></returns>
-        BaseTreeNode FindNode(string nodeId);
+        Task<BaseTreeNode> FindNodeAsync(string nodeId);
 
         /// <summary>
         /// 获取指定Id的组织机构树节点。
         /// </summary>
         /// <param name="organizationId">组织机构Id。</param>
         /// <returns></returns>
-        OrganizationTreeNode FindOrganizationNode(string organizationId);
+        Task<OrganizationTreeNode> FindOrganizationNodeAsync(string organizationId);
     }
 }
