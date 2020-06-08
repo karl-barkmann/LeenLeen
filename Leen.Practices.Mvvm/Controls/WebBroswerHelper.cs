@@ -3,7 +3,7 @@
     /// <summary>
     /// 使 <see cref="WebBrowser"/> 支持在Xaml markUp中的Binding，以便通过MVVM方式进行导航。
     /// </summary>
-    public class WebBroswerHelper
+    public static class WebBroswerHelper
     {
         /// <summary>
         /// 获取当前导航路径。
@@ -59,8 +59,7 @@
 
         private static void NavigateUriPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            WebBrowser browser = d as WebBrowser;
-            if (browser != null && !GetIsDisposed(d))
+            if (d is WebBrowser browser && !GetIsDisposed(d))
             {
                 try
                 {

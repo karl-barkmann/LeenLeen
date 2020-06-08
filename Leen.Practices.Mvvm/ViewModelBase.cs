@@ -26,6 +26,7 @@ namespace Leen.Practices.Mvvm
         private bool _isBusy;
         private string _busyMessage;
         private bool anyPropertyChanged;
+        private bool _hasInitialized;
         private readonly static TaskCompletionSource<bool> s_TaskCompletionSource = new TaskCompletionSource<bool>();
 
         static ViewModelBase()
@@ -159,6 +160,18 @@ namespace Leen.Practices.Mvvm
             set
             {
                 SetProperty(ref _busyMessage, value, () => BusyMessage);
+            }
+        }
+
+        /// <summary>
+        /// 获取一个值指示该模型是否已成功初始化。
+        /// </summary>
+        public bool HasInitialized
+        {
+            get { return _hasInitialized; }
+            internal set
+            {
+                SetProperty(ref _hasInitialized, value, () => HasInitialized);
             }
         }
 

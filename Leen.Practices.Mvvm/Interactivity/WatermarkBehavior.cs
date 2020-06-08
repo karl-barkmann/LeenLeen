@@ -6,7 +6,7 @@ using System.Windows.Media;
 namespace System.Windows.Interactivity
 {
     /// <summary>
-    /// 实现一种使 <see cref="TextBox"/> 控件支持水印文字显示的行为。
+    /// 实现一种使控件支持水印文字显示的行为。
     /// </summary>
     public class WatermarkBehavior : Behavior<Control>
     {
@@ -418,7 +418,7 @@ namespace System.Windows.Interactivity
             }
         }
 
-        private WatermarkAdorner CreateProperAdorner()
+        protected virtual WatermarkAdorner CreateProperAdorner()
         {
             WatermarkAdorner adorner;
             switch (AssociatedObject)
@@ -447,28 +447,28 @@ namespace System.Windows.Interactivity
         }
     }
 
-    class WatermarkAdorner : Adorner 
+    public class WatermarkAdorner : Adorner 
     {
-        public WatermarkAdorner(Control target, string watermark)
+        internal WatermarkAdorner(Control target, string watermark)
             : base(target)
         {
             IsHitTestVisible = false;
             Watermark = watermark;
         }
 
-        public double FontSize { get; set; }
+        internal double FontSize { get; set; }
 
-        public Brush Foreground { get; set; }
+        internal Brush Foreground { get; set; }
 
-        public FontFamily FontFamily { get; set; }
+        internal FontFamily FontFamily { get; set; }
 
-        public FontWeight FontWeight { get; set; }
+        internal FontWeight FontWeight { get; set; }
 
-        public FontStretch FontStretch { get; set; }
+        internal FontStretch FontStretch { get; set; }
 
-        public FontStyle FontStyle { get; set; }
+        internal FontStyle FontStyle { get; set; }
 
-        public string Watermark { get; }
+        internal string Watermark { get; }
 
         public virtual new Control AdornedElement
         {
