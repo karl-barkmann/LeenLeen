@@ -24,21 +24,6 @@ namespace Leen.Practices.OrganizationTree
         public DataTemplate DeviceTemplate { get; set; }
 
         /// <summary>
-        /// 获取或设置设备分类节点数据模板。
-        /// </summary>
-        public DataTemplate DeviceCategoryTemplate { get; set; }
-
-        /// <summary>
-        /// 获取或设置自定义节点数据模板。
-        /// </summary>
-        public DataTemplate CustomTemplate { get; set; }
-
-        /// <summary>
-        /// 获取或设置自定义节点数据模板。
-        /// </summary>
-        public DataTemplate DomainTemplate { get; set; }
-
-        /// <summary>
         /// 获取或设置自定义节点数据模板。
         /// </summary>
         public DataTemplate PlaceHolderTemplate { get; set; }
@@ -58,17 +43,11 @@ namespace Leen.Practices.OrganizationTree
                 {
                     case TreeNodeType.Device:
                         return DeviceTemplate;
-                    case TreeNodeType.DeviceCategory:
-                        return DeviceCategoryTemplate;
                     case TreeNodeType.Organization:
                         return OrganizationTemplate;
-                    case TreeNodeType.Domain:
-                        return DomainTemplate;
-                    case TreeNodeType.Custom:
-                        return CustomTemplate;
                     case TreeNodeType.PlaceHolder:
                         return PlaceHolderTemplate;
-                    case TreeNodeType.None:
+                    default:
                         return DefaultTemplate;
                 }
             }

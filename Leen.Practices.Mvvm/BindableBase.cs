@@ -8,10 +8,10 @@ using System.Runtime.CompilerServices;
 namespace Leen.Practices.Mvvm
 {
     /// <summary>
-    /// Implementation of System.ComponentModel.INotifyPropertyChanged and System.ComponentModel.INotifyPropertyChanging to simplify models.
+    /// Implementation of <see cref="INotifyPropertyChanged"/> and <see cref="INotifyPropertyChanging"/> to simplify models.
     /// </summary>
     [Serializable]
-    public class BindableBase : INotifyPropertyChanged, INotifyPropertyChanging
+    public class BindableBase : ValidationBase, INotifyPropertyChanged, INotifyPropertyChanging
     {
         /// <summary>
         /// 构造BindableBase的实例。

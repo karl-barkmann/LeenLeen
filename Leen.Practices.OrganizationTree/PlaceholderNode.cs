@@ -2,15 +2,13 @@
 {
     internal class PlaceholderNode : BaseTreeNode
     {
-        public PlaceholderNode() : base("-1", true)
+        public PlaceholderNode() : base("-1", TreeNodeType.PlaceHolder, true)
         {
-            NodeType = TreeNodeType.PlaceHolder;
             NodeName = "加载中...";
         }
 
-        public PlaceholderNode(string nodeId, bool initializeWithPlaceholder) : base(nodeId, initializeWithPlaceholder)
+        public PlaceholderNode(string nodeId, bool initializeWithPlaceholder) : base(nodeId, TreeNodeType.PlaceHolder, initializeWithPlaceholder)
         {
-            NodeType = TreeNodeType.PlaceHolder;
             NodeName = "加载中...";
         }
     }

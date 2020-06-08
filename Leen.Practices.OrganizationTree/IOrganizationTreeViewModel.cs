@@ -37,12 +37,5 @@ namespace Leen.Practices.OrganizationTree
         /// <param name="organizationId">组织机构Id。</param>
         /// <returns></returns>
         OrganizationTreeNode FindOrganizationNode(string organizationId);
-
-        /// <summary>
-        /// 获取指定Id的设备树节点。
-        /// </summary>
-        /// <param name="deviceId">设备Id。</param>
-        /// <returns></returns>
-        DeviceTreeNode FindDeviceNode(string deviceId);
     }
 }

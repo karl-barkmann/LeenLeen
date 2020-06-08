@@ -380,6 +380,15 @@ namespace Leen.Windows.Controls
             };
         }
 
+        protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        {
+            base.OnGotKeyboardFocus(e);
+            if (e.NewFocus == _decreaseButton || e.NewFocus == _increaseButton || e.NewFocus == _input)
+                return;
+            _input.SelectAll();
+            _input.Focus();
+        }
+
         private void OnTimerCallback(object sender, EventArgs e)
         {
             _inputValidating = true;
@@ -405,7 +414,7 @@ namespace Leen.Windows.Controls
             {
                 CommandManager.InvalidateRequerySuggested(); // Should post an idle queue item to update IsEnabled on button
             }
-            _decreaseButton = GetTemplateChild("PART_UP") as RepeatButton;
+            _decreaseButton = GetTemplateChild("PART_DOWN") as RepeatButton;
             if (_decreaseButton != null)
             {
                 CommandManager.InvalidateRequerySuggested(); // Should post an idle queue item to update IsEnabled on button

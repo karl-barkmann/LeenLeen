@@ -19,6 +19,8 @@ namespace System.Windows
         /// <returns></returns>
         public static T GetVisualParent<T>(this DependencyObject child) where T : DependencyObject
         {
+            if (child is T)
+                return child as T;
             DependencyObject parentObject = VisualTreeHelper.GetParent(child);
 
             if (parentObject == null)

@@ -5,13 +5,19 @@ namespace Leen.Practices.OrganizationTree
     /// <summary>
     /// 组织机构和设备树节点的类型。
     /// </summary>
-    public enum TreeNodeType
+    public enum TreeNodeType : byte
     {
         /// <summary>
         /// 默认值。
         /// </summary>
         [Description("未知节点")]
-        None,
+        Unknown,
+
+        /// <summary>
+        /// 占位节点，内部使用。
+        /// </summary>
+        [Description("占位节点")]
+        PlaceHolder,
 
         /// <summary>
         /// 设备节点包含但不限于摄像头通道、探头、报警输出及报警输入等。
@@ -40,13 +46,10 @@ namespace Leen.Practices.OrganizationTree
         /// <summary>
         /// 任意自定义节点。
         /// </summary>
+        /// <remarks>
+        /// 该枚举值标记自定义节点类型的起点。
+        /// </remarks>
         [Description("自定义节点")]
-        Custom = 0x1010,
-
-        /// <summary>
-        /// 占位节点，内部使用。
-        /// </summary>
-        [Description("占位节点")]
-        PlaceHolder = -1,
+        Custom = 0x50,
     }
 }

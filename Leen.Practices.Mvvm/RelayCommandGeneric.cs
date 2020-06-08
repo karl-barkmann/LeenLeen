@@ -35,8 +35,8 @@ namespace Leen.Practices.Mvvm
     {
         #region Fields
 
-        private Func<T, bool> _canExecute;
-        private Action<T> _execute;
+        private readonly Func<T, bool> _canExecute;
+        private readonly Action<T> _execute;
         private string _text;
         private Key _key;
         private ModifierKeys _keyModifiers;
@@ -53,18 +53,20 @@ namespace Leen.Practices.Mvvm
         #region Constructors
 
         /// <summary>
+        /// 使用 <see cref="Action"/> 构造 <see cref="RelayCommand"/> 的实例。
+        /// </summary>
+        /// <param name="execute">执行命令时调用方法。</param>
+        public RelayCommand(Action<T> execute) => _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+
+        /// <summary>
         /// 使用 <see cref="Action"/> 和 <see langword="Func"/> 构造 <see cref="RelayCommand"/> 的实例。
         /// </summary>
         /// <param name="execute">执行命令时调用方法。</param>
         /// <param name="canExecute">确定命令是否可以执行时调用方法。</param>
         public RelayCommand(Action<T> execute, Func<T, bool> canExecute)
         {
-            if (canExecute == null)
-            {
-                throw new ArgumentNullException("canExecute");
-            }
-            _execute = execute;
-            _canExecute = canExecute;
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute ?? throw new ArgumentNullException(nameof(canExecute));
         }
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace Leen.Practices.Mvvm
         public RelayCommand(KeyGesture keyGesture, Action<T> execute, Func<T, bool> canExecute)
             : this(execute, canExecute)
         {
-            KeyGesture = keyGesture;
+            KeyGesture = keyGesture ?? throw new ArgumentNullException(nameof(keyGesture));
         }
 
         /// <summary>
@@ -382,7 +384,7 @@ namespace Leen.Practices.Mvvm
         /// <returns></returns>
         public virtual bool CanExecute(object parameter)
         {
-            return _canExecute((T)parameter);
+            return _canExecute == null ? true : _canExecute((T)parameter);
         }
 
 
