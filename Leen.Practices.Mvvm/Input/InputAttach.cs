@@ -15,7 +15,7 @@ namespace System.Windows.Input
     ///     </Setter>
     /// </example>
     /// </remarks>
-    public class InputAttached
+    public static class InputAttached
     {
         /// <summary>
         /// 

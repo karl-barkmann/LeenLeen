@@ -3,7 +3,7 @@
     /// <summary>
     ///  用于在资源文件中为元素的 <see cref="ToolTip"/> 定义 <see cref="Style"/> 的帮助类，使其支持Markup绑定。
     /// </summary>
-    public class TooltipAttached
+    public static class TooltipAttached
     {
         /// <summary>
         /// 获取当前元素的 <see cref="ToolTip"/> 样式。
@@ -33,13 +33,14 @@
 
         private static void StylePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var element = d as FrameworkElement;
-            if (element == null) return;
-            if (e.OldValue != null)
+            if (d is FrameworkElement element)
             {
-                element.Resources[typeof(ToolTip)] = null;
+                if (e.OldValue != null)
+                {
+                    element.Resources[typeof(ToolTip)] = null;
+                }
+                element.Resources.Add(typeof(ToolTip), e.NewValue as Style);
             }
-            element.Resources.Add(typeof(ToolTip), e.NewValue as Style);
         }
     }
 }

@@ -118,7 +118,7 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentException($"The view model {viewModel} of type {viewModel.GetType()} is not referenced by any registered view.");
             }
 
-            if(view is Window dialogView)
+            if (view is Window dialogView)
             {
                 return dialogView;
             }
@@ -444,12 +444,22 @@ namespace Leen.Practices.Mvvm
         {
             if (targetView.DataContext is ViewModelBase vm)
             {
-                var task = vm.InitializeAsync();
-
-                if (task.Status == TaskStatus.Created)
+                vm.IsBusy = true;
+                vm.BusyMessage = "正在加载中...";
+                vm.InitializeAsync().ContinueWith((x, state) =>
                 {
-                    task.Start();
-                }
+                    var target = (ViewModelBase)state;
+                    target.IsBusy = false;
+                    target.BusyMessage = string.Empty;
+                    if (x.Exception != null)
+                    {
+                        //view model initializing failure
+                    }
+                    else
+                    {
+                        target.HasInitialized = true;
+                    }
+                }, vm);
             }
         }
     }
