@@ -5,6 +5,7 @@
         xmlns:controls="clr-namespace:Leen.Windows.Controls;assembly=Leen.Windows.Controls"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:li="clr-namespace:System.Windows.Interactivity;assembly=Leen.Windows.Controls"
+        xmlns:lie="clr-namespace:System.Windows.Interactivity;assembly=Leen.Practices.Mvvm"
         xmlns:mvvm="clr-namespace:Leen.Practices.Mvvm;assembly=Leen.Practices.Mvvm"
         Title="MainWindow"
         Width="525"
@@ -58,14 +59,6 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <controls:MultipleStateControl Width="138"
-                                       Height="126"
-                                       Margin="196,93,0,0"
-                                       HorizontalAlignment="Left"
-                                       VerticalAlignment="Top"
-                                       State="{Binding State}"
-                                       StateConverter="{Binding Mode=OneWay, Source={StaticResource StateToBrushConverter}}"
-                                       Style="{DynamicResource MultipeStateControlStyle}" />
         <controls:SearchBox x:Name="searchBox"
                             Width="230"
                             Margin="96,52,0,0"
@@ -80,7 +73,8 @@
                 <li:SearchBoxEnterBehavior Command="{Binding SearchCommand}" CommandParameter="{Binding ElementName=searchBox, Path=Text}" />
             </i:Interaction.Behaviors>
         </controls:SearchBox>
-        <controls:DoubleUpDown Width="130"
+        <controls:DoubleUpDown x:Name="input"
+                               Width="130"
                                Margin="53,93,0,0"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Top"
@@ -109,10 +103,41 @@
                 VerticalAlignment="Top"
                 Command="{Binding ShowSimpleTraderCrawlerCommand}"
                 Content="爬虫3" />
-        <controls:ProgressRing 
-                               HorizontalAlignment="Center"
+        <controls:ProgressRing HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                ActiveMessage=""
                                Background="Black" />
+        <Primitives:ProgressCircle Width="250"
+                                   Height="250"
+                                   Margin="0,0,0,0"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Top"
+                                   Progress="{Binding ElementName=input, Path=Value}"
+                                   StrokeCap="Round"
+                                   Thickness="32">
+            <Primitives:ProgressCircle.Stroke>
+                <LinearGradientBrush StartPoint="0.04904099, 0.5" EndPoint="1.048927, 0.5661898">
+                    <LinearGradientBrush.GradientStops>
+                        <GradientStop Offset="0" Color="#5E4FED" />
+                        <GradientStop Offset="0.4525105" Color="#42DDF1" />
+                        <GradientStop Offset="1" Color="#2ABFF9" />
+                    </LinearGradientBrush.GradientStops>
+                </LinearGradientBrush>
+            </Primitives:ProgressCircle.Stroke>
+        </Primitives:ProgressCircle>
+        <TextBox Width="120"
+                 Height="23"
+                 Margin="42,152,0,0"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Top"
+                 Text="TextBox"
+                 TextWrapping="Wrap">
+            <i:Interaction.Behaviors>
+                <lie:WatermarkBehavior WatermarkFontSize="16"
+                                       WatermarkForeground="Red"
+                                       WatermarkPadding="15,0"
+                                       WatermarkText="请输入用户名" />
+            </i:Interaction.Behaviors>
+        </TextBox>
     </Grid>
 </Window>

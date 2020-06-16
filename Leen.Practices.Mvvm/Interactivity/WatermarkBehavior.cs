@@ -283,6 +283,45 @@ namespace System.Windows.Interactivity
 
         #endregion
 
+        #region WatermarkPadding
+
+        /// <summary>
+        /// Gets or sets the <see cref="WatermarkPadding"/> value.
+        /// </summary>
+        public Thickness? WatermarkPadding
+        {
+            get { return (Thickness?)GetValue(WatermarkPaddingProperty); }
+            set { SetValue(WatermarkPaddingProperty, value); }
+        }
+
+        /// <summary>
+        /// Dependency property for <see cref="WatermarkPadding"/> property.
+        /// </summary>
+        public static readonly DependencyProperty WatermarkPaddingProperty =
+            DependencyProperty.Register(
+                                nameof(WatermarkPadding),
+                                typeof(Thickness?),
+                                typeof(WatermarkBehavior),
+                                new PropertyMetadata(null, WatermarkPaddingPropertyChanged));
+
+        private static void WatermarkPaddingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((WatermarkBehavior)d).OnWatermarkPaddingChanged((Thickness?)e.OldValue, (Thickness?)e.NewValue);
+        }
+
+        /// <summary>
+        /// Called when <see cref="WatermarkPadding"/> changed.
+        /// </summary>
+        /// <param name="oldValue">Old value of <see cref="WatermarkPadding"/>.</param>
+        /// <param name="newValue">New value of <see cref="WatermarkPadding"/>.</param>
+        protected virtual void OnWatermarkPaddingChanged(Thickness? oldValue, Thickness? newValue)
+        {
+
+        }
+
+        #endregion
+
+
         #region IsEnable
 
         /// <summary>
@@ -443,6 +482,7 @@ namespace System.Windows.Interactivity
             adorner.FontStyle = WatermarkFontStyle;
             adorner.FontWeight = WatermarkFontWeight;
             adorner.Foreground = WatermarkForeground;
+            adorner.Padding = WatermarkPadding;
             return adorner;
         }
     }
@@ -467,6 +507,8 @@ namespace System.Windows.Interactivity
         internal FontStretch FontStretch { get; set; }
 
         internal FontStyle FontStyle { get; set; }
+
+        internal Thickness? Padding { get; set; }
 
         internal string Watermark { get; }
 
@@ -503,7 +545,10 @@ namespace System.Windows.Interactivity
                                             typeface,
                                             FontSize,
                                             Foreground);
-                dc.DrawText(fmt, new Point(AdornedElement.Padding.Left, (AdornedElement.RenderSize.Height - fmt.Height) / 2));
+                if(Padding.HasValue)
+                    dc.DrawText(fmt, new Point(Padding.Value.Left, (AdornedElement.RenderSize.Height - fmt.Height) / 2));
+                else
+                    dc.DrawText(fmt, new Point(AdornedElement.Padding.Left, (AdornedElement.RenderSize.Height - fmt.Height) / 2));
             }
         }
 

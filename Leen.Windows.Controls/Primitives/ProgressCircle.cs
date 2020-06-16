@@ -182,6 +182,46 @@ namespace Leen.Windows.Controls.Primitives
 
         #endregion
 
+        #region StrokeCap
+
+        /// <summary>
+        /// Gets or sets the <see cref="StrokeCap"/> value.
+        /// </summary>
+        public PenLineCap StrokeCap
+        {
+            get { return (PenLineCap)GetValue(StrokeCapProperty); }
+            set { SetValue(StrokeCapProperty, value); }
+        }
+
+        /// <summary>
+        /// Dependency property for <see cref="StrokeCap"/> property.
+        /// </summary>
+        public static readonly DependencyProperty StrokeCapProperty =
+            DependencyProperty.Register(
+                                nameof(StrokeCap),
+                                typeof(PenLineCap),
+                                typeof(ProgressCircle),
+                                new PropertyMetadata(PenLineCap.Flat, StrokeCapPropertyChanged));
+
+        private static void StrokeCapPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ProgressCircle)d).OnStrokeCapChanged((PenLineCap)e.OldValue, (PenLineCap)e.NewValue);
+        }
+
+        /// <summary>
+        /// Called when <see cref="StrokeCap"/> changed.
+        /// </summary>
+        /// <param name="oldValue">Old value of <see cref="StrokeCap"/>.</param>
+        /// <param name="newValue">New value of <see cref="StrokeCap"/>.</param>
+        protected virtual void OnStrokeCapChanged(PenLineCap oldValue, PenLineCap newValue)
+        {
+            outterCircle.StrokeDashCap = newValue;
+            UpdateProgressVisual(Progress, Thickness);
+        }
+
+        #endregion
+
+
         #region Foreground
 
         /// <summary>
@@ -356,6 +396,7 @@ namespace Leen.Windows.Controls.Primitives
                 RenderTransformOrigin = new Point(0.5, 0.5),
                 Stroke = new SolidColorBrush(Colors.DarkBlue),
                 StrokeThickness = 3,
+                StrokeDashCap = StrokeCap,
                 StrokeDashArray = new DoubleCollection(new double[] { 0, 500 })
             };
             var loadingRotate = new RotateTransform { Angle = -90 };
@@ -443,10 +484,24 @@ namespace Leen.Windows.Controls.Primitives
 
         private void UpdateProgressVisual(float progress, double thickness)
         {
-            var factor = 100 * (ActualWidth / 100d);
-            double value = ((factor - thickness) * Math.PI * progress) / (100 * thickness);
-            outterCircle.StrokeDashArray = new DoubleCollection() { value, 500 };
-            outterCircle.StrokeThickness = thickness;
+            if (progress > 0)
+            {
+                var factor = 100 * (ActualWidth / 100d);
+                double value = ((factor - thickness) * Math.PI * progress) / (100 * thickness);
+                if (StrokeCap == PenLineCap.Round)
+                {
+                    value = ((factor - thickness) * Math.PI * progress) / (100 * thickness) - Thickness / 100;
+                }
+                var dash = new DoubleCollection() { value , 500 };
+                dash.Freeze();
+                outterCircle.StrokeDashArray = dash;
+                outterCircle.Visibility = Visibility.Visible;
+                outterCircle.StrokeThickness = thickness;
+            }
+            else
+            {
+                outterCircle.Visibility = Visibility.Collapsed;
+            }
             _progressText.Text = $"{progress}%";
         }
     }
