@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -155,7 +156,7 @@ namespace Leen.Windows.Controls
 
             foreach (FrameworkElement child in control.InternalChildren)
             {
-                TranslateTransform transform = transform = new TranslateTransform(0, 0);
+                TranslateTransform transform = new TranslateTransform(0, 0);
                 child.RenderTransform = transform;
             }
             control.Animation(control.SelectedIndex, 0);
@@ -285,6 +286,7 @@ namespace Leen.Windows.Controls
         {
             SlidablePanel control = d as SlidablePanel;
             control.Animation((int)e.NewValue, control.ScrollDuration);
+            control._autoScrollTimer.Start();
         }
 
         #endregion
@@ -309,7 +311,7 @@ namespace Leen.Windows.Controls
         /// <summary>
         /// Identifies the <see cref="Duration" /> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ScrollDurationProperty = 
+        public static readonly DependencyProperty ScrollDurationProperty =
             DependencyProperty.Register(nameof(ScrollDuration),
                                         typeof(double),
                                         typeof(SlidablePanel),
@@ -533,22 +535,29 @@ namespace Leen.Windows.Controls
             {
                 if (e.Delta < 0)
                 {
-                    if (SelectedIndex < (Children.Count - 1))
+                    var index = SelectedIndex + 1;
+                    if (index > (Children.Count - 1))
                     {
-                        SelectedIndex += 1;
-                        e.Handled = true;
+                        index = 0;
                     }
+
+                    _autoScrollTimer.Stop();
+                    SelectedIndex = index;
                 }
                 else
                 {
-                    if (SelectedIndex > 0)
+                    var index = SelectedIndex - 1;
+                    if (index < 0)
                     {
-                        SelectedIndex -= 1;
-                        e.Handled = true;
+                        index = Children.Count - 1;
                     }
+                    _autoScrollTimer.Stop();
+                    SelectedIndex = index;
                 }
             }
+            e.Handled = true;
         }
+
 
         void NewSliderPanel_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -708,7 +717,7 @@ namespace Leen.Windows.Controls
                 oldCollection.CollectionChanged -= OnCollectionChanged;
             }
 
-            if(newValue is INotifyCollectionChanged newCollection)
+            if (newValue is INotifyCollectionChanged newCollection)
             {
                 newCollection.CollectionChanged += OnCollectionChanged;
             }
@@ -903,7 +912,7 @@ namespace Leen.Windows.Controls
 
             for (int i = 0; i < InternalChildren.Count; i++)
             {
-                DoubleAnimation doubleAnimation = new DoubleAnimation(to, new Duration(TimeSpan.FromMilliseconds(duration)));
+                var doubleAnimation = new DoubleAnimation(to, new Duration(TimeSpan.FromMilliseconds(duration)));
 
                 if (Orientation == Orientation.Horizontal)
                 {
