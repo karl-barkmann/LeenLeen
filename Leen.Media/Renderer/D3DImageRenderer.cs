@@ -20,6 +20,7 @@ namespace Leen.Media.Renderer
         internal const int SM_CYVIRTUALSCREEN = 79;
         internal static Format D3DFormatYV12 = D3DX.MakeFourCC((byte)'Y', (byte)'V', (byte)'1', (byte)'2');
         internal static Format D3DFormatNV12 = D3DX.MakeFourCC((byte)'N', (byte)'V', (byte)'1', (byte)'2');
+        internal static Format D3DFormatI420 = D3DX.MakeFourCC((byte)'I', (byte)'4', (byte)'2', (byte)'0');
         internal static Color4 BlackColor = new Color4(0x01, 0, 0, 0);
 
         #endregion
@@ -32,12 +33,11 @@ namespace Leen.Media.Renderer
         private CreateFlags m_CreateFlag;
 
         private Device m_Device;
-        private IntPtr m_DummyRenderHwnd;
-        private HwndSource m_DummyRenderWnd;
+        private readonly IntPtr m_DummyRenderHwnd;
+        private readonly HwndSource m_DummyRenderWnd;
 
         private Surface m_InputSurface;
         private Texture m_RendreTexture;
-        private Surface m_TextureSurface;
         private VertexBuffer m_VertexBuffer;
 
         private DisplayMode m_DisplayMode;
@@ -56,8 +56,6 @@ namespace Leen.Media.Renderer
         private int m_UVSize;
         private int m_SurfaceYStride;
         private int m_SurfaceUVStride;
-        private int m_PixelWidth;
-        private int m_PixelHeight;
 
         private readonly bool r_IsVistaOrBetter;
 
@@ -104,7 +102,7 @@ namespace Leen.Media.Renderer
         /// <summary>
         /// 获取渲染交换链的后台缓冲。
         /// </summary>
-        public IntPtr BackBuffer => m_TextureSurface == null ? IntPtr.Zero : m_TextureSurface.ComPointer;
+        public IntPtr BackBuffer => RenderSurface == null ? IntPtr.Zero : RenderSurface.ComPointer;
 
         /// <summary>
         /// 确认该渲染器是否支持指定视频格式。
@@ -126,8 +124,8 @@ namespace Leen.Media.Renderer
         /// <summary>
         /// 使用指定视频参数初始化渲染缓冲表面。
         /// </summary>
-        /// <param name="surfaceStride">视频像素宽度。</param>
-        /// <param name="surfaceHeight">视频像素高度。</param>
+        /// <param name="surfaceStride">视频数据跨度。</param>
+        /// <param name="surfaceHeight">视频数据高度。</param>
         /// <param name="pixelWidth">视频像素宽度。</param>
         /// <param name="pixelHeight">视频像素高度。</param>
         /// <param name="format">视频帧采样格式。</param>
@@ -165,8 +163,6 @@ namespace Leen.Media.Renderer
 
             #region 初始化尺寸参数
 
-            m_PixelWidth = pixelWidth;
-            m_PixelHeight = pixelHeight;
             m_FrameFormat = format;
             switch (format)
             {
@@ -304,13 +300,15 @@ namespace Leen.Media.Renderer
 
             try
             {
-                m_Device.ColorFill(m_TextureSurface, BlackColor);
+                m_Device.ColorFill(RenderSurface, BlackColor);
                 BackBufferRefreshed?.Invoke(this, EventArgs.Empty);
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (NullReferenceException)
             {
                 //SlimDX has some wried bug.
             }
+#pragma warning restore CA1031 // Do not catch general exception types
 
             ReleaseResource();
         }
@@ -318,13 +316,7 @@ namespace Leen.Media.Renderer
         /// <summary>
         /// 获取后台渲染表面。
         /// </summary>
-        public Surface RenderSurface
-        {
-            get
-            {
-                return m_TextureSurface;
-            }
-        }
+        public Surface RenderSurface { get; private set; }
 
         /// <summary>
         /// 获取一个值指示渲染设备是否可用。
@@ -428,7 +420,7 @@ namespace Leen.Media.Renderer
             //renderTarget = device.GetRenderTarget(0);
             int vertexSize = Marshal.SizeOf(typeof(Vertex));
             m_RendreTexture = new Texture(m_Device, width, height, 1, Usage.RenderTarget, m_DisplayMode.Format, Pool.Default);
-            m_TextureSurface = m_RendreTexture.GetSurfaceLevel(0);
+            RenderSurface = m_RendreTexture.GetSurfaceLevel(0);
 
             Vertex[] vertexList = new Vertex[]
             {
@@ -483,8 +475,8 @@ namespace Leen.Media.Renderer
             SafeRelease(m_VertexBuffer);
 
             SafeRelease(m_RendreTexture);
-            SafeRelease(m_TextureSurface);
-            m_TextureSurface = null;
+            SafeRelease(RenderSurface);
+            RenderSurface = null;
 
             SafeRelease(m_Device);
             m_Device = null;
@@ -523,6 +515,7 @@ namespace Leen.Media.Renderer
             switch (m_FrameFormat)
             {
                 case FrameFormat.YV12:
+                case FrameFormat.I420:
                     #region 填充YV12数据
                     if (rect.Pitch == m_YStride)
                     {
@@ -719,9 +712,9 @@ namespace Leen.Media.Renderer
 
         private void StretchSurface()
         {
-            m_Device.ColorFill(m_TextureSurface, BlackColor);
+            m_Device.ColorFill(RenderSurface, BlackColor);
 
-            m_Device.StretchRectangle(m_InputSurface, m_TextureSurface, TextureFilter.Linear);
+            m_Device.StretchRectangle(m_InputSurface, RenderSurface, TextureFilter.Linear);
         }
 
         private void CreateScene()
@@ -737,18 +730,6 @@ namespace Leen.Media.Renderer
 
             m_Device.DrawPrimitives(PrimitiveType.TriangleFan, 0, 2);
             m_Device.EndScene();
-        }
-
-        private void Present()
-        {
-            if (r_IsVistaOrBetter)
-            {
-                ((DeviceEx)m_Device).PresentEx(SlimDX.Direct3D9.Present.None);
-            }
-            else
-            {
-                m_Device.Present();
-            }
         }
 
         /// <summary>
@@ -791,14 +772,6 @@ namespace Leen.Media.Renderer
             return m_Direct3D.CheckDeviceFormatConversion(r_AdapterId, DeviceType.Hardware, d3dFormat, m_DisplayMode.Format);
         }
 
-        private void GetWindowSize(IntPtr hwnd, out int width, out int height)
-        {
-            User32.RECT rect = new User32.RECT();
-            User32.GetWindowRect(hwnd, ref rect);
-            height = rect.Bottom - rect.Top;
-            width = rect.Right - rect.Left;
-        }
-
         private static Format ConvertToD3D(FrameFormat format)
         {
             switch (format)
@@ -808,6 +781,9 @@ namespace Leen.Media.Renderer
 
                 case FrameFormat.NV12:
                     return D3DFormatNV12;
+
+                case FrameFormat.I420:
+                    return D3DFormatI420;
 
                 case FrameFormat.YUY2:
                     return Format.Yuy2;
@@ -831,7 +807,7 @@ namespace Leen.Media.Renderer
                     return Format.R8G8B8;
 
                 default:
-                    throw new ArgumentException("Unknown pixel format", "format");
+                    throw new ArgumentException("Unknown pixel format", nameof(format));
             }
         }
 
@@ -858,7 +834,11 @@ namespace Leen.Media.Renderer
             GC.SuppressFinalize(this);
         }
 
-        private void Dispose(bool disposing)
+        /// <summary>
+        /// 释放使用的资源。
+        /// </summary>
+        /// <param name="disposing">正在由调用者释放。</param>
+        protected virtual void Dispose(bool disposing)
         {
             if (!isDisposed)
             {
@@ -883,9 +863,11 @@ namespace Leen.Media.Renderer
                     item.Dispose();
                 }
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch
             {
             }
+#pragma warning restore CA1031 // Do not catch general exception types
         }
 
         #endregion

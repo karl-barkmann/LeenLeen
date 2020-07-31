@@ -355,7 +355,7 @@ namespace System.Windows.Interactivity
         /// <param name="newValue">New value of <see cref="IsEnabled"/>.</param>
         protected virtual void OnIsEnabledChanged(bool oldValue, bool newValue)
         {
-            if (newValue)
+            if (newValue && AssociatedObject.Visibility == Visibility.Visible)
                 AddAdorner();
             else
                 RemoveAdorner();
@@ -372,7 +372,7 @@ namespace System.Windows.Interactivity
 
             if (AssociatedObject.IsLoaded)
             {
-                if(IsEnabled)
+                if(IsEnabled && AssociatedObject.Visibility== Visibility.Visible)
                     AddAdorner();
             }
             else
@@ -393,7 +393,7 @@ namespace System.Windows.Interactivity
 
         private void AssociatedObject_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if ((bool)e.NewValue && IsEnabled)
+            if ((bool)e.NewValue && IsEnabled && AssociatedObject.Visibility == Visibility.Visible)
             {
                 AddAdorner();
             }
@@ -405,7 +405,7 @@ namespace System.Windows.Interactivity
 
         private void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
         {
-            if(IsEnabled)
+            if(IsEnabled && AssociatedObject.Visibility == Visibility.Visible)
                 AddAdorner();
             AssociatedObject.Loaded -= AssociatedObject_Loaded;
             base.OnAttached();

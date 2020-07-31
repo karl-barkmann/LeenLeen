@@ -26,6 +26,11 @@
         UYVY = 3,
 
         /// <summary>
+        /// 12 bits per pixel planar format with Y plane followed by U and V planes，known as YUV I420 planar.
+        /// </summary>
+        I420 = 4,
+
+        /// <summary>
         /// 16 bits per pixel with 5 bits for each RGB channel.
         /// </summary>
         RGB15 = 10,
