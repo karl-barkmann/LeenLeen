@@ -396,7 +396,7 @@ namespace Leen.Media.Controls.Primitives
 								nameof(IsRenderingEnabled),
 								typeof(bool),
 								typeof(MediaRenderElement),
-								new FrameworkPropertyMetadata(true));
+								new FrameworkPropertyMetadata(true, OnIsRenderingEnabledChanged));
 
 		/// <summary>
 		/// Enables or disables rendering of the video
@@ -549,10 +549,13 @@ namespace Leen.Media.Controls.Primitives
 		/// <param name="e">Related event args.</param>
 		protected virtual void OnSourceChanged(DependencyPropertyChangedEventArgs e)
 		{
-			if (PlayState == MediaPlayState.None)
+			if (PlayState != MediaPlayState.None)
 			{
-				OpenImpl(e.NewValue);
+				Close();
 			}
+
+			if (e.NewValue != null)
+				OpenImpl(e.NewValue);
 		}
 
 		#endregion
@@ -771,6 +774,7 @@ namespace Leen.Media.Controls.Primitives
 				switch (playState)
 				{
 					case MediaPlayState.None:
+						Close();
 						break;
 					case MediaPlayState.Opened:
 						break;

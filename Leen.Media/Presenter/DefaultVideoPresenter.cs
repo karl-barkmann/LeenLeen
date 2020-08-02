@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Documents;
 using Leen.Media.Renderer;
 
 namespace Leen.Media.Presenter
@@ -9,11 +10,10 @@ namespace Leen.Media.Presenter
     public class DefaultVideoPresenter : IVideoPresenter, IDisposable
     {
         private volatile bool m_IsPresenting;
-        private readonly IMediaPlayer r_MediaPlayer;
-        private readonly IVideoRenderer r_VideoRenderer;
         private int m_Pitch;
         private readonly FrameFormat m_FrameFormat;
         private bool m_SurfaceReady;
+        private bool _mediaClosed;
 
         /// <summary>
         /// 构造 <see cref="DefaultVideoPresenter"/> 类的实例。
@@ -23,12 +23,12 @@ namespace Leen.Media.Presenter
         /// <param name="renderer">视频渲染接口。</param>
         public DefaultVideoPresenter(FrameFormat frameFormat, IMediaPlayer mediaPlayer, IVideoRenderer renderer)
         {
-            r_MediaPlayer = mediaPlayer ?? throw new ArgumentNullException(nameof(mediaPlayer));
-            r_VideoRenderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
+            Player = mediaPlayer ?? throw new ArgumentNullException(nameof(mediaPlayer));
+            Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
             m_FrameFormat = frameFormat;
-            r_MediaPlayer.StateChanged += MediaPlayer_StateChanged;
-            r_MediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
-            r_MediaPlayer.FrameAllocated += MediaPlayer_FrameAllocated;
+            Player.StateChanged += MediaPlayer_StateChanged;
+            Player.MediaFailed += MediaPlayer_MediaFailed;
+            Player.FrameAllocated += MediaPlayer_FrameAllocated;
         }
 
         /// <summary>
@@ -49,24 +49,12 @@ namespace Leen.Media.Presenter
         /// <summary>
         /// 获取此视频呈现接口关联的媒体播放器。
         /// </summary>
-        public IMediaPlayer Player
-        {
-            get
-            {
-                return r_MediaPlayer;
-            }
-        }
+        public IMediaPlayer Player { get; }
 
         /// <summary>
         /// 获取此视频呈现接口关联的视频渲染器。
         /// </summary>
-        public IVideoRenderer Renderer
-        {
-            get
-            {
-                return r_VideoRenderer;
-            }
-        }
+        public IVideoRenderer Renderer { get; }
 
         #region IDisposable Support
 
@@ -82,9 +70,9 @@ namespace Leen.Media.Presenter
             {
                 if (disposing)
                 {
-                    r_MediaPlayer.StateChanged -= MediaPlayer_StateChanged;
-                    r_MediaPlayer.MediaFailed -= MediaPlayer_MediaFailed;
-                    r_MediaPlayer.FrameAllocated -= MediaPlayer_FrameAllocated;
+                    Player.StateChanged -= MediaPlayer_StateChanged;
+                    Player.MediaFailed -= MediaPlayer_MediaFailed;
+                    Player.FrameAllocated -= MediaPlayer_FrameAllocated;
                 }
 
                 m_Disposed = true;
@@ -111,12 +99,17 @@ namespace Leen.Media.Presenter
             if (e.NewState == MediaPlayState.None)
             {
                 m_SurfaceReady = false;
+                _mediaClosed = true;
+            }
+            else
+            {
+                _mediaClosed = false;
             }
         }
 
         private void MediaPlayer_FrameAllocated(object sender, FrameAllocatedEventArgs e)
         {
-            if (!IsPresenting)
+            if (!IsPresenting || _mediaClosed)
             {
                 return;
             }
@@ -124,11 +117,11 @@ namespace Leen.Media.Presenter
             if (!m_SurfaceReady || m_Pitch != e.Pitches[0])
             {
                 m_Pitch = e.Pitches[0];
-                r_VideoRenderer.SetupSurface(m_Pitch, e.PixelHeight, e.PixelWidth, e.PixelHeight, m_FrameFormat);
+                Renderer.SetupSurface(m_Pitch, e.PixelHeight, e.PixelWidth, e.PixelHeight, m_FrameFormat);
                 m_SurfaceReady = true;
             }
 
-            r_VideoRenderer.Render(e.Buffers);
+            Renderer.Render(e.Buffers);
         }
     }
 }

@@ -20,8 +20,22 @@ namespace System.Windows.Interactivity
         /// <see cref="IsSelected"/> 的依赖属性。
         /// </summary>
         public static readonly DependencyProperty IsSelectedProperty =
-            DependencyProperty.Register("IsSelected", typeof(bool), typeof(SupportSelectionBehavior), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+            DependencyProperty.Register(nameof(IsSelected), typeof(bool), typeof(SupportSelectionBehavior), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+        /// <summary>
+        /// 获取或设置一个值标识是否不支持冒泡事件的点击选中/> 。
+        /// </summary>
+        public bool DirectlySelection
+        {
+            get { return (bool)GetValue(DirectlySelectionProperty); }
+            set { SetValue(DirectlySelectionProperty, value); }
+        }
+
+        /// <summary>
+        /// <see cref="DirectlySelection"/> 的依赖属性。
+        /// </summary>
+        public static readonly DependencyProperty DirectlySelectionProperty =
+            DependencyProperty.Register(nameof(DirectlySelection), typeof(bool), typeof(SupportSelectionBehavior), new PropertyMetadata(false));
 
         /// <summary>
         /// Called after the behavior is attached to an AssociatedObject.
@@ -30,7 +44,10 @@ namespace System.Windows.Interactivity
         {
             base.OnAttached();
 
-            AssociatedObject.PreviewMouseLeftButtonDown += AssociatedObject_PreviewMouseLeftButtonDown;
+            if (!DirectlySelection)
+                AssociatedObject.PreviewMouseLeftButtonDown += AssociatedObject_PreviewMouseLeftButtonDown;
+            else
+                AssociatedObject.MouseLeftButtonDown += AssociatedObject_MouseLeftButtonDown;
         }
 
         /// <summary>
@@ -40,10 +57,23 @@ namespace System.Windows.Interactivity
         protected override void OnDetaching()
         {
             base.OnDetaching();
+            AssociatedObject.MouseLeftButtonDown -= AssociatedObject_MouseLeftButtonDown;
             AssociatedObject.PreviewMouseLeftButtonDown -= AssociatedObject_PreviewMouseLeftButtonDown;
         }
 
         private void AssociatedObject_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                SetCurrentValue(IsSelectedProperty, false);
+            }
+            else
+            {
+                SetCurrentValue(IsSelectedProperty, true);
+            }
+        }
+
+        private void AssociatedObject_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl))
             {
