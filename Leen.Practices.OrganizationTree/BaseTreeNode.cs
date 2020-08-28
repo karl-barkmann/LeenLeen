@@ -1016,7 +1016,7 @@ namespace Leen.Practices.OrganizationTree
             if (children != null && children.Any())
             {
                 ChildrenCount = children.Count();
-                if (Children == PlaceHolderChildren)
+                if (Children == PlaceHolderChildren || Children == null)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {

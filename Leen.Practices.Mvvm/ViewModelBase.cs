@@ -123,6 +123,16 @@ namespace Leen.Practices.Mvvm
         }
 
         /// <summary>
+        /// 获取一个值指示视图模型对应视图是否已加载。
+        /// </summary>
+        public bool IsLoaded { get; internal set; }
+
+        /// <summary>
+        /// 获取一个值指示视图模型对应视图是否已卸载。
+        /// </summary>
+        public bool IsUnloaded { get; internal set; }
+
+        /// <summary>
         /// 获取或设置一个值指示当前视图模型是否正在编辑中。
         /// </summary>
         public bool IsEditing
@@ -188,6 +198,20 @@ namespace Leen.Practices.Mvvm
         public virtual Task InitializeAsync()
         {
             return s_TaskCompletionSource.Task;
+        }
+
+        internal void NotifyInitializeError(Exception ex)
+        {
+            OnInitializeError(ex);
+        }
+
+        /// <summary>
+        /// 但初始化发生错误时调用。
+        /// </summary>
+        /// <param name="error">初始化时发生的异常。</param>
+        protected virtual void OnInitializeError(Exception error)
+        {
+
         }
 
         /// <summary>

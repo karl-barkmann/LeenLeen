@@ -239,6 +239,10 @@ namespace Leen.Practices.Mvvm
                 //Such as TabControl TabItem content view
                 if (ViewLocator.GetIsRegistered(view.ActualView))
                 {
+                    if (view.DataContext is ViewModelBase viewModel)
+                    {
+                        viewModel.IsUnloaded = true;
+                    }
                     view.ActualView.Loaded += LancyRegister;
                 }
                 else
@@ -444,6 +448,7 @@ namespace Leen.Practices.Mvvm
         {
             if (targetView.DataContext is ViewModelBase vm)
             {
+                vm.IsLoaded = true;
                 vm.IsBusy = true;
                 vm.BusyMessage = "正在加载中...";
                 vm.InitializeAsync().ContinueWith((x, state) =>
@@ -453,7 +458,7 @@ namespace Leen.Practices.Mvvm
                     target.BusyMessage = string.Empty;
                     if (x.Exception != null)
                     {
-                        //view model initializing failure
+                        target.NotifyInitializeError(x.Exception);
                     }
                     else
                     {
