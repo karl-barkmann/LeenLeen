@@ -1,5 +1,5 @@
-﻿using System.Runtime.InteropServices;
-using SlimDX;
+﻿using SharpDX;
+using System.Runtime.InteropServices;
 
 namespace Leen.Media.Renderer
 {

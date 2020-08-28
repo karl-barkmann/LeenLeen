@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Leen.Windows.Controls
 {
-    internal static class DoubleUtil
+    public static class DoubleUtil
     {
         internal const double DBL_EPSILON = 2.2204460492503131e-016;
         internal const short DefaultBaseValueSource = 1;
@@ -17,7 +17,7 @@ namespace Leen.Windows.Controls
             internal UInt64 UintValue;
         }
 
-        internal static bool IsNaN(double value)
+        public static bool IsNaN(double value)
         {
             NanUnion t = new NanUnion();
             t.DoubleValue = value;

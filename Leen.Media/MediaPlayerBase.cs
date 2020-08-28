@@ -353,19 +353,21 @@ namespace Leen.Media
 
             m_MediaSource = source ?? throw new ArgumentNullException(nameof(source));
 
-            bool mediaOpened = false;
+            bool mediaOpened;
             try
             {
                 m_IsMediaOpening = true;
                 mediaOpened = OpenImpl(source);
                 m_IsMediaOpening = false;
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception ex)
             {
                 m_IsMediaOpening = false;
                 OnMediaFailed(ex);
                 return;
             }
+#pragma warning restore CA1031 // Do not catch general exception types
 
             if (mediaOpened)
             {
@@ -392,18 +394,26 @@ namespace Leen.Media
             }
 
             m_MediaSource = source ?? throw new ArgumentNullException(nameof(source));
-
-            bool mediaOpened = false;
-
+            bool mediaOpened;
             try
             {
                 m_IsMediaOpening = true;
                 mediaOpened = await OpenImplAsync(source).ConfigureAwait(false);
+                m_IsMediaOpening = false;
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception ex)
             {
                 m_IsMediaOpening = false;
                 OnMediaFailed(ex);
+                return;
+            }
+#pragma warning restore CA1031 // Do not catch general exception types
+
+            if (mediaOpened)
+            {
+                m_MediaOpened = mediaOpened;
+                InvokeMediaStateChanged(MediaPlayState.Opened);
             }
         }
 

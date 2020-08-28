@@ -1,6 +1,7 @@
 ﻿using Leen.Native;
-using SlimDX;
-using SlimDX.Direct3D9;
+using SharpDX;
+using SharpDX.Direct3D9;
+using SharpDX.Mathematics.Interop;
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
@@ -21,7 +22,7 @@ namespace Leen.Media.Renderer
         internal static Format D3DFormatYV12 = D3DX.MakeFourCC((byte)'Y', (byte)'V', (byte)'1', (byte)'2');
         internal static Format D3DFormatNV12 = D3DX.MakeFourCC((byte)'N', (byte)'V', (byte)'1', (byte)'2');
         internal static Format D3DFormatI420 = D3DX.MakeFourCC((byte)'I', (byte)'4', (byte)'2', (byte)'0');
-        internal static Color4 BlackColor = new Color4(0x01, 0, 0, 0);
+        internal static RawColorBGRA BlackColor = new RawColorBGRA(0, 0, 0x01, 0);
 
         #endregion
 
@@ -102,7 +103,7 @@ namespace Leen.Media.Renderer
         /// <summary>
         /// 获取渲染交换链的后台缓冲。
         /// </summary>
-        public IntPtr BackBuffer => RenderSurface == null ? IntPtr.Zero : RenderSurface.ComPointer;
+        public IntPtr BackBuffer => RenderSurface == null ? IntPtr.Zero : RenderSurface.NativePointer;
 
         /// <summary>
         /// 确认该渲染器是否支持指定视频格式。
@@ -228,14 +229,8 @@ namespace Leen.Media.Renderer
         /// 渲染一帧图像。
         /// </summary>
         /// <param name="buffers">帧数据缓冲，以不同的帧格式对应不同的帧数据数组。</param>
-        /// <exception cref="System.InvalidOperationException">设备或缓冲表面未初始化。</exception>
         public void Render(IntPtr[] buffers)
         {
-            if (m_InputSurface == null)
-            {
-                throw new InvalidOperationException("surface not ready,please setup surface first.");
-            }
-
             lock (r_renderLock)
             {
                 if (m_FrameFormat == FrameFormat.NV12 ||
@@ -255,7 +250,8 @@ namespace Leen.Media.Renderer
                 CreateScene();
             }
 
-            BackBufferRefreshed?.Invoke(this, EventArgs.Empty);
+            if (m_InputSurface != null)
+                BackBufferRefreshed?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -264,14 +260,8 @@ namespace Leen.Media.Renderer
         /// <param name="uBuffer">U分量数据缓冲。</param>
         /// <param name="vBuffer">V分量数据缓冲。</param>
         /// <param name="yBuffer">Y分量数据缓冲。</param>
-        /// <exception cref="System.InvalidOperationException">设备或缓冲表面未初始化。</exception>
         public void Render(IntPtr yBuffer, IntPtr uBuffer, IntPtr vBuffer)
         {
-            if (m_InputSurface == null)
-            {
-                throw new InvalidOperationException("surface not ready,please setup surface first.");
-            }
-
             lock (r_renderLock)
             {
                 FillBuffer(yBuffer, uBuffer, vBuffer);
@@ -281,7 +271,8 @@ namespace Leen.Media.Renderer
                 CreateScene();
             }
 
-            BackBufferRefreshed?.Invoke(this, EventArgs.Empty);
+            if (m_InputSurface != null)
+                BackBufferRefreshed?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
@@ -359,12 +350,7 @@ namespace Leen.Media.Renderer
             {
                 m_Direct3D = r_IsVistaOrBetter ? new Direct3DEx() : new Direct3D();
             }
-            catch(Direct3D9NotFoundException ex)
-            {
-                m_DriverOrDirectXNotReady = true;
-                throw new MediaDeviceUnavailableException(ex.Message, ex);
-            }
-            catch (Direct3D9Exception ex)
+            catch (SharpDXException ex)
             {
                 //either display driver or directx is not installed
                 m_DriverOrDirectXNotReady = true;
@@ -493,7 +479,7 @@ namespace Leen.Media.Renderer
         {
             PresentParameters presentParams = new PresentParameters()
             {
-                PresentFlags = PresentFlags.Video | PresentFlags.OverlayYCbCr_BT709,
+                PresentFlags = PresentFlags.Video | PresentFlags.OverlayYCbCrBt709,
                 Windowed = true,
                 DeviceWindowHandle = m_DummyRenderHwnd,
                 BackBufferWidth = width == 0 ? 1 : width,
@@ -511,7 +497,7 @@ namespace Leen.Media.Renderer
         private void FillBuffer(IntPtr bufferPtr)
         {
             DataRectangle rect = m_InputSurface.LockRectangle(LockFlags.None);
-            IntPtr surfaceBufferPtr = rect.Data.DataPointer;
+            IntPtr surfaceBufferPtr = rect.DataPointer;
             switch (m_FrameFormat)
             {
                 case FrameFormat.YV12:
@@ -603,7 +589,7 @@ namespace Leen.Media.Renderer
             }
 
             DataRectangle rect = m_InputSurface.LockRectangle(LockFlags.None);
-            IntPtr surfaceBufferPtr = rect.Data.DataPointer;
+            IntPtr surfaceBufferPtr = rect.DataPointer;
             switch (m_FrameFormat)
             {
                 case FrameFormat.YV12:
@@ -707,29 +693,39 @@ namespace Leen.Media.Renderer
                     break;
             }
 
+            if (m_InputSurface == null)
+            {
+                return;
+            }
+
             m_InputSurface.UnlockRectangle();
         }
 
         private void StretchSurface()
         {
-            m_Device.ColorFill(RenderSurface, BlackColor);
-
-            m_Device.StretchRectangle(m_InputSurface, RenderSurface, TextureFilter.Linear);
+            if (m_Device != null)
+            {
+                m_Device.ColorFill(RenderSurface, BlackColor);
+                m_Device.StretchRectangle(m_InputSurface, RenderSurface, TextureFilter.Linear);
+            }
         }
 
         private void CreateScene()
         {
-            m_Device.Clear(ClearFlags.Target, BlackColor, 1.0f, 0);
-            m_Device.BeginScene();
+            if (m_Device != null)
+            {
+                m_Device.Clear(ClearFlags.Target, BlackColor, 1.0f, 0);
+                m_Device.BeginScene();
 
-            m_Device.VertexFormat = CUSTOM_VERTEX;
+                m_Device.VertexFormat = CUSTOM_VERTEX;
 
-            m_Device.SetStreamSource(0, m_VertexBuffer, 0, Marshal.SizeOf(typeof(Vertex)));
+                m_Device.SetStreamSource(0, m_VertexBuffer, 0, Marshal.SizeOf(typeof(Vertex)));
 
-            m_Device.SetTexture(0, m_RendreTexture);
+                m_Device.SetTexture(0, m_RendreTexture);
 
-            m_Device.DrawPrimitives(PrimitiveType.TriangleFan, 0, 2);
-            m_Device.EndScene();
+                m_Device.DrawPrimitives(PrimitiveType.TriangleFan, 0, 2);
+                m_Device.EndScene();
+            }
         }
 
         /// <summary>
@@ -754,8 +750,8 @@ namespace Leen.Media.Renderer
 
         private void SetupMatrices(int width, int height)
         {
-            SlimDX.Matrix matOrtho = SlimDX.Matrix.OrthoOffCenterLH(0, width, height, 0, 0.0f, 1.0f);
-            SlimDX.Matrix matIdentity = SlimDX.Matrix.Identity;
+            Matrix matOrtho = Matrix.OrthoOffCenterLH(0, width, height, 0, 0.0f, 1.0f);
+            Matrix matIdentity = Matrix.Identity;
 
             m_Device.SetTransform(TransformState.Projection, matOrtho);
             m_Device.SetTransform(TransformState.World, matIdentity);

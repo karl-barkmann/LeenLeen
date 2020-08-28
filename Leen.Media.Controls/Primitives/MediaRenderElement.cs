@@ -522,7 +522,6 @@ namespace Leen.Media.Controls.Primitives
 								new PropertyChangedCallback(OnSourceChanged)));
 		/// <summary>
 		/// Gets/Sets the source on this <see cref="MediaRenderElement"/>.
-		///
 		/// The <see cref="Source"/> property is the Uri of the media to be played.
 		/// </summary>
 		public object Source
@@ -547,7 +546,7 @@ namespace Leen.Media.Controls.Primitives
 		/// Called when <see cref="Source"/> changed.
 		/// </summary>
 		/// <param name="e">Related event args.</param>
-		protected virtual void OnSourceChanged(DependencyPropertyChangedEventArgs e)
+		protected async virtual void OnSourceChanged(DependencyPropertyChangedEventArgs e)
 		{
 			if (PlayState != MediaPlayState.None)
 			{
@@ -555,18 +554,41 @@ namespace Leen.Media.Controls.Primitives
 			}
 
 			if (e.NewValue != null)
-				OpenImpl(e.NewValue);
+			{
+				if (AsyncOpen)
+					await OpenAsyncImpl(e.NewValue);
+				else
+					OpenImpl(e.NewValue);
+			}
 		}
 
 		#endregion
 
-		#region IsMuted
+		#region AsyncOpen
+		/// <summary>
+		/// 获取或设置一个值指示是否异步打开媒体（除非显示调用<see cref="Open(object)"/>）。
+		/// </summary>
+		public bool AsyncOpen
+		{
+			get { return (bool)GetValue(AsyncOpenProperty); }
+			set { SetValue(AsyncOpenProperty, value); }
+		}
 
 		/// <summary>
-		/// The DependencyProperty for the <see cref="IsMuted"/> property.
-		/// <seealso cref="IsMuted" />
+		/// DependencyProperty for <see cref="MediaRenderElement"/> <see cref="AsyncOpen"/> property.
 		/// </summary>
-		public static readonly DependencyProperty IsMutedProperty =
+		public static readonly DependencyProperty AsyncOpenProperty =
+			DependencyProperty.Register(nameof(AsyncOpen), typeof(bool), typeof(MediaRenderElement), new PropertyMetadata(true));
+
+        #endregion
+
+        #region IsMuted
+
+        /// <summary>
+        /// The DependencyProperty for the <see cref="IsMuted"/> property.
+        /// <seealso cref="IsMuted" />
+        /// </summary>
+        public static readonly DependencyProperty IsMutedProperty =
 			DependencyProperty.Register(
 						nameof(IsMuted),
 						typeof(bool),

@@ -478,6 +478,8 @@ namespace Leen.Practices.OrganizationTree
                 throw new ArgumentNullException(nameof(childNode));
             }
 
+            if (childNode.Behavior == DefaultBehavior && Behavior != DefaultBehavior)
+                childNode.SetBehavior(Behavior);
             if (IsExpanded)
             {
                 if (Children == null)
