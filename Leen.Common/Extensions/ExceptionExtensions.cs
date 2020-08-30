@@ -10,14 +10,9 @@ namespace Leen.Common
     /// </summary>
     public static class ExceptionExtensions
     {
-        private static readonly PropertyInfo _propertyRemoteStackTrace;
-
-        static ExceptionExtensions()
-        {
-            _propertyRemoteStackTrace = typeof(Exception).GetProperty(
+        private static readonly PropertyInfo _propertyRemoteStackTrace = typeof(Exception).GetProperty(
                 "RemoteStackTrace",
                 BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.NonPublic);
-        }
 
         /// <summary>
         /// 判断异常是否为必须继续抛出的异常。
@@ -44,7 +39,7 @@ namespace Leen.Common
         public static string BuildExceptionLog(this Exception exception, bool recursiveInnerException = true)
         {
             if (exception == null)
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
 
             return exception.BuildExceptionLog("发生未处理异常，以下是异常详细信息：", recursiveInnerException);
         }
@@ -59,7 +54,7 @@ namespace Leen.Common
         public static string BuildExceptionLog(this Exception exception, string logSummaryHeader, bool recursiveInnerException = true)
         {
             if (exception == null)
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
 
             StringBuilder logBuilder = new StringBuilder(logSummaryHeader);
 
@@ -92,7 +87,7 @@ namespace Leen.Common
         public static string GetRemoteStackTrace(this Exception exception)
         {
             if (exception == null)
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
             exception.PreserveStackTrace();
             return (string)_propertyRemoteStackTrace.GetValue(exception, null);
         }

@@ -61,9 +61,9 @@
     <Compile Include="Utils\CsvReader.cs" />
     <Compile Include="Utils\CsvWriter.cs" />
     <Compile Include="Utils\DumpHelper.cs" />
+    <Compile Include="Utils\ReflectionHelper.cs" />
     <Compile Include="Xml\DynamicXml.cs" />
     <Compile Include="DynamicXmlExtensions.cs" />
-    <Compile Include="Extensions\EnumerationExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\LoggerExtensions.cs" />
     <Compile Include="Extensions\GenericExtensions.cs" />
@@ -84,7 +84,6 @@
     <Compile Include="Utils\MarshalHelper.cs" />
     <Compile Include="Utils\NetHelper.cs" />
     <Compile Include="Utils\NetStatHelper.cs" />
-    <Compile Include="Utils\NumberHelper.cs" />
     <Compile Include="Utils\OSHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ApplicationRuntime.cs" />

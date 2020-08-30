@@ -15,11 +15,10 @@ namespace Demo.Windows.ViewModel
         /// </summary>
         public MainWindowViewModel()
         {
-            State = 1;
             ShowTingCrawlerCommand = new RelayCommand(OnShowTingCrawler);
             ShowNgaCrawlerCommand = new RelayCommand(OnShowNgaCrawler);
             ShowSimpleTraderCrawlerCommand = new RelayCommand(OnShowSimpleTraderCrawler);
-            SearchCommand = new RelayCommand<string>(OnSearch,OnCanSerach);
+            SearchCommand = new RelayCommand<string>(OnSearch, OnCanSerach);
         }
 
         public int State
@@ -31,6 +30,7 @@ namespace Demo.Windows.ViewModel
             }
         }
 
+        [WatchOn(nameof(State))]
         public ICommand SearchCommand { get; }
 
         public ICommand ShowTingCrawlerCommand { get; set; }
@@ -41,8 +41,13 @@ namespace Demo.Windows.ViewModel
 
         private void OnShowTingCrawler()
         {
-            var crawler = new TingCrawlerWindowViewModel();
-            UIService.ShowDialog(crawler, this);
+            Watch(() => State, (oldVal, newVal) =>
+            {
+                Console.WriteLine($"ÊôÐÔ¼àÌý£º{nameof(State)}=> {newVal}");
+            }, true);
+            State++;
+            //var crawler = new TingCrawlerWindowViewModel();
+            //UIService.ShowDialog(crawler, this);
         }
 
         private void OnShowNgaCrawler()
@@ -59,11 +64,18 @@ namespace Demo.Windows.ViewModel
 
         private bool OnCanSerach(string keywords)
         {
-            return true;
+            return State < 3;
+        }
+
+        [WatchOn(nameof(State), typeof(int))]
+        private void OnStateChange()
+        {
+
         }
 
         private void OnSearch(string keywords)
         {
+            State++;
             UIService.ShowInfoMessage($"ËÑË÷¹Ø¼ü×Ö£º{keywords}", "ÌáÊ¾", this);
         }
     }

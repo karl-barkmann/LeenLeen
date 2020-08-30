@@ -378,7 +378,7 @@ namespace Leen.Common
         {
             if (source == null)
             {
-                return default(TSource);
+                return default;
             }
             if (comparer == null)
             {
@@ -388,9 +388,9 @@ namespace Leen.Common
             {
                 if (!itor.MoveNext())
                 {
-                    return default(TSource);
+                    return default;
                 }
-                TSource max = default(TSource);
+                TSource max = default;
                 TKey maxKey = selector(max);
                 while (itor.MoveNext())
                 {
@@ -408,11 +408,11 @@ namespace Leen.Common
 
         public static bool IsSame<T>(this IEnumerable<T> source, IEnumerable<T> comparand)
         {
-            if ((object)source == null)
+            if (source == null)
             {
-                return (object)comparand == null;
+                return comparand == null;
             }
-            if ((object)comparand == null)
+            if (comparand == null)
             {
                 return false;
             }
@@ -430,7 +430,7 @@ namespace Leen.Common
                         {
                             return false;
                         }
-                    } while (Object.Equals(sit.Current, cit.Current));
+                    } while (Equals(sit.Current, cit.Current));
                     return false;
                 }
             }

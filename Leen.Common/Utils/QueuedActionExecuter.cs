@@ -254,19 +254,17 @@ namespace Leen.Common.Utils
 
                     Thread.Sleep(TimeSpan.FromMilliseconds(threadRunIntervalMilliseconds));
                 }
-                catch (ThreadAbortException ex)
+                catch (ThreadAbortException)
                 {
                     actions.Clear();
                     break;
                 }
             }
-
         }
 
         private void ExecuteActions()
         {
-            bool existAction = true;
-
+            bool existAction;
             do
             {
                 Action tempAction;
@@ -298,8 +296,7 @@ namespace Leen.Common.Utils
                     if (removeList != null && removeList.Contains(obj.Id))
                         removeList.Remove(obj.Id);
 
-                    if (ExcutedActionEvent != null)
-                        ExcutedActionEvent(obj, new ExecuteResultArgs() { ActionId = obj.Id, Result = result });
+                    ExcutedActionEvent?.Invoke(obj, new ExecuteResultArgs() { ActionId = obj.Id, Result = result });
                 }
                 else
                 {
@@ -308,15 +305,11 @@ namespace Leen.Common.Utils
             }
             while (existAction && isRunning);
             IsBusy = false;
-
-
         }
 
         private void OnBusyChanged()
         {
-            var handle = BusyChanged;
-            if (handle != null)
-                handle(this, new EventArgs());
+            BusyChanged?.Invoke(this, new EventArgs());
         }
 
         #endregion

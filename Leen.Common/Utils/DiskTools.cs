@@ -6,6 +6,27 @@ namespace Leen.Common.Utils
 {
     public static class DiskTools
     {
+        public static string GetFriendlySize(long size)
+        {
+            if (size >= 0x10000000000L)
+            {
+                return string.Format("{0:F}TB", size / 1.099512E+12f);
+            }
+            if (size >= 0x40000000L)
+            {
+                return string.Format("{0:F}GB", size / 1.073742E+09f);
+            }
+            if (size >= 0x100000L)
+            {
+                return string.Format("{0:F}MB", size / 1048576f);
+            }
+            if (size >= 0x400L)
+            {
+                return string.Format("{0:F}KB", size / 1024f);
+            }
+            return (size.ToString() + "B");
+        }
+
         public static long GetAllAvailableFreeSpace()
         {
             long num = 0L;

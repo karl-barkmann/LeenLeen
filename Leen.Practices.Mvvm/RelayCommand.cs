@@ -34,8 +34,8 @@ namespace Leen.Practices.Mvvm
     {
         #region Fields
 
-        private Func<bool> _canExecute;
-        private Action _execute;
+        private readonly Func<bool> _canExecute;
+        private readonly Action _execute;
         private string _text;
         private Key _key;
         private ModifierKeys _keyModifiers;
@@ -52,16 +52,20 @@ namespace Leen.Practices.Mvvm
         #region Constructors
 
         /// <summary>
+        /// 私有构造函数。
+        /// </summary>
+        protected RelayCommand()
+        {
+
+        }
+
+        /// <summary>
         /// 使用 <see cref="Action"/> 构造 <see cref="RelayCommand"/> 的实例。
         /// </summary>
         /// <param name="execute">执行命令时调用方法。</param>
         public RelayCommand(Action execute)
         {
-            if (execute == null)
-            {
-                throw new ArgumentNullException("execute");
-            }
-            _execute = execute;
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
         }
 
         /// <summary>
@@ -182,11 +186,7 @@ namespace Leen.Practices.Mvvm
         public RelayCommand(Action execute, Func<bool> canExecute)
             : this(execute)
         {
-            if (canExecute == null)
-            {
-                throw new ArgumentNullException("canExecute");
-            }
-            _canExecute = canExecute;
+            _canExecute = canExecute ?? throw new ArgumentNullException(nameof(canExecute));
         }
 
         /// <summary>
@@ -354,7 +354,7 @@ namespace Leen.Practices.Mvvm
         public ModifierKeys KeyModifiers
         {
             get { return _keyModifiers; }
-            private set
+            protected set
             {
                 SetProperty(ref _keyModifiers, value, () => KeyModifiers);
             }
@@ -366,7 +366,7 @@ namespace Leen.Practices.Mvvm
         public Key Key
         {
             get { return _key; }
-            private set
+            protected set
             {
                 SetProperty(ref _key, value, () => Key);
             }
@@ -378,7 +378,7 @@ namespace Leen.Practices.Mvvm
         public KeyGesture KeyGesture
         {
             get { return _keyGesture; }
-            private set
+            protected set
             {
                 if (SetProperty(ref _keyGesture, value, () => KeyGesture))
                 {
@@ -405,7 +405,7 @@ namespace Leen.Practices.Mvvm
         public string KeyGestureText
         {
             get { return _keyGestureText; }
-            private set
+            protected set
             {
                 SetProperty(ref _keyGestureText, value, () => KeyGestureText);
             }
@@ -425,7 +425,7 @@ namespace Leen.Practices.Mvvm
                 return _mouseGesture;
             }
 
-            private set
+            protected set
             {
                 if (SetProperty(ref _mouseGesture, value, () => MouseGesture))
                 {
@@ -451,7 +451,7 @@ namespace Leen.Practices.Mvvm
         public ModifierKeys MouseModifiers
         {
             get { return _mouseModifiers; }
-            private set
+            protected set
             {
                 SetProperty(ref _mouseModifiers, value, () => MouseModifiers);
             }
@@ -463,7 +463,7 @@ namespace Leen.Practices.Mvvm
         public MouseAction MouseAction
         {
             get { return _mouseAction; }
-            private set
+            protected set
             {
                 SetProperty(ref _mouseAction, value, () => MouseAction);
             }
@@ -476,7 +476,7 @@ namespace Leen.Practices.Mvvm
         public string MouseGestureText
         {
             get { return _mouseGestureText; }
-            private set
+            protected set
             {
                 SetProperty(ref _mouseGestureText, value, () => MouseGestureText);
             }
@@ -495,7 +495,7 @@ namespace Leen.Practices.Mvvm
         /// <returns></returns>
         public virtual bool CanExecute(object parameter)
         {
-            return _canExecute == null ? true : _canExecute();
+            return _canExecute == null || _canExecute();
         }
 
         /// <summary>

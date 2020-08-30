@@ -7,9 +7,9 @@ namespace Demo.Windows.View
     /// <summary>
     /// ChildWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class ChildWindow : Window,IView
+    public partial class TingCrawlerWindow : Window,IView
     {
-        public ChildWindow()
+        public TingCrawlerWindow()
         {
             InitializeComponent();
         }

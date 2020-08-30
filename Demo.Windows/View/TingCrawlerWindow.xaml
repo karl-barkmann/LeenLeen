@@ -1,4 +1,4 @@
-﻿<Window x:Class="Demo.Windows.View.ChildWindow"
+﻿<Window x:Class="Demo.Windows.View.TingCrawlerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"

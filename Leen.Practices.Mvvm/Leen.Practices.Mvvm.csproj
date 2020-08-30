@@ -90,6 +90,7 @@
     <Compile Include="ViewModelBase.cs" />
     <Compile Include="ViewModelLocationProvider.cs" />
     <Compile Include="ViewModelLocator.cs" />
+    <Compile Include="WatchOnAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Leen.Common\Leen.Common.csproj">

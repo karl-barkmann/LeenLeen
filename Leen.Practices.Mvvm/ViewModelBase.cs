@@ -6,7 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,10 +26,11 @@ namespace Leen.Practices.Mvvm
     {
         private bool editing;
         private bool _isBusy;
-        private string _busyMessage;
+        private string _busyMessage = "正在加载中...";
         private bool anyPropertyChanged;
         private bool _hasInitialized;
         private readonly static TaskCompletionSource<bool> s_TaskCompletionSource = new TaskCompletionSource<bool>();
+        private Dictionary<string, object> _watchOnProperties;
 
         static ViewModelBase()
         {
@@ -68,36 +71,6 @@ namespace Leen.Practices.Mvvm
         public virtual ILogger Logger { get; set; }
 
         /// <summary>
-        /// 获取指定类型的已注册接口。
-        /// </summary>
-        /// <typeparam name="T">接口类型。</typeparam>
-        /// <returns></returns>
-        public T GetInstance<T>()
-        {
-            return ServiceLocator.Current.GetInstance<T>();
-        }
-
-        /// <summary>
-        /// 获取指定类型的已注册接口。
-        /// </summary>
-        /// <typeparam name="T">接口类型。</typeparam>
-        /// <returns></returns>
-        public IEnumerable<T> GetInstances<T>()
-        {
-            return ServiceLocator.Current.GetAllInstances<T>();
-        }
-
-        /// <summary>
-        /// 获取指定类型及名称的已注册接口。
-        /// </summary>
-        /// <typeparam name="T">接口类型。</typeparam>
-        /// <returns></returns>
-        public T GetInstance<T>(string serviceName)
-        {
-            return ServiceLocator.Current.GetInstance<T>(serviceName);
-        }
-
-        /// <summary>
         /// 获取一个值，指示当前视图模型是否是在设计器中加载（Microsoft Visual Studio XAML UI Designer or Blend）。
         /// </summary>
         public static bool IsInDesignMode
@@ -106,7 +79,7 @@ namespace Leen.Practices.Mvvm
         }
 
         /// <summary>
-        /// 获取或设置一个值指示视图模型中的属性是否已有改变。
+        /// 获取或设置一个值指示视图模型自开始编辑以来是否有属性已发生改变。
         /// </summary>
         public bool AnyPropertyChanged
         {
@@ -138,7 +111,7 @@ namespace Leen.Practices.Mvvm
         public bool IsEditing
         {
             get { return editing; }
-            set
+            protected set
             {
                 if (editing == value)
                     return;
@@ -155,7 +128,7 @@ namespace Leen.Practices.Mvvm
         public bool IsBusy
         {
             get { return _isBusy; }
-            set
+            protected internal set
             {
                 SetProperty(ref _isBusy, value, () => IsBusy);
             }
@@ -167,7 +140,7 @@ namespace Leen.Practices.Mvvm
         public string BusyMessage
         {
             get { return _busyMessage; }
-            set
+            protected internal set
             {
                 SetProperty(ref _busyMessage, value, () => BusyMessage);
             }
@@ -186,6 +159,36 @@ namespace Leen.Practices.Mvvm
         }
 
         /// <summary>
+        /// 获取指定类型的已注册接口。
+        /// </summary>
+        /// <typeparam name="T">接口类型。</typeparam>
+        /// <returns></returns>
+        public static T GetInstance<T>()
+        {
+            return ServiceLocator.Current.GetInstance<T>();
+        }
+
+        /// <summary>
+        /// 获取指定类型的已注册接口。
+        /// </summary>
+        /// <typeparam name="T">接口类型。</typeparam>
+        /// <returns></returns>
+        public static IEnumerable<T> GetInstances<T>()
+        {
+            return ServiceLocator.Current.GetAllInstances<T>();
+        }
+
+        /// <summary>
+        /// 获取指定类型及名称的已注册接口。
+        /// </summary>
+        /// <typeparam name="T">接口类型。</typeparam>
+        /// <returns></returns>
+        public static T GetInstance<T>(string serviceName)
+        {
+            return ServiceLocator.Current.GetInstance<T>(serviceName);
+        }
+
+        /// <summary>
         /// 异步初始化后台数据，通常是一些耗时操作。
         /// <para>
         /// 当UI交互接口在处理交互请求时，会自动处理这些初始化。
@@ -197,13 +200,63 @@ namespace Leen.Practices.Mvvm
         /// <returns></returns>
         public virtual Task InitializeAsync()
         {
+            WatchMethods();
+            WatchProperties();
             return s_TaskCompletionSource.Task;
         }
 
-        internal void NotifyInitializeError(Exception ex)
+        private void WatchProperties()
         {
-            OnInitializeError(ex);
+            var properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(prop => Attribute.IsDefined(prop, typeof(WatchOnAttribute)));
+            foreach (var property in properties)
+            {
+                var propVal = property.GetValue(this, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                if (propVal == null)
+                {
+                    continue;
+                }
+                if (typeof(RelayCommand).IsAssignableFrom(propVal.GetType()))
+                {
+                    var watchOn = property.GetCustomAttribute<WatchOnAttribute>();
+                    if (watchOn != null)
+                    {
+                        if (_watchOnProperties == null)
+                            _watchOnProperties = new Dictionary<string, object>();
+                        _watchOnProperties.Add(property.Name, propVal);
+                        Watch(property.PropertyType, watchOn.TargetProperty, () =>
+                        {
+                            if (propVal is RelayCommand command)
+                            {
+                                command.RaiseCanExecuteChanged();
+                            }
+                        }, false);
+                    }
+                }
+            }
         }
+
+        private void WatchMethods()
+        {
+            var methods = GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(method => Attribute.IsDefined(method, typeof(WatchOnAttribute)));
+            foreach (var method in methods)
+            {
+                var parameters = method.GetParameters();
+                var watchOn = method.GetCustomAttribute<WatchOnAttribute>();
+                if ((parameters == null || parameters.Length < 1) && watchOn != null)
+                {
+                    Watch(watchOn.PropertyType, watchOn.TargetProperty, () =>
+                    {
+                        method.Invoke(this, null);
+                    }, false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 清除任何需要清除的资源，退订相关事件订阅。
+        /// </summary>
+        public virtual void CleanUp()
+        { }
 
         /// <summary>
         /// 但初始化发生错误时调用。
@@ -215,10 +268,20 @@ namespace Leen.Practices.Mvvm
         }
 
         /// <summary>
-        /// 清除任何需要清除的资源，退订相关事件订阅。
+        /// 但视图模型关联的视图加载是调用。
         /// </summary>
-        public virtual void CleanUp()
-        { }
+        protected internal virtual void OnLoad()
+        {
+
+        }
+
+        /// <summary>
+        /// 但视图模型关联的视图卸载是调用。
+        /// </summary>
+        protected internal virtual void OnUnload()
+        {
+
+        }
 
         /// <summary>
         /// 开始记录属性变更。
@@ -257,10 +320,15 @@ namespace Leen.Practices.Mvvm
         /// <param name="propertyName">指定属性名称。</param>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
         SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        protected override void RaisePropertyChanged([CallerMemberName]string propertyName = null)
+        protected override void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             base.RaisePropertyChanged(propertyName);
-            AnyPropertyChanged = editing & true && propertyName != "IsEditing";
+            AnyPropertyChanged = editing & true && propertyName != nameof(IsEditing);
+        }
+
+        internal void NotifyInitializeError(Exception ex)
+        {
+            OnInitializeError(ex);
         }
     }
 }

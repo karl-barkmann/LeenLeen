@@ -12,7 +12,7 @@ namespace Leen.Common.Utils
     {
         #region 成员变量
 
-        private static readonly Object sysRoot = new object();
+        private static readonly object sysRoot = new object();
         private List<KeyValuePair<Action, DateTime>> actions;
 
         private string threadName;
@@ -187,9 +187,7 @@ namespace Leen.Common.Utils
 
         private void OnBusyChanged()
         {
-            var handle = BusyChanged;
-            if (handle != null)
-                handle(this, new EventArgs());
+            BusyChanged?.Invoke(this, new EventArgs());
         }
 
         #endregion

@@ -175,7 +175,7 @@ namespace Leen.Practices.ErrorReport
             builder.AppendFormat("应用程序版本：{0}{1}", Application.ProductVersion, Environment.NewLine);
             using (Process currentProcess = Process.GetCurrentProcess())
             {
-                builder.AppendFormat("内存占用：物理{0} 虚拟：{1}{2}", NumberHelper.GetOptimalSize(currentProcess.WorkingSet64), NumberHelper.GetOptimalSize(currentProcess.VirtualMemorySize64), Environment.NewLine);
+                builder.AppendFormat("内存占用：物理{0} 虚拟：{1}{2}", DiskTools.GetFriendlySize(currentProcess.WorkingSet64), DiskTools.GetFriendlySize(currentProcess.VirtualMemorySize64), Environment.NewLine);
                 builder.AppendFormat("应用程序线程数：{0}{1}", currentProcess.Threads.Count, Environment.NewLine);
                 builder.AppendFormat("应用程序句柄数：{0}{1}", currentProcess.HandleCount, Environment.NewLine);
             }
@@ -189,7 +189,7 @@ namespace Leen.Practices.ErrorReport
                     DriveInfo info = new DriveInfo(str2);
                     if ((info.DriveType == DriveType.Fixed) || (info.DriveType == DriveType.Network))
                     {
-                        builder.AppendFormat(format, new object[] { str2, NumberHelper.GetOptimalSize(info.TotalSize), NumberHelper.GetOptimalSize(info.AvailableFreeSpace), Environment.NewLine });
+                        builder.AppendFormat(format, new object[] { str2, DiskTools.GetFriendlySize(info.TotalSize), DiskTools.GetFriendlySize(info.AvailableFreeSpace), Environment.NewLine });
                     }
                 }
             }

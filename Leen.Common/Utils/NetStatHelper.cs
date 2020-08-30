@@ -15,12 +15,11 @@ namespace Leen.Common.Utils
     /// <summary>
     /// 使用netstat管道命令获取进程及端口信息。
     /// </summary>
-    public class NetStatHelper
+    public static class NetStatHelper
     {
         #region Members
 
-        private static readonly string FINDLISTENINGPROCESS = "netstat -nao |find /i \"listen\"";
-        private static readonly string EXIT = "exit";
+        private const string FINDLISTENINGPROCESS = "netstat -nao |find /i \"listen\"";
 
         #endregion
 
@@ -32,10 +31,7 @@ namespace Leen.Common.Utils
         /// <exception cref="System.ArgumentException">端口号指定错误。</exception>
         public static bool PortCanUse(int port)
         {
-            Process process = null;
-
-            process = GetListeningProcess(port);
-
+            Process process = GetListeningProcess(port);
             if (process == null || process.HasExited)
                 return true;
 
@@ -73,11 +69,7 @@ namespace Leen.Common.Utils
         {
             if (port < 1 || port > 65536)
                 throw new ArgumentException("port", "端口号指定错误。");
-
-            Process process = null;
-
-            process = GetListeningProcess(port);
-
+            Process process = GetListeningProcess(port);
             return process;
         }
 
@@ -87,10 +79,10 @@ namespace Leen.Common.Utils
         {
             Process netStateProcess = new Process();
 
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe");
+            ProcessStartInfo startInfo = new ProcessStartInfo("cmd.exe");
             startInfo.Arguments = "/c " + commandline;
             startInfo.CreateNoWindow = true;
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
 
@@ -128,12 +120,13 @@ namespace Leen.Common.Utils
 
             foreach (string result in netStateOutPuts)
             {
-                int port;
-                int processId = Analyse(result, out port);
+                int processId = Analyse(result, out int port);
                 if (ports.ContainsKey(port))
                 {
-                    List<int> existsPorts = new List<int>(ports[processId]);
-                    existsPorts.Add(port);
+                    List<int> existsPorts = new List<int>(ports[processId])
+                    {
+                        port
+                    };
 
                     ports[processId] = existsPorts.ToArray();
                 }

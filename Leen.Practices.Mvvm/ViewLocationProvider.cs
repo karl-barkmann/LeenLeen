@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Threading;
 
 namespace Leen.Practices.Mvvm
 {
@@ -214,15 +212,15 @@ namespace Leen.Practices.Mvvm
                 return;
             }
 
-            //Visual tree has a up to down initializing 
+            //WPF Visual tree has a up to down initializing behavior
             if (owner.IsLoaded)
             {
                 views.Add(view);
 
                 InitializeAsync(view);
 
-                owner.Closing += owner_Closing;
-                owner.Closed += OwnerClosed;
+                owner.Closing += OnOwnerClosing;
+                owner.Closed += OnOwnerClosed;
             }
             else
             {
@@ -241,7 +239,9 @@ namespace Leen.Practices.Mvvm
                 {
                     if (view.DataContext is ViewModelBase viewModel)
                     {
+                        viewModel.IsLoaded = false;
                         viewModel.IsUnloaded = true;
+                        viewModel.OnUnload();
                     }
                     view.ActualView.Loaded += LancyRegister;
                 }
@@ -255,6 +255,9 @@ namespace Leen.Practices.Mvvm
                     //clean up resources,and event subscribution
                     if (view.DataContext is ViewModelBase viewModel)
                     {
+                        viewModel.IsLoaded = false;
+                        viewModel.IsUnloaded = true;
+                        viewModel.OnUnload();
                         viewModel.CleanUp();
                     }
                     if (view.DataContext is IDisposable disposable)
@@ -392,7 +395,7 @@ namespace Leen.Practices.Mvvm
             return ownner;
         }
 
-        private static void OwnerClosed(object sender, EventArgs e)
+        private static void OnOwnerClosed(object sender, EventArgs e)
         {
             if (sender is Window ownner)
             {
@@ -405,11 +408,11 @@ namespace Leen.Practices.Mvvm
                     Unregister(view);
                 }
 
-                ownner.Closed -= OwnerClosed;
+                ownner.Closed -= OnOwnerClosed;
             }
         }
 
-        static void owner_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        static void OnOwnerClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (sender is Window ownner)
             {
@@ -421,7 +424,7 @@ namespace Leen.Practices.Mvvm
                 {
                     Unregister(view);
                 }
-                ownner.Closing -= owner_Closing;
+                ownner.Closing -= OnOwnerClosing;
             }
         }
 
@@ -446,16 +449,16 @@ namespace Leen.Practices.Mvvm
 
         private static void InitializeAsync(IView targetView)
         {
-            if (targetView.DataContext is ViewModelBase vm)
+            if (targetView.DataContext is ViewModelBase vm && !vm.HasInitialized)
             {
                 vm.IsLoaded = true;
+                vm.IsUnloaded = false;
+                vm.OnLoad();
                 vm.IsBusy = true;
-                vm.BusyMessage = "正在加载中...";
                 vm.InitializeAsync().ContinueWith((x, state) =>
                 {
                     var target = (ViewModelBase)state;
                     target.IsBusy = false;
-                    target.BusyMessage = string.Empty;
                     if (x.Exception != null)
                     {
                         target.NotifyInitializeError(x.Exception);

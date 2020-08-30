@@ -1,17 +1,18 @@
-﻿<Window x:Class="Demo.Windows.View.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:Primitives="clr-namespace:Leen.Windows.Controls.Primitives;assembly=Leen.Windows.Controls"
-        xmlns:controls="clr-namespace:Leen.Windows.Controls;assembly=Leen.Windows.Controls"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:li="clr-namespace:System.Windows.Interactivity;assembly=Leen.Windows.Controls"
-        xmlns:lie="clr-namespace:System.Windows.Interactivity;assembly=Leen.Practices.Mvvm"
-        xmlns:mvvm="clr-namespace:Leen.Practices.Mvvm;assembly=Leen.Practices.Mvvm"
-        Title="MainWindow"
-        Width="525"
-        Height="350"
-        mvvm:ViewLocator.IsRegistered="True"
-        mvvm:ViewModelLocator.AutoWireViewModel="True">
+﻿<Window
+    x:Class="Demo.Windows.View.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Primitives="clr-namespace:Leen.Windows.Controls.Primitives;assembly=Leen.Windows.Controls"
+    xmlns:controls="clr-namespace:Leen.Windows.Controls;assembly=Leen.Windows.Controls"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:li="clr-namespace:System.Windows.Interactivity;assembly=Leen.Windows.Controls"
+    xmlns:lie="clr-namespace:System.Windows.Interactivity;assembly=Leen.Practices.Mvvm"
+    xmlns:mvvm="clr-namespace:Leen.Practices.Mvvm;assembly=Leen.Practices.Mvvm"
+    Title="MainWindow"
+    Width="525"
+    Height="350"
+    mvvm:ViewLocator.IsRegistered="True"
+    mvvm:ViewModelLocator.AutoWireViewModel="True">
     <Window.Resources>
 
         <Style x:Key="DoubleUpDownStyle1" TargetType="{x:Type controls:DoubleUpDown}">
@@ -20,10 +21,11 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type controls:DoubleUpDown}">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Opacity="{TemplateBinding Opacity}">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Opacity="{TemplateBinding Opacity}">
                             <Grid Margin="{TemplateBinding Padding}" Background="Transparent">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
@@ -34,23 +36,26 @@
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
 
-                                <TextBox x:Name="PART_INPUT"
-                                         Grid.RowSpan="2"
-                                         Grid.Column="0"
-                                         VerticalContentAlignment="Center"
-                                         Background="{TemplateBinding Background}"
-                                         Foreground="{TemplateBinding Foreground}"
-                                         TextAlignment="Left" />
-                                <RepeatButton x:Name="PART_UP"
-                                              Grid.Row="0"
-                                              Grid.Column="1"
-                                              Command="{x:Static controls:NumericUpDown.IncreaseSmall}"
-                                              Content="△" />
-                                <RepeatButton x:Name="PART_DOWN"
-                                              Grid.Row="1"
-                                              Grid.Column="1"
-                                              Command="{x:Static controls:NumericUpDown.DecreaseSmall}"
-                                              Content="▽" />
+                                <TextBox
+                                    x:Name="PART_INPUT"
+                                    Grid.RowSpan="2"
+                                    Grid.Column="0"
+                                    VerticalContentAlignment="Center"
+                                    Background="{TemplateBinding Background}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    TextAlignment="Left" />
+                                <RepeatButton
+                                    x:Name="PART_UP"
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Command="{x:Static controls:NumericUpDown.IncreaseSmall}"
+                                    Content="△" />
+                                <RepeatButton
+                                    x:Name="PART_DOWN"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Command="{x:Static controls:NumericUpDown.DecreaseSmall}"
+                                    Content="▽" />
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -59,62 +64,69 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <controls:SearchBox x:Name="searchBox"
-                            Width="230"
-                            Margin="96,52,0,0"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top"
-                            VerticalContentAlignment="Center"
-                            CornerRadius="10"
-                            Text="123456"
-                            TextWrapping="Wrap"
-                            WatermarkText="搜索组织机构、设备、用户">
+        <controls:SearchBox
+            x:Name="searchBox"
+            Width="230"
+            Margin="10,48,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            VerticalContentAlignment="Center"
+            CornerRadius="10"
+            Text="123456"
+            TextWrapping="Wrap"
+            WatermarkText="搜索组织机构、设备、用户">
             <i:Interaction.Behaviors>
                 <li:SearchBoxEnterBehavior Command="{Binding SearchCommand}" CommandParameter="{Binding ElementName=searchBox, Path=Text}" />
             </i:Interaction.Behaviors>
         </controls:SearchBox>
-        <controls:DoubleUpDown x:Name="input"
-                               Width="130"
-                               Margin="53,93,0,0"
-                               HorizontalAlignment="Left"
-                               VerticalAlignment="Top"
-                               LargeChange="10"
-                               Maximum="10000"
-                               Minimum="0"
-                               SmallChange="1"
-                               StringFormat="N2"
-                               Style="{DynamicResource DoubleUpDownStyle1}" />
-        <Button Width="75"
-                Margin="10,10,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Command="{Binding ShowTingCrawlerCommand}"
-                Content="爬虫1" />
-        <Button Width="75"
-                Margin="108,10,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Command="{Binding ShowNgaCrawlerCommand}"
-                Content="爬虫2" />
+        <controls:DoubleUpDown
+            x:Name="input"
+            Width="130"
+            Margin="10,89,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            LargeChange="10"
+            Maximum="10000"
+            Minimum="0"
+            SmallChange="1"
+            StringFormat="N2"
+            Style="{DynamicResource DoubleUpDownStyle1}" />
+        <Button
+            Width="75"
+            Margin="10,10,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Command="{Binding ShowTingCrawlerCommand}"
+            Content="爬虫1" />
+        <Button
+            Width="75"
+            Margin="108,10,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Command="{Binding ShowNgaCrawlerCommand}"
+            Content="爬虫2" />
 
-        <Button Width="75"
-                Margin="206,10,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Command="{Binding ShowSimpleTraderCrawlerCommand}"
-                Content="爬虫3" />
-        <controls:ProgressRing HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               ActiveMessage=""
-                               Background="Black" />
-        <Primitives:ProgressCircle Width="250"
-                                   Height="250"
-                                   Margin="0,0,0,0"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Top"
-                                   Progress="{Binding ElementName=input, Path=Value}"
-                                   StrokeCap="Round"
-                                   Thickness="32">
+        <Button
+            Width="75"
+            Margin="206,10,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Command="{Binding ShowSimpleTraderCrawlerCommand}"
+            Content="爬虫3" />
+        <controls:ProgressRing
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            ActiveMessage=""
+            Background="Black" />
+        <Primitives:ProgressCircle
+            Width="250"
+            Height="250"
+            Margin="0,0,0,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Progress="{Binding ElementName=input, Path=Value}"
+            StrokeCap="Round"
+            Thickness="32">
             <Primitives:ProgressCircle.Stroke>
                 <LinearGradientBrush StartPoint="0.04904099, 0.5" EndPoint="1.048927, 0.5661898">
                     <LinearGradientBrush.GradientStops>
@@ -125,19 +137,26 @@
                 </LinearGradientBrush>
             </Primitives:ProgressCircle.Stroke>
         </Primitives:ProgressCircle>
-        <TextBox Width="120"
-                 Height="23"
-                 Margin="42,152,0,0"
-                 HorizontalAlignment="Left"
-                 VerticalAlignment="Top"
-                 Text="TextBox"
-                 TextWrapping="Wrap">
+        <TextBox
+            Width="120"
+            Height="23"
+            Margin="10,146,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="TextBox"
+            TextWrapping="Wrap">
             <i:Interaction.Behaviors>
-                <lie:WatermarkBehavior WatermarkFontSize="16"
-                                       WatermarkForeground="Red"
-                                       WatermarkPadding="15,0"
-                                       WatermarkText="请输入用户名" />
+                <lie:WatermarkBehavior
+                    WatermarkFontSize="16"
+                    WatermarkForeground="Red"
+                    WatermarkPadding="15,0"
+                    WatermarkText="请输入用户名" />
             </i:Interaction.Behaviors>
         </TextBox>
+
+        <Button
+            VerticalAlignment="Bottom"
+            Command="{Binding SearchCommand}"
+            Content="Search" />
     </Grid>
 </Window>

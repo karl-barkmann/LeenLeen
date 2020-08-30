@@ -23,7 +23,7 @@ namespace Leen.Common.Utils
                 localKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
             RegistryKey wer = localKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows\Windows Error Reporting", true);
             RegistryKey app = wer.CreateSubKey("LocalDumps\\" + appName, RegistryKeyPermissionCheck.ReadWriteSubTree);
-            if (dumpPath == string.Empty) dumpPath = appName;
+            if (string.IsNullOrEmpty(dumpPath)) dumpPath = appName;
             app.SetValue("DumpFolder", @"%LOCALAPPDATA%\CrashDumps\" + dumpPath.Trim('\\'), RegistryValueKind.ExpandString);
             app.Close();
             wer.Close();
