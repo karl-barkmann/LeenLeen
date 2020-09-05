@@ -1,5 +1,6 @@
 ﻿using CommonServiceLocator;
 using Leen.Common;
+using Leen.Common.Utils;
 using Leen.Logging;
 using Leen.Windows.Interaction;
 using System;
@@ -210,26 +211,29 @@ namespace Leen.Practices.Mvvm
             var properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(prop => Attribute.IsDefined(prop, typeof(WatchOnAttribute)));
             foreach (var property in properties)
             {
-                var propVal = property.GetValue(this, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                var propVal = ReflectionHelper.GetPropValue(this, property.Name);
                 if (propVal == null)
                 {
                     continue;
                 }
                 if (typeof(RelayCommand).IsAssignableFrom(propVal.GetType()))
                 {
-                    var watchOn = property.GetCustomAttribute<WatchOnAttribute>();
-                    if (watchOn != null)
+                    var watchOnList = property.GetCustomAttributes<WatchOnAttribute>();
+                    if (watchOnList != null)
                     {
                         if (_watchOnProperties == null)
                             _watchOnProperties = new Dictionary<string, object>();
                         _watchOnProperties.Add(property.Name, propVal);
-                        Watch(property.PropertyType, watchOn.TargetProperty, () =>
+                        foreach (var watchOn in watchOnList)
                         {
-                            if (propVal is RelayCommand command)
+                            Watch(watchOn.PropertyType, watchOn.TargetProperty, () =>
                             {
-                                command.RaiseCanExecuteChanged();
-                            }
-                        }, false);
+                                if (propVal is RelayCommand command)
+                                {
+                                    command.RaiseCanExecuteChanged();
+                                }
+                            }, false);
+                        }
                     }
                 }
             }
@@ -237,17 +241,33 @@ namespace Leen.Practices.Mvvm
 
         private void WatchMethods()
         {
-            var methods = GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(method => Attribute.IsDefined(method, typeof(WatchOnAttribute)));
+            var methods = GetType().GetMethods(BindingFlags.Public
+                                               | BindingFlags.NonPublic
+                                               | BindingFlags.Instance).Where(method => Attribute.IsDefined(method, typeof(WatchOnAttribute)));
             foreach (var method in methods)
             {
                 var parameters = method.GetParameters();
-                var watchOn = method.GetCustomAttribute<WatchOnAttribute>();
-                if ((parameters == null || parameters.Length < 1) && watchOn != null)
+                var watchOnList = method.GetCustomAttributes<WatchOnAttribute>();
+                if (watchOnList != null)
                 {
-                    Watch(watchOn.PropertyType, watchOn.TargetProperty, () =>
+                    foreach (var watchOn in watchOnList)
                     {
-                        method.Invoke(this, null);
-                    }, false);
+                        Watch(watchOn.PropertyType, watchOn.TargetProperty, (oldVal, newVal) =>
+                        {
+                            if (parameters == null || parameters.Length < 1)
+                            {
+                                method.Invoke(this, null);
+                            }
+                            else if (parameters.Length == 1 && (watchOn.PropertyType == null || parameters[0].ParameterType == watchOn.PropertyType))
+                            {
+                                method.Invoke(this, new object[1] { newVal });
+                            }
+                            else if (parameters.Length == 2 && (watchOn.PropertyType == null || parameters.All(x => x.ParameterType == watchOn.PropertyType)))
+                            {
+                                method.Invoke(this, new object[2] { oldVal, newVal });
+                            }
+                        });
+                    }
                 }
             }
         }

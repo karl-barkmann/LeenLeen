@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -467,7 +468,7 @@ namespace Leen.Practices.Mvvm
                     {
                         target.HasInitialized = true;
                     }
-                }, vm);
+                }, vm, TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
     }

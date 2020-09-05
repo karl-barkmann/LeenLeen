@@ -1,7 +1,9 @@
 ﻿using Leen.Common.Utils;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -46,50 +48,34 @@ namespace Leen.Practices.Mvvm
             {
                 throw new ArgumentNullException(nameof(propertyExpression));
             }
-            if (!(propertyExpression.Body is MemberExpression expression))
-            {
-                throw new ArgumentException("expression is not a member access expression.", nameof(propertyExpression));
-            }
-            PropertyInfo info = expression.Member as PropertyInfo;
-            if (info == null)
-            {
-                throw new ArgumentException("The member access expression does not access a property.", nameof(propertyExpression));
-            }
 
-            //For some reason,developers may delcare a property as private.
-            var method = info.GetGetMethod(true);
-            if (method.IsStatic)
+            var properties = new List<string>();
+            Expression expression = propertyExpression.Body;
+            do
             {
-                throw new ArgumentException("The referenced property is a static property.", nameof(propertyExpression));
-            }
+                if (expression is MemberExpression memberExpression && memberExpression.Member is PropertyInfo property)
+                {
+                    expression = memberExpression.Expression;
+                    var method = property.GetGetMethod(true);
+                    if (method.IsStatic)
+                    {
+                        throw new ArgumentException("The referenced property is a static property.", nameof(propertyExpression));
+                    }
+                    properties.Add(memberExpression.Member.Name);
+                }
+                else
+                {
+                    break;
+                }
+            } while (expression != null);
 
-            return expression.Member.Name;
-        }
-
-        /// <summary>
-        /// Watch on a property changed.
-        /// </summary>
-        /// <typeparam name="T">Property type.</typeparam>
-        /// <param name="propertyName">Property name.</param>
-        /// <param name="callback">Callback Lambda when the property changed. </param>
-        /// <param name="deepWatch">Where Watch property deeply if a property is a refernce value.</param>
-        /// <returns></returns>
-        public IDisposable Watch<T>(string propertyName, Action<T, T> callback, bool deepWatch)
-        {
-            if (string.IsNullOrEmpty(propertyName) || string.IsNullOrWhiteSpace(propertyName))
+            if(properties.Count<1)
             {
-                throw new ArgumentException($"{nameof(propertyName)} can not be null or empty", nameof(propertyName));
+                throw new ArgumentException("The expression does not access a property.", nameof(propertyExpression));
             }
 
-            if (callback is null)
-            {
-                throw new ArgumentNullException(nameof(callback));
-            }
-
-            var propertyExpression = Expression.Lambda<Func<T>>(Expression.Property(Expression.Constant(this), propertyName));
-
-            var watcher = new PropertyWatcher<T>(this, propertyExpression, callback, deepWatch);
-            return watcher;
+            properties.Reverse();
+            return string.Join(".", properties);
         }
 
         /// <summary>
@@ -119,14 +105,37 @@ namespace Leen.Practices.Mvvm
         /// <summary>
         /// Watch on a property changed.
         /// </summary>
-        /// <param name="propType">Property type.</param>
+        /// <param name="propertyType">Property type.</param>
         /// <param name="propertyName">Property name.</param>
         /// <param name="callback">Callback Lambda when the property changed. </param>
         /// <param name="deepWatch">Where Watch property deeply if a property is a refernce value.</param>
         /// <returns></returns>
-        protected internal IDisposable Watch(Type propType, string propertyName, Action callback, bool deepWatch)
+        private protected IDisposable Watch(Type propertyType, string propertyName, Action callback, bool deepWatch)
         {
-            var watcher = new PropertyWatcher(this, propType, propertyName, callback, deepWatch);
+            var watcher = new PropertyWatcher(this, propertyType, propertyName, callback, deepWatch);
+            return watcher;
+        }
+
+        /// <summary>
+        /// Watch on a property changed.
+        /// </summary>
+        /// <param name="propertyName">Property name.</param>
+        /// <param name="callback">Callback Lambda when the property changed. </param>
+        private protected IDisposable Watch<T>(string propertyName, Action<T, T> callback)
+        {
+            var watcher = new PropertyWatcher<T>(this, propertyName, callback);
+            return watcher;
+        }
+
+        /// <summary>
+        /// Watch on a property changed.
+        /// </summary>
+        /// <param name="propertyType">Property type.</param>
+        /// <param name="propertyName">Property name.</param>
+        /// <param name="callback">Callback Lambda when the property changed. </param>
+        private protected IDisposable Watch(Type propertyType, string propertyName, Action<object, object> callback)
+        {
+            var watcher = new PropertyWatcher(this, propertyType, propertyName, callback);
             return watcher;
         }
 
@@ -263,6 +272,7 @@ namespace Leen.Practices.Mvvm
         {
             private T oldVal;
             private T newVal;
+            private readonly List<IDisposable> _deepWatchers;
 
             public PropertyWatcher(BindableBase target, Expression<Func<T>> propertyExpression, Action<T, T> callback, bool deepWatch)
             {
@@ -270,22 +280,71 @@ namespace Leen.Practices.Mvvm
                 PropertyName = ExtractPropertyName(propertyExpression);
                 Callback = callback;
                 DeepWatch = deepWatch;
-                if (deepWatch)
+                DirectlyWatch = PropertyName.IndexOf('.') > 0;
+
+                if (deepWatch && !DirectlyWatch)
                 {
-                    var propertyInfo = (propertyExpression.Body as MemberExpression).Member as PropertyInfo;
-                    var propertyValue = propertyInfo.GetValue(Target, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                    var propertyValue = ReflectionHelper.GetPropValue<T>(target, PropertyName);
                     if (propertyValue is BindableBase nestTarget)
                     {
-                        var properties = nestTarget.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                        if (_deepWatchers == null)
+                            _deepWatchers = new List<IDisposable>();
+                        var properties = nestTarget.GetType().GetProperties(BindingFlags.Public
+                                                                            | BindingFlags.NonPublic
+                                                                            | BindingFlags.Instance);
                         foreach (var property in properties)
                         {
-                            nestTarget.Watch(property.PropertyType, property.Name, () =>
+                            var watcher = nestTarget.Watch(property.PropertyType, property.Name, () =>
                             {
                                 callback((T)propertyValue, (T)propertyValue);
                             }, deepWatch);
+                            _deepWatchers.Add(watcher);
                         }
                     }
                 }
+
+                if (DirectlyWatch)
+                {
+                    var lastPropValue = ReflectionHelper.GetPropValue<T>(target, PropertyName);
+                    if (lastPropValue is BindableBase lastTarget)
+                    {
+                        if (_deepWatchers == null)
+                            _deepWatchers = new List<IDisposable>();
+                        var properties = lastTarget.GetType().GetProperties(BindingFlags.Public
+                                                                       | BindingFlags.NonPublic
+                                                                       | BindingFlags.Instance);
+                        foreach (var property in properties)
+                        {
+                            var watcher = lastTarget.Watch(property.PropertyType, property.Name, () =>
+                            {
+                                callback((T)lastPropValue, (T)lastPropValue);
+                            }, deepWatch);
+                            _deepWatchers.Add(watcher);
+                        }
+                    }
+                    else
+                    {
+                        var preLastPropValue = ReflectionHelper.GetPropValue(target, PropertyName.Substring(0, PropertyName.LastIndexOf('.')));
+                        if (preLastPropValue is BindableBase preTarget)
+                        {
+                            if (_deepWatchers == null)
+                                _deepWatchers = new List<IDisposable>();
+
+                            var propertyName = PropertyName.Substring(PropertyName.LastIndexOf('.') + 1);
+                            var watcher = preTarget.Watch(propertyName, callback);
+                            _deepWatchers.Add(watcher);
+                        }
+                    }
+                }
+                Target.PropertyChanged += OnTargetPropertyChanged;
+                Target.PropertyChanging += OnTargetPropertyChanging;
+            }
+
+            public PropertyWatcher(BindableBase target, string propertyName, Action<T, T> callback)
+            {
+                Target = target;
+                PropertyName = propertyName;
+                Callback = callback;
                 Target.PropertyChanged += OnTargetPropertyChanged;
                 Target.PropertyChanging += OnTargetPropertyChanging;
             }
@@ -300,11 +359,19 @@ namespace Leen.Practices.Mvvm
 
             private protected bool DeepWatch { get; }
 
+            public bool DirectlyWatch { get; }
+
             public void Dispose()
             {
                 if (!IsDisposed)
                 {
+                    if (_deepWatchers != null)
+                    {
+                        _deepWatchers.ForEach(x => x.Dispose());
+                    }
+                    _deepWatchers.Clear();
                     Target.PropertyChanged -= OnTargetPropertyChanged;
+                    Target.PropertyChanging -= OnTargetPropertyChanging;
                     IsDisposed = true;
                     oldVal = default;
                     newVal = default;
@@ -315,7 +382,7 @@ namespace Leen.Practices.Mvvm
             {
                 if (e.PropertyName == PropertyName)
                 {
-                    newVal = (T)ReflectionHelper.GetPropValue(Target, PropertyName);
+                    newVal = ReflectionHelper.GetPropValue<T>(Target, PropertyName);
                     try
                     {
                         Callback(oldVal, newVal);
@@ -332,42 +399,60 @@ namespace Leen.Practices.Mvvm
             {
                 if (e.PropertyName == PropertyName)
                 {
-                    oldVal = (T)ReflectionHelper.GetPropValue(Target, PropertyName);
+                    oldVal = ReflectionHelper.GetPropValue<T>(Target, PropertyName);
                 }
             }
         }
 
         private class PropertyWatcher : IDisposable
         {
+            private readonly List<IDisposable> _deepWatchers;
+            private object oldVal;
+            private object newVal;
+
             public PropertyWatcher(BindableBase target, Type propertyType, string propertyName, Action callback, bool deepWatch)
             {
                 Target = target;
+                PropertyType = propertyType;
                 PropertyName = propertyName;
                 Callback = callback;
                 DeepWatch = deepWatch;
                 if (deepWatch)
                 {
-                    var propertyInfo = target.GetType().GetProperty(propertyName, propertyType);
-                    var propertyValue = propertyInfo.GetValue(Target, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.GetProperty, null, null, null);
+                    var propertyValue = ReflectionHelper.GetPropValue(target, propertyName, propertyType);
                     if (propertyValue is BindableBase nestTarget)
                     {
+                        _deepWatchers = new List<IDisposable>();
                         var properties = nestTarget.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                         foreach (var property in properties)
                         {
-                            nestTarget.Watch(property.PropertyType, property.Name, callback, deepWatch);
+                            var watcher = nestTarget.Watch(property.PropertyType, property.Name, callback, deepWatch);
+                            _deepWatchers.Add(watcher);
                         }
                     }
                 }
-                Target.PropertyChanged += Target_PropertyChanged;
+                Target.PropertyChanged += OnTargetPropertyChanged;
+            }
+
+            public PropertyWatcher(BindableBase target, Type propertyType, string propertyName, Action<object,object> callback)
+            {
+                Target = target;
+                PropertyType = propertyType;
+                PropertyName = propertyName;
+                ValCallback = callback;
+                Target.PropertyChanging += OnTargetPropertyChanging;
+                Target.PropertyChanged += OnTargetPropertyChanged;
             }
 
             public bool IsDisposed { get; private set; }
 
             private protected BindableBase Target { get; }
-
+            public Type PropertyType { get; }
             private protected string PropertyName { get; }
 
             public Action Callback { get; }
+
+            public Action<object, object> ValCallback { get; }
 
             public bool DeepWatch { get; }
 
@@ -375,16 +460,38 @@ namespace Leen.Practices.Mvvm
             {
                 if (!IsDisposed)
                 {
-                    Target.PropertyChanged -= Target_PropertyChanged;
+                    if (_deepWatchers != null)
+                    {
+                        _deepWatchers.ForEach(x => x.Dispose());
+                    }
+                    _deepWatchers.Clear();
+                    Target.PropertyChanged -= OnTargetPropertyChanged;
+                    Target.PropertyChanging -= OnTargetPropertyChanging;
                     IsDisposed = true;
                 }
             }
 
-            private void Target_PropertyChanged(object sender, PropertyChangedEventArgs e)
+            private void OnTargetPropertyChanging(object sender, PropertyChangingEventArgs e)
+            {
+                if (e.PropertyName == PropertyName)
+                    oldVal = ReflectionHelper.GetPropValue(Target, PropertyName, PropertyType);
+            }
+
+            private void OnTargetPropertyChanged(object sender, PropertyChangedEventArgs e)
             {
                 if (e.PropertyName == PropertyName)
                 {
-                    Callback();
+                    newVal = ReflectionHelper.GetPropValue(Target, PropertyName, PropertyType);
+                    Callback?.Invoke();
+                    try
+                    {
+                        ValCallback?.Invoke(oldVal, newVal);
+                    }
+                    finally
+                    {
+                        oldVal = default;
+                        newVal = default;
+                    }
                 }
             }
         }

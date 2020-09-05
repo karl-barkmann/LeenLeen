@@ -10,6 +10,9 @@ namespace Demo.Windows.ViewModel
     {
         private int _state;
 
+        private MainWindowViewModel _inner;
+        private MainWindowViewModel _nest;
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -19,6 +22,24 @@ namespace Demo.Windows.ViewModel
             ShowNgaCrawlerCommand = new RelayCommand(OnShowNgaCrawler);
             ShowSimpleTraderCrawlerCommand = new RelayCommand(OnShowSimpleTraderCrawler);
             SearchCommand = new RelayCommand<string>(OnSearch, OnCanSerach);
+        }
+
+        public MainWindowViewModel Inner
+        {
+            get { return _inner; }
+            set
+            {
+                SetProperty(ref _inner, value, () => Inner);
+            }
+        }
+
+        public MainWindowViewModel Nest
+        {
+            get { return _nest; }
+            set
+            {
+                SetProperty(ref _nest, value, () => Nest);
+            }
         }
 
         public int State
@@ -31,6 +52,7 @@ namespace Demo.Windows.ViewModel
         }
 
         [WatchOn(nameof(State))]
+        [WatchOn(nameof(IsBusy))]
         public ICommand SearchCommand { get; }
 
         public ICommand ShowTingCrawlerCommand { get; set; }
@@ -41,10 +63,13 @@ namespace Demo.Windows.ViewModel
 
         private void OnShowTingCrawler()
         {
-            Watch(() => State, (oldVal, newVal) =>
+            Inner = new MainWindowViewModel();
+            Inner.Nest = new MainWindowViewModel();
+            Watch(() => Inner.Nest.State, (oldVal, newVal) =>
             {
-                Console.WriteLine($"ÊôÐÔ¼àÌý£º{nameof(State)}=> {newVal}");
+                Console.WriteLine($"ÊôÐÔ¼àÌý£º{nameof(Inner.Nest.State)}=> {newVal}");
             }, true);
+            Inner.Nest.State++;
             State++;
             //var crawler = new TingCrawlerWindowViewModel();
             //UIService.ShowDialog(crawler, this);
@@ -52,25 +77,30 @@ namespace Demo.Windows.ViewModel
 
         private void OnShowNgaCrawler()
         {
-            var crawler = new NgaCrawlerWindowViewModel();
-            UIService.ShowDialog(crawler, this);
+            IsBusy = true;
+            Inner.Nest.State++;
+            //var crawler = new NgaCrawlerWindowViewModel();
+            //UIService.ShowDialog(crawler, this);
         }
 
         private void OnShowSimpleTraderCrawler()
         {
-            var crawler = new SimpleTraderCrawlerWindowViewModel();
-            UIService.ShowDialog(crawler, this);
+            IsBusy = false;
+            Inner.Nest.State--;
+            //var crawler = new SimpleTraderCrawlerWindowViewModel();
+            //UIService.ShowDialog(crawler, this);
         }
 
         private bool OnCanSerach(string keywords)
         {
-            return State < 3;
+            return State < 3 && !IsBusy;
         }
 
-        [WatchOn(nameof(State), typeof(int))]
-        private void OnStateChange()
+        [WatchOn(nameof(State))]
+        [WatchOn(nameof(IsBusy))]
+        private void OnStateChange(object oldVal, object newVal)
         {
-
+            Console.WriteLine("OnStateChange");
         }
 
         private void OnSearch(string keywords)

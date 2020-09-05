@@ -1,9 +1,4 @@
-﻿using Demo.Windows.ViewModel;
-using Leen.Practices.Mvvm;
-using System;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Media;
+﻿using System.Windows;
 
 namespace Demo.Windows
 {
@@ -17,10 +12,6 @@ namespace Demo.Windows
             base.OnStartup(e);
             var bootstrapper = new Bootstrapper();
             bootstrapper.Run(e.Args);
-        }
-
-        private void OnAction(int a)
-        {
         }
     }
 }
