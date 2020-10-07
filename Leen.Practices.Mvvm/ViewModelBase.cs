@@ -230,7 +230,10 @@ namespace Leen.Practices.Mvvm
                             {
                                 if (propVal is RelayCommand command)
                                 {
-                                    command.RaiseCanExecuteChanged();
+                                    UIService.InvokeIfNeeded(() =>
+                                    {
+                                        command.RaiseCanExecuteChanged();
+                                    });
                                 }
                             }, false);
                         }

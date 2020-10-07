@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq.Expressions;
 
 namespace Leen.Practices.Mvvm
 {
     /// <summary>
     /// 一种用于监听指定的属性变更并执行相应操作的特性。
     /// <para>
-    /// 应用于方法时方法参数应为监听的属性或无参方法。
+    /// 应用于方法时方法参数应为监听的属性类型或无参方法。
     /// </para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = true)]
