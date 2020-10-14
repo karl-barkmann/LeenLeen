@@ -6,6 +6,7 @@ using Leen.Windows.Interaction;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
@@ -43,22 +44,7 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         public ViewModelBase()
         {
-            if (ServiceLocator.IsLocationProviderSet && ServiceLocator.Current.IsRegisterd<IUIInteractionService>())
-            {
-                UIService = ServiceLocator.Current.GetInstance<IUIInteractionService>();
-            }
-            else
-            {
-                UIService = new UIInteractionService();
-            }
-            if (ServiceLocator.IsLocationProviderSet && ServiceLocator.Current.IsRegisterd<ILogger>())
-            {
-                Logger = ServiceLocator.Current.GetInstance<ILogger>();
-            }
-            else
-            {
-                Logger = new DebugLogger();
-            }
+            
         }
 
         /// <summary>

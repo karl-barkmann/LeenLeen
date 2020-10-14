@@ -1,4 +1,8 @@
-﻿using System;
+﻿using CommonServiceLocator;
+using Leen.Common;
+using Leen.Logging;
+using Leen.Windows.Interaction;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -200,7 +204,12 @@ namespace Leen.Practices.Mvvm
             if (source != null && view.ActualView.IsLoaded)
             {
                 views.Add(view);
-
+                if (view.DataContext is ViewModelBase vm)
+                {
+                    vm.IsLoaded = true;
+                    vm.IsUnloaded = false;
+                    vm.OnLoad();
+                }
                 InitializeAsync(view);
 
                 return;
@@ -217,7 +226,12 @@ namespace Leen.Practices.Mvvm
             if (owner.IsLoaded)
             {
                 views.Add(view);
-
+                if (view.DataContext is ViewModelBase vm)
+                {
+                    vm.IsLoaded = true;
+                    vm.IsUnloaded = false;
+                    vm.OnLoad();
+                }
                 InitializeAsync(view);
 
                 owner.Closing += OnOwnerClosing;
@@ -238,11 +252,11 @@ namespace Leen.Practices.Mvvm
                 //Such as TabControl TabItem content view
                 if (ViewLocator.GetIsRegistered(view.ActualView))
                 {
-                    if (view.DataContext is ViewModelBase viewModel)
+                    if (view.DataContext is ViewModelBase vm)
                     {
-                        viewModel.IsLoaded = false;
-                        viewModel.IsUnloaded = true;
-                        viewModel.OnUnload();
+                        vm.IsLoaded = false;
+                        vm.IsUnloaded = true;
+                        vm.OnUnload();
                     }
                     view.ActualView.Loaded += LancyRegister;
                 }
@@ -254,12 +268,12 @@ namespace Leen.Practices.Mvvm
                     }
 
                     //clean up resources,and event subscribution
-                    if (view.DataContext is ViewModelBase viewModel)
+                    if (view.DataContext is ViewModelBase vm)
                     {
-                        viewModel.IsLoaded = false;
-                        viewModel.IsUnloaded = true;
-                        viewModel.OnUnload();
-                        viewModel.CleanUp();
+                        vm.IsLoaded = false;
+                        vm.IsUnloaded = true;
+                        vm.OnUnload();
+                        vm.CleanUp();
                     }
                     if (view.DataContext is IDisposable disposable)
                     {
@@ -452,9 +466,24 @@ namespace Leen.Practices.Mvvm
         {
             if (targetView.DataContext is ViewModelBase vm && !vm.HasInitialized)
             {
-                vm.IsLoaded = true;
-                vm.IsUnloaded = false;
-                vm.OnLoad();
+                if (ServiceLocator.IsLocationProviderSet)
+                {
+                    if (vm.UIService == null)
+                    {
+                        if (ServiceLocator.Current.IsRegisterd<IUIInteractionService>())
+                            vm.UIService = ServiceLocator.Current.GetInstance<IUIInteractionService>();
+                        else
+                            vm.UIService = new UIInteractionService();
+                    }
+
+                    if (vm.Logger == null)
+                    {
+                        if (ServiceLocator.Current.IsRegisterd<ILogger>())
+                            vm.Logger = ServiceLocator.Current.GetInstance<ILogger>();
+                        else
+                            vm.Logger = new DebugLogger();
+                    }
+                }
                 vm.IsBusy = true;
                 vm.InitializeAsync().ContinueWith((x, state) =>
                 {

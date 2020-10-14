@@ -20,6 +20,11 @@ namespace Leen.Windows.Interaction
         IInteropService InteropService { get; set; }
 
         /// <summary>
+        /// 获取或设置此界面交互接口的应用程序主窗体视图模型。
+        /// </summary>
+        object Shell { get; set; }
+
+        /// <summary>
         /// 显示消息对话框，如果需要将委托到UI线程上执行。
         /// </summary>
         /// <param name="message">消息内容，使用@NewLine代表换行，实现自动替换。</param>

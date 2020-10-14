@@ -25,7 +25,7 @@ namespace Leen.Practices.Mvvm
                                                    MessageBoxButton buttons = MessageBoxButton.OK,
                                                    MessageBoxImage icon = MessageBoxImage.Information)
         {
-            return interactionService.ShowMessage(message, title, buttons, icon, ownnerViewModel);
+            return interactionService.ShowMessage(message, title, buttons, icon, ownnerViewModel ?? interactionService.Shell);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Leen.Practices.Mvvm
                                                         MessageBoxButton buttons = MessageBoxButton.OK,
                                                         MessageBoxImage icon = MessageBoxImage.Error)
         {
-            return interactionService.ShowMessage(message, title, buttons, icon, ownnerViewModel);
+            return interactionService.ShowMessage(message, title, buttons, icon, ownnerViewModel ?? interactionService.Shell);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Leen.Practices.Mvvm
                                                        MessageBoxButton buttons = MessageBoxButton.OK,
                                                        MessageBoxImage icon = MessageBoxImage.Warning)
         {
-            return interactionService.ShowMessage(message, title, buttons, icon, ownnerViewModel);
+            return interactionService.ShowMessage(message, title, buttons, icon, ownnerViewModel ?? interactionService.Shell);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Leen.Practices.Mvvm
                                                        MessageBoxButton buttons = MessageBoxButton.OKCancel,
                                                        MessageBoxImage icon = MessageBoxImage.Question)
         {
-            return interactionService.ShowMessage(message, title, buttons, icon, ownnerViewModel);
+            return interactionService.ShowMessage(message, title, buttons, icon, ownnerViewModel ?? interactionService.Shell);
         }
     }
 }

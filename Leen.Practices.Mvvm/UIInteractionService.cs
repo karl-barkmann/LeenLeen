@@ -39,6 +39,11 @@ namespace Leen.Practices.Mvvm
         public virtual IInteropService InteropService { get; set; }
 
         /// <summary>
+        /// 获取或设置此界面交互接口的应用程序主窗体视图模型。
+        /// </summary>
+        public virtual object Shell { get; set; }
+
+        /// <summary>
         /// 显示消息对话框，如果需要将委托到UI线程上执行。
         /// </summary>
         /// <param name="message">消息内容，使用@NewLine代表换行，实现自动替换。</param>
@@ -59,6 +64,7 @@ namespace Leen.Practices.Mvvm
             content = content.Replace("@newline", Environment.NewLine);
             content = content.Replace("@NEWLINE", Environment.NewLine);
 
+            ownerViewModel = ownerViewModel ?? Shell;
             Window owner = ownerViewModel == null ? null : ViewLocationProvider.FindOwnerWindow(ownerViewModel);
             if (owner == null)
             {
@@ -298,7 +304,7 @@ namespace Leen.Practices.Mvvm
         /// 在指定的父视图模型对应视图上显示指定的视图模型对应的视图，如果需要将委托到UI线程上执行。
         /// </summary>
         /// <param name="viewModel">子窗体的视图模型。</param>
-        /// <param name="ownerViewModel">父窗体的视图模型。当该值为 null 时，降采用应用程序主窗体作为父视图。</param>
+        /// <param name="ownerViewModel">父窗体的视图模型。当该值为 null 时，将采用应用程序主窗体作为父视图。</param>
         public void Show(object viewModel, object ownerViewModel)
         {
             if (viewModel == null)
@@ -306,6 +312,7 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
+            ownerViewModel = ownerViewModel ?? Shell;
             void showCallback()
             {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel);
@@ -333,7 +340,7 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="viewModel">子视图模型。</param>
         /// <param name="viewAlias">子视图别名，与Xaml中定义的 ViewLocator.Alias 对应。</param>
-        /// <param name="ownerViewModel">父视图模型。当该值为 null 时，降采用应用程序主窗体作为父视图。</param>
+        /// <param name="ownerViewModel">父视图模型。当该值为 null 时，将采用应用程序主窗体作为父视图。</param>
         public void Show(object viewModel, string viewAlias, object ownerViewModel)
         {
             if (viewModel == null)
@@ -346,6 +353,7 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentException($"{nameof(viewAlias)} can not be null or empty", nameof(viewAlias));
             }
 
+            ownerViewModel = ownerViewModel ?? Shell;
             void showCallback()
             {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel);
@@ -372,7 +380,7 @@ namespace Leen.Practices.Mvvm
         /// 在指定的父视图模型对应视图上显示指定的视图模型对应的模式对话框视图，如果需要将委托到UI线程上执行。
         /// </summary>
         /// <param name="viewModel">子窗体的视图模型。</param>
-        /// <param name="ownerViewModel">父窗体的视图模型。当该值为 null 时，降采用应用程序主窗体作为父视图。</param>
+        /// <param name="ownerViewModel">父窗体的视图模型。当该值为 null 时，将采用应用程序主窗体作为父视图。</param>
         /// <returns>窗体对话框返回值。</returns>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? ShowDialog(object viewModel, object ownerViewModel)
@@ -381,6 +389,8 @@ namespace Leen.Practices.Mvvm
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
+
+            ownerViewModel = ownerViewModel ?? Shell;
 
             bool? showCallback()
             {
@@ -418,7 +428,7 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="viewModel">子视图模型。</param>
         /// <param name="viewAlias">子视图别名，与Xaml中定义的 ViewLocator.Alias 对应。</param>
-        /// <param name="ownerViewModel">父视图模型。当该值为 null 时，降采用应用程序主窗体作为父视图。</param>
+        /// <param name="ownerViewModel">父视图模型。当该值为 null 时，将采用应用程序主窗体作为父视图。</param>
         /// <returns>对话框返回值。</returns>
         public bool? ShowDialog(object viewModel, string viewAlias, object ownerViewModel)
         {
@@ -432,6 +442,7 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentException($"{nameof(viewAlias)} can not be null or empty", nameof(viewAlias));
             }
 
+            ownerViewModel = ownerViewModel ?? Shell;
             bool? showCallback()
             {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel, viewAlias);
@@ -715,9 +726,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="view">子视图。</param>
         /// <param name="ownerViewModel">父窗体的视图模型。</param>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
-        protected virtual void Show(object viewModel,
-            IView view,
-            object ownerViewModel = null)
+        protected virtual void Show(object viewModel, IView view, object ownerViewModel = null)
         {
             IWindow dialog = ActivationBehavior.CreateWindow();
             RetrieveWindowProperties(view, dialog);
