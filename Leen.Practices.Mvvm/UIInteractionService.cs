@@ -19,6 +19,8 @@ namespace Leen.Practices.Mvvm
     /// </summary>
     public class UIInteractionService : IUIInteractionService
     {
+        private object _pushedModal;
+
         /// <summary>
         /// 构造 <see cref="UIInteractionService"/> 的实例。
         /// </summary>
@@ -53,29 +55,21 @@ namespace Leen.Practices.Mvvm
         /// <param name="ownerViewModel">父视图模型。</param>
         /// <returns>对话框返回值。</returns>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
-        public virtual MessageBoxResult ShowMessage(string message,
-                                                    string title,
-                                                    MessageBoxButton buttons = MessageBoxButton.OK,
-                                                    MessageBoxImage icon = MessageBoxImage.Information,
-                                                    object ownerViewModel = null)
+        public MessageBoxResult ShowMessage(string message,
+                                            string title,
+                                            MessageBoxButton buttons = MessageBoxButton.OK,
+                                            MessageBoxImage icon = MessageBoxImage.Information,
+                                            object ownerViewModel = null)
         {
             StringBuilder content = new StringBuilder(message);
             content = content.Replace("@NewLine", Environment.NewLine);
             content = content.Replace("@newline", Environment.NewLine);
             content = content.Replace("@NEWLINE", Environment.NewLine);
 
-            ownerViewModel = ownerViewModel ?? Shell;
-            Window owner = ownerViewModel == null ? null : ViewLocationProvider.FindOwnerWindow(ownerViewModel);
-            if (owner == null)
-            {
-                MessageBoxResult result = InvokeIfNeeded(() => MessageBox.Show(content.ToString(), title, buttons, icon));
-                return result;
-            }
-            else
-            {
-                MessageBoxResult result = InvokeIfNeeded(() => MessageBox.Show(owner, content.ToString(), title, buttons, icon));
-                return result;
-            }
+            if (ownerViewModel == null)
+                ownerViewModel = _pushedModal ?? Shell;
+            MessageBoxResult result = InvokeIfNeeded(() => ShowMessageImpl(content.ToString(), title, buttons, icon, null));
+            return result;
         }
 
         /// <summary>
@@ -93,9 +87,7 @@ namespace Leen.Practices.Mvvm
 
             var application = Application.Current;
             if (application == null)
-            {
                 application = new Application();
-            }
             var dispatcher = application.Dispatcher;
             return Invoke(func, dispatcher);
         }
@@ -137,9 +129,7 @@ namespace Leen.Practices.Mvvm
 
             var application = Application.Current;
             if (application == null)
-            {
                 application = new Application();
-            }
             var dispatcher = application.Dispatcher;
             Invoke(action, dispatcher);
         }
@@ -181,9 +171,7 @@ namespace Leen.Practices.Mvvm
 
             var application = Application.Current;
             if (application == null)
-            {
                 application = new Application();
-            }
             var dispatcher = application.Dispatcher;
             Invoke(action, args, dispatcher);
         }
@@ -225,9 +213,7 @@ namespace Leen.Practices.Mvvm
 
             var application = Application.Current;
             if (application == null)
-            {
                 application = new Application();
-            }
             var dispatcher = application.Dispatcher;
             BeginInvoke(action, dispatcher);
         }
@@ -269,9 +255,7 @@ namespace Leen.Practices.Mvvm
 
             var application = Application.Current;
             if (application == null)
-            {
                 application = new Application();
-            }
             var dispatcher = application.Dispatcher;
             BeginInvoke(action, args, dispatcher);
         }
@@ -312,7 +296,6 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            ownerViewModel = ownerViewModel ?? Shell;
             void showCallback()
             {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel);
@@ -353,7 +336,6 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentException($"{nameof(viewAlias)} can not be null or empty", nameof(viewAlias));
             }
 
-            ownerViewModel = ownerViewModel ?? Shell;
             void showCallback()
             {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel);
@@ -390,21 +372,10 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            ownerViewModel = ownerViewModel ?? Shell;
-
             bool? showCallback()
             {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel);
-                if (view is Window window)
-                {
-                    window.Owner = ViewLocationProvider.FindOwnerWindow(ownerViewModel);
-                    RetrieveWindowProperties(view, new WindowWrapper(window));
-                    return window.ShowDialog();
-                }
-                else
-                {
-                    return ShowDialog(viewModel, view, ownerViewModel);
-                }
+                return ShowDialog(viewModel, view, ownerViewModel);
             }
 
             if (ownerViewModel != null)
@@ -442,7 +413,6 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentException($"{nameof(viewAlias)} can not be null or empty", nameof(viewAlias));
             }
 
-            ownerViewModel = ownerViewModel ?? Shell;
             bool? showCallback()
             {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel, viewAlias);
@@ -536,7 +506,7 @@ namespace Leen.Practices.Mvvm
             InvokeIfNeeded(() =>
             {
                 IView view = ViewLocationProvider.FindViewForViewModel(viewModel);
-                Minimize(viewModel, view);
+                Activate(viewModel, view);
             }, viewModel);
         }
 
@@ -562,9 +532,7 @@ namespace Leen.Practices.Mvvm
 
             var result = dlg.ShowDialog();
             if (result == true)
-            {
                 fileName = dlg.FileName;
-            }
             return result;
         }
 
@@ -592,9 +560,7 @@ namespace Leen.Practices.Mvvm
 
             var result = dlg.ShowDialog();
             if (result == true)
-            {
                 fileName = dlg.FileName;
-            }
             return result;
         }
 
@@ -624,9 +590,7 @@ namespace Leen.Practices.Mvvm
 
             var result = dlg.ShowDialog();
             if (result == true)
-            {
                 fileName = dlg.FileName;
-            }
             return result;
         }
 
@@ -652,9 +616,7 @@ namespace Leen.Practices.Mvvm
 
             var result = dlg.ShowDialog();
             if (result == true)
-            {
                 fileName = dlg.FileName;
-            }
             return result;
         }
 
@@ -682,9 +644,7 @@ namespace Leen.Practices.Mvvm
 
             var result = dlg.ShowDialog();
             if (result == true)
-            {
                 fileName = dlg.FileName;
-            }
             return result;
         }
 
@@ -714,11 +674,10 @@ namespace Leen.Practices.Mvvm
 
             var result = dlg.ShowDialog();
             if (result == true)
-            {
                 fileName = dlg.FileName;
-            }
             return result;
         }
+
         /// <summary>
         /// 在指定的父视图模型对应视图上显示指定的视图模型对应的非模式对话框视图，如果需要将委托到UI线程上执行。
         /// </summary>
@@ -728,13 +687,23 @@ namespace Leen.Practices.Mvvm
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         protected virtual void Show(object viewModel, IView view, object ownerViewModel = null)
         {
-            IWindow dialog = ActivationBehavior.CreateWindow();
+            IWindow dialog;
+            if (view is Window dialogView)
+            {
+                dialog = new WindowWrapper(dialogView);
+            }
+            else
+            {
+                dialog = ActivationBehavior.CreateWindow();
+                dialog.Content = view.ActualView;
+            }
             RetrieveWindowProperties(view, dialog);
 
+            if (ownerViewModel == null)
+                ownerViewModel = _pushedModal ?? Shell;
+
             if (ownerViewModel != null)
-            {
                 dialog.Owner = ViewLocationProvider.FindOwnerWindow(ownerViewModel);
-            }
 
             if (dialog.Owner == null && InteropService != null)
             {
@@ -742,7 +711,6 @@ namespace Leen.Practices.Mvvm
                 dialog.Owner = ownnerHwnd;
             }
 
-            dialog.Content = view.ActualView;
             dialog.DataContext = viewModel;
             dialog.Show();
         }
@@ -837,18 +805,25 @@ namespace Leen.Practices.Mvvm
         /// <param name="ownerViewModel">父窗体的视图模型。</param>
         /// <returns>窗体对话框的返回值。</returns>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
-        protected virtual bool? ShowDialog(
-            object viewModel,
-            IView view,
-            object ownerViewModel = null)
+        protected virtual bool? ShowDialog(object viewModel, IView view, object ownerViewModel = null)
         {
-            IWindow dialog = ActivationBehavior.CreateWindow();
+            IWindow dialog;
+            if (view is Window dialogView)
+            {
+                dialog = new WindowWrapper(dialogView);
+            }
+            else
+            {
+                dialog = ActivationBehavior.CreateWindow();
+                dialog.Content = view.ActualView;
+            }
             RetrieveWindowProperties(view, dialog);
 
+            if (ownerViewModel == null)
+                ownerViewModel = _pushedModal ?? Shell;
+
             if (ownerViewModel != null)
-            {
                 dialog.Owner = ViewLocationProvider.FindOwnerWindow(ownerViewModel);
-            }
 
             if (dialog.Owner == null && InteropService != null)
             {
@@ -856,18 +831,44 @@ namespace Leen.Practices.Mvvm
                 dialog.Owner = ownnerHwnd;
             }
 
-            dialog.Content = view.ActualView;
             dialog.DataContext = viewModel;
 
             User32.EnableWindow(InteropService.Shell.Handle, false);
+            _pushedModal = viewModel;
             try
             {
                 return dialog.ShowDialog();
             }
             finally
             {
+                _pushedModal = null;
                 User32.EnableWindow(InteropService.Shell.Handle, true);
             }
+        }
+
+        /// <summary>
+        /// 显示消息对话框。
+        /// </summary>
+        /// <param name="message">消息内容。</param>
+        /// <param name="title">消息对话框的标题。</param>
+        /// <param name="buttons">消息对话框按钮。</param>
+        /// <param name="icon">消息对话框图标。</param>
+        /// <param name="ownerViewModel">父视图模型。</param>
+        /// <returns>对话框返回值。</returns>
+        protected virtual MessageBoxResult ShowMessageImpl(string message,
+                                                           string title,
+                                                           MessageBoxButton buttons,
+                                                           MessageBoxImage icon,
+                                                           object ownerViewModel)
+        {
+            Window owner = null;
+            if (ownerViewModel != null)
+                owner = ViewLocationProvider.FindOwnerWindow(ownerViewModel);
+
+            if (owner == null)
+                return MessageBox.Show(message, title, buttons, icon);
+            else
+                return MessageBox.Show(owner, message, title, buttons, icon);
         }
 
         private static T Invoke<T>(Func<T> func, Dispatcher dispatcher)

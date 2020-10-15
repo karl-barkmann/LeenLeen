@@ -23,7 +23,9 @@ namespace Demo.Windows
         {
             base.InitializeShell(args);
 
-            ((MainWindow)Shell).ShowDialog();
+            var shell = Shell as MainWindow;
+            Container.GetExportedValue<IUIInteractionService>().Shell = shell.DataContext;
+            shell.ShowDialog();
         }
     }
 }

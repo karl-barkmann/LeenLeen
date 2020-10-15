@@ -55,6 +55,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="TestWindow.xaml.cs">
+      <DependentUpon>TestWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel\NgaCrawlerWindowViewModel.cs" />
     <Compile Include="ViewModel\SimpleTraderCrawlerWindowViewModel.cs" />
     <Compile Include="ViewModel\TingCrawlerWindowViewModel.cs" />
@@ -77,6 +80,10 @@
     <Compile Include="ViewModel\BookSectionViewModel.cs" />
     <Compile Include="ViewModel\BookViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
+    <Page Include="TestWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\NgaCrawlerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

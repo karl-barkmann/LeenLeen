@@ -200,46 +200,49 @@ namespace Leen.Practices.Mvvm
 
         internal static void Register(IView view)
         {
-            var source = PresentationSource.FromVisual(view.ActualView);
-            if (source != null && view.ActualView.IsLoaded)
+            if (!views.Contains(view))
             {
-                views.Add(view);
-                if (view.DataContext is ViewModelBase vm)
+                var source = PresentationSource.FromVisual(view.ActualView);
+                if (source != null && view.ActualView.IsLoaded)
                 {
-                    vm.IsLoaded = true;
-                    vm.IsUnloaded = false;
-                    vm.OnLoad();
+                    views.Add(view);
+                    if (view.DataContext is ViewModelBase vm)
+                    {
+                        vm.IsLoaded = true;
+                        vm.IsUnloaded = false;
+                        vm.OnLoad();
+                    }
+                    InitializeAsync(view);
+
+                    return;
                 }
-                InitializeAsync(view);
 
-                return;
-            }
-
-            Window owner = GetOwnner(view.ActualView);
-            if (owner == null)
-            {
-                view.ActualView.Loaded += LancyRegister;
-                return;
-            }
-
-            //WPF Visual tree has a up to down initializing behavior
-            if (owner.IsLoaded)
-            {
-                views.Add(view);
-                if (view.DataContext is ViewModelBase vm)
+                Window owner = GetOwnner(view.ActualView);
+                if (owner == null)
                 {
-                    vm.IsLoaded = true;
-                    vm.IsUnloaded = false;
-                    vm.OnLoad();
+                    view.ActualView.Loaded += LancyRegister;
+                    return;
                 }
-                InitializeAsync(view);
 
-                owner.Closing += OnOwnerClosing;
-                owner.Closed += OnOwnerClosed;
-            }
-            else
-            {
-                view.ActualView.Loaded += LancyRegister;
+                //WPF Visual tree has a up to down initializing behavior
+                if (owner.IsLoaded)
+                {
+                    views.Add(view);
+                    if (view.DataContext is ViewModelBase vm)
+                    {
+                        vm.IsLoaded = true;
+                        vm.IsUnloaded = false;
+                        vm.OnLoad();
+                    }
+                    InitializeAsync(view);
+
+                    owner.Closing += OnOwnerClosing;
+                    owner.Closed += OnOwnerClosed;
+                }
+                else
+                {
+                    view.ActualView.Loaded += LancyRegister;
+                }
             }
         }
 
@@ -326,10 +329,7 @@ namespace Leen.Practices.Mvvm
                 view.DataContext = viewModel;
             }
 
-            if (!views.Contains(view))
-            {
-                Register(view);
-            }
+            Register(view);
 
             return view;
         }

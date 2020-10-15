@@ -9,7 +9,7 @@ namespace Demo.Windows.ViewModel
     public class MainWindowViewModel : ViewModelBase
     {
         private int _state;
-
+        private string _tile;
         private MainWindowViewModel _inner;
         private MainWindowViewModel _nest;
 
@@ -22,6 +22,16 @@ namespace Demo.Windows.ViewModel
             ShowNgaCrawlerCommand = new RelayCommand(OnShowNgaCrawler);
             ShowSimpleTraderCrawlerCommand = new RelayCommand(OnShowSimpleTraderCrawler);
             SearchCommand = new RelayCommand<string>(OnSearch, OnCanSerach);
+            Title = "Shell";
+        }
+
+        public string Title
+        {
+            get { return _tile; }
+            set
+            {
+                SetProperty(ref _tile, value, () => Title);
+            }
         }
 
         public MainWindowViewModel Inner
@@ -78,17 +88,17 @@ namespace Demo.Windows.ViewModel
         private void OnShowNgaCrawler()
         {
             IsBusy = true;
-            Inner.Nest.State++;
-            //var crawler = new NgaCrawlerWindowViewModel();
-            //UIService.ShowDialog(crawler, this);
+            var crawler = new MainWindowViewModel();
+            crawler.Title = "Show at " + DateTime.Now.ToLongTimeString();
+            UIService.Show(crawler, this);
         }
 
         private void OnShowSimpleTraderCrawler()
         {
             IsBusy = false;
-            Inner.Nest.State--;
-            //var crawler = new SimpleTraderCrawlerWindowViewModel();
-            //UIService.ShowDialog(crawler, this);
+            var crawler = new MainWindowViewModel();
+            crawler.Title = "ShowDialog at " + DateTime.Now.ToLongTimeString();
+            UIService.ShowDialog(crawler, this);
         }
 
         private bool OnCanSerach(string keywords)
