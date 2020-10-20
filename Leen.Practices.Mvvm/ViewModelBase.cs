@@ -6,7 +6,6 @@ using Leen.Windows.Interaction;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
@@ -189,6 +188,15 @@ namespace Leen.Practices.Mvvm
         {
             WatchMethods();
             WatchProperties();
+            return OnInitializeAsync();
+        }
+
+        /// <summary>
+        /// 当初始化时调用。
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Task OnInitializeAsync()
+        {
             return s_TaskCompletionSource.Task;
         }
 

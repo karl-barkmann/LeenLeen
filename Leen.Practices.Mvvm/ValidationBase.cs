@@ -29,7 +29,7 @@ namespace Leen.Practices.Mvvm
         /// <summary>
         /// 获取一个值，该值指示实体是否已通过验证。
         /// </summary>
-        public bool IsValid { get { return this.HasErrors; } }
+        public bool IsValid { get { return HasErrors; } }
 
         /// <summary>
         /// 获取针对指定属性或整个实体的验证错误。

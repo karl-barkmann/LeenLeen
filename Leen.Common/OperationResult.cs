@@ -7,6 +7,10 @@ namespace Leen.Common
     /// </summary>
     public class OperationResult<T> : OperationResult
     {
+        static OperationResult()
+        {
+        }
+
         /// <summary>
         /// 构造 <see cref="OperationResult"/> 类的实例。
         /// </summary>
@@ -50,6 +54,68 @@ namespace Leen.Common
         /// 当请求服务成功处理时，处理的响应结果。
         /// </summary>
         public T Result { get; private set; }
+
+        /// <summary>
+        /// 获取表示请求成功的操作结果。
+        /// </summary>
+        /// <param name="result">包含正确操作返回的操作结果。</param>
+        public static OperationResult<T> FromResult(T result)
+        {
+            return new OperationResult<T>(result);
+        }
+
+        /// <summary>
+        /// 构建包含错误消息的操作结果。
+        /// </summary>
+        /// <param name="errorMessage">错误消息。</param>
+        /// <returns></returns>
+        public new static OperationResult<T> FromErrorMessage(string errorMessage)
+        {
+            return new OperationResult<T>(0, errorMessage);
+        }
+
+        /// <summary>
+        /// 构建包含错误码的操作结果。
+        /// </summary>
+        /// <param name="errorCode">错误码。</param>
+        /// <returns></returns>
+        public new static OperationResult<T> FromErrorCode(int errorCode)
+        {
+            return new OperationResult<T>(errorCode, string.Empty);
+        }
+
+        /// <summary>
+        /// 构建包含错误内容的操作结果。
+        /// </summary>
+        /// <param name="errorCode">错误码。</param>
+        /// <param name="errorMessage">错误消息。</param>
+        /// <returns></returns>
+        public new static OperationResult<T> FromError(int errorCode, string errorMessage)
+        {
+            return new OperationResult<T>(errorCode, errorMessage);
+        }
+
+        /// <summary>
+        /// 构建包含异常对象的操作结果。
+        /// </summary>
+        /// <param name="ex">异常信息。</param>
+        /// <returns></returns>
+        public new static OperationResult<T> FromException(Exception ex)
+        {
+            return new OperationResult<T>(ex);
+        }
+
+        /// <summary>
+        /// 构建操作结果。
+        /// </summary>
+        /// <param name="errorCode">错误码。</param>
+        /// <param name="errorMessage">错误消息。</param>
+        /// <param name="ex">异常信息。</param>
+        /// <returns></returns>
+        public new static OperationResult<T> Create(int errorCode, string errorMessage, Exception ex)
+        {
+            return new OperationResult<T>(errorCode, errorMessage, ex);
+        }
     }
 
     /// <summary>
@@ -57,14 +123,9 @@ namespace Leen.Common
     /// </summary>
     public class OperationResult : IOperationResult
     {
-        private static OperationResult _success;
-        private int _errorCode;
-        private Exception _error;
-        private string _errorMessage;
-
         static OperationResult()
         {
-            _success = new OperationResult(null);
+            Success = new OperationResult(null);
         }
 
         /// <summary>
@@ -94,21 +155,15 @@ namespace Leen.Common
         /// <param name="error">当请求未成功处理时，表示服务请求处理过程中发生的异常信息。</param>
         public OperationResult(int errorCode, string errorMessage, Exception error)
         {
-            _error = error;
-            _errorCode = errorCode;
-            _errorMessage = errorMessage;
+            Error = error;
+            ErrorCode = errorCode;
+            ErrorMessage = errorMessage;
         }
 
         /// <summary>
         /// 获取表示请求成功的操作结果。
         /// </summary>
-        public static OperationResult Success
-        {
-            get
-            {
-                return _success;
-            }
-        }
+        public static OperationResult Success { get; private set; }
 
         /// <summary>
         /// 获取一个值，指示请求是否已由服务成功处理。
@@ -124,34 +179,69 @@ namespace Leen.Common
         /// <summary>
         /// 当请求未成功处理时，服务返回的错误描述（如果有）。
         /// </summary>
-        public string ErrorMessage
-        {
-            get
-            {
-                return _errorMessage;
-            }
-        }
+        public string ErrorMessage { get; }
 
         /// <summary>
         /// 当请求未成功处理时，服务返回的错误码。
         /// </summary>
-        public int ErrorCode
-        {
-            get
-            {
-                return _errorCode;
-            }
-        }
+        public int ErrorCode { get; }
 
         /// <summary>
         /// 当请求未成功处理时，表示服务请求处理过程中发生的异常信息。
         /// </summary>
-        public Exception Error
+        public Exception Error { get; }
+
+        /// <summary>
+        /// 构建包含错误消息的操作结果。
+        /// </summary>
+        /// <param name="errorMessage">错误消息。</param>
+        /// <returns></returns>
+        public static OperationResult FromErrorMessage(string errorMessage)
         {
-            get
-            {
-                return _error;
-            }
+            return new OperationResult(0, errorMessage);
+        }
+
+        /// <summary>
+        /// 构建包含错误码的操作结果。
+        /// </summary>
+        /// <param name="errorCode">错误码。</param>
+        /// <returns></returns>
+        public static OperationResult FromErrorCode(int errorCode)
+        {
+            return new OperationResult(errorCode, string.Empty);
+        }
+
+        /// <summary>
+        /// 构建包含错误内容的操作结果。
+        /// </summary>
+        /// <param name="errorCode">错误码。</param>
+        /// <param name="errorMessage">错误消息。</param>
+        /// <returns></returns>
+        public static OperationResult FromError(int errorCode, string errorMessage)
+        {
+            return new OperationResult(errorCode, errorMessage);
+        }
+
+        /// <summary>
+        /// 构建包含异常对象的操作结果。
+        /// </summary>
+        /// <param name="ex">异常信息。</param>
+        /// <returns></returns>
+        public static OperationResult FromException(Exception ex)
+        {
+            return new OperationResult(ex);
+        }
+
+        /// <summary>
+        /// 构建操作结果。
+        /// </summary>
+        /// <param name="errorCode">错误码。</param>
+        /// <param name="errorMessage">错误消息。</param>
+        /// <param name="ex">异常信息。</param>
+        /// <returns></returns>
+        public static OperationResult Create(int errorCode, string errorMessage, Exception ex)
+        {
+            return new OperationResult(errorCode, errorMessage, ex);
         }
     }
 
