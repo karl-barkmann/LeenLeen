@@ -12,52 +12,7 @@
         Height="350"
         mvvm:ViewLocator.IsRegistered="True"
         mvvm:ViewModelLocator.AutoWireViewModel="True">
-    <Window.Resources>
-
-        <Style x:Key="DoubleUpDownStyle1" TargetType="{x:Type controls:DoubleUpDown}">
-            <Setter Property="SmallChange" Value="1" />
-            <Setter Property="LargeChange" Value="10" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type controls:DoubleUpDown}">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Opacity="{TemplateBinding Opacity}">
-                            <Grid Margin="{TemplateBinding Padding}" Background="Transparent">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-
-                                <TextBox x:Name="PART_INPUT"
-                                         Grid.RowSpan="2"
-                                         Grid.Column="0"
-                                         VerticalContentAlignment="Center"
-                                         Background="{TemplateBinding Background}"
-                                         Foreground="{TemplateBinding Foreground}"
-                                         TextAlignment="Left" />
-                                <RepeatButton x:Name="PART_UP"
-                                              Grid.Row="0"
-                                              Grid.Column="1"
-                                              Command="{x:Static controls:NumericUpDown.IncreaseSmall}"
-                                              Content="△" />
-                                <RepeatButton x:Name="PART_DOWN"
-                                              Grid.Row="1"
-                                              Grid.Column="1"
-                                              Command="{x:Static controls:NumericUpDown.DecreaseSmall}"
-                                              Content="▽" />
-                            </Grid>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
+    <Window.Resources />
     <Grid>
         <controls:SearchBox x:Name="searchBox"
                             Width="230"
@@ -82,8 +37,7 @@
                                Maximum="10000"
                                Minimum="0"
                                SmallChange="1"
-                               StringFormat="N2"
-                               Style="{DynamicResource DoubleUpDownStyle1}" />
+                               StringFormat="N2" />
         <Button Width="75"
                 Margin="10,10,0,0"
                 HorizontalAlignment="Left"
@@ -125,23 +79,26 @@
                 </LinearGradientBrush>
             </Primitives:ProgressCircle.Stroke>
         </Primitives:ProgressCircle>
-        <TextBox Width="120"
-                 Height="23"
-                 Margin="10,146,0,0"
-                 HorizontalAlignment="Left"
-                 VerticalAlignment="Top"
-                 Text="TextBox"
-                 TextWrapping="Wrap">
+        <controls:TextInput Width="120"
+                            Height="23"
+                            Margin="10,146,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Text="TextBox"
+                            TextWrapping="Wrap">
             <i:Interaction.Behaviors>
                 <lie:WatermarkBehavior WatermarkFontSize="16"
                                        WatermarkForeground="Red"
                                        WatermarkPadding="15,0"
                                        WatermarkText="请输入用户名" />
             </i:Interaction.Behaviors>
-        </TextBox>
+        </controls:TextInput>
 
         <Button VerticalAlignment="Bottom"
                 Command="{Binding SearchCommand}"
                 Content="Search" />
+        <controls:TimePicker Margin="20,196,0,0"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Top" />
     </Grid>
 </Window>

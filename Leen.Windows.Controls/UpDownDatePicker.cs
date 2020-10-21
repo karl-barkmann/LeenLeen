@@ -17,6 +17,11 @@ namespace Leen.Windows.Controls
         private DatePickerTextBox txtDate;
         private Popup popup;
 
+        static UpDownDatePicker()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(UpDownDatePicker), new FrameworkPropertyMetadata(typeof(UpDownDatePicker)));
+        }
+
         /// <summary>
         /// 可快速选择前一天或后一天的DatePicker。
         /// </summary>
@@ -52,17 +57,15 @@ namespace Leen.Windows.Controls
             {
                 if (txtDate.IsReadOnly)
                 {
-                    var dropDownButton = GetTemplateChild("PART_Button") as Button;
-                    if (dropDownButton != null)
-                        dropDownButton.Visibility = System.Windows.Visibility.Hidden;
+                    if (GetTemplateChild("PART_Button") is Button dropDownButton)
+                        dropDownButton.Visibility = Visibility.Hidden;
                     txtDate.PreviewMouseLeftButtonDown += txtDate_PreviewMouseLeftButtonDown;
                     txtDate.LostFocus += txtDate_LostFocus;
                 }
                 else
                 {
-                    var dropDownButton = GetTemplateChild("PART_Button") as Button;
-                    if (dropDownButton != null)
-                        dropDownButton.Visibility = System.Windows.Visibility.Visible;
+                    if (GetTemplateChild("PART_Button") is Button dropDownButton)
+                        dropDownButton.Visibility = Visibility.Visible;
                 }
             }
         }

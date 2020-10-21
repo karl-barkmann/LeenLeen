@@ -72,10 +72,10 @@
     <Compile Include="Data\IPAddressToStringConverter.cs" />
     <Compile Include="Data\NullToTargetConverter.cs" />
     <Compile Include="Data\SwitchVisibilityConverter.cs" />
-    <Compile Include="Controls\Helper\PasswordBoxBindingHelper.cs" />
+    <Compile Include="Controls\PasswordBoxBindingHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Controls\Helper\RichTextBoxHelper.cs" />
-    <Compile Include="Controls\Helper\TextBoxHelper.cs" />
+    <Compile Include="Controls\RichTextBoxHelper.cs" />
+    <Compile Include="Controls\TextBoxHelper.cs" />
     <Compile Include="Utils\KeyboardUtil.cs" />
     <Compile Include="Utils\UriHelper.cs" />
     <Compile Include="Utils\WpfExtensions.cs" />

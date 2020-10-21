@@ -11,11 +11,11 @@ namespace Demo.Windows
         {
             base.OnStartup(e);
 
-            var shell = new TestWindow("Shell ");
-            shell.ShowDialog();
+            //var shell = new TestWindow("Shell ");
+            //shell.ShowDialog();
 
-            //var bootstrapper = new Bootstrapper();
-            //bootstrapper.Run(e.Args);
+            var bootstrapper = new Bootstrapper();
+            bootstrapper.Run(e.Args);
         }
     }
 }

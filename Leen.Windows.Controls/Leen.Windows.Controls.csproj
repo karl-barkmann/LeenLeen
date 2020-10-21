@@ -55,9 +55,12 @@
     <Compile Include="Primitives\Arrow.cs" />
     <Compile Include="Primitives\CurvedArrow.cs" />
     <Compile Include="RangeRule.cs" />
+    <Compile Include="RoundedTextBox.cs" />
     <Compile Include="ScrollDirection.cs" />
     <Compile Include="SearchBox.cs" />
     <Compile Include="SlidablePanel.cs" />
+    <Compile Include="TextInput.cs" />
+    <Compile Include="TimePicker.cs" />
     <Compile Include="UIThreadHostControl.cs" />
     <Compile Include="UpDownDatePicker.cs" />
     <Compile Include="VirtualizingUniformGrid.cs" />
@@ -69,9 +72,6 @@
     <Compile Include="BusyAdorner.cs" />
     <Compile Include="BusyDecorator.cs" />
     <Compile Include="BusyIndicator.cs" />
-    <Compile Include="MultipleStateControl.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Primitives\ProgressCircle.cs" />

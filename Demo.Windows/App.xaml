@@ -7,26 +7,5 @@
              xmlns:localView="clr-namespace:Demo.Windows.View"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d">
-    <Application.Resources>
-        <localView:StateToBrushConverter x:Key="StateToBrushConverter" />
-        <Style x:Key="MultipeStateControlStyle" TargetType="{x:Type Controls:MultipleStateControl}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Controls:MultipleStateControl}">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                            <Path x:Name="PART_StateIndicator"
-                                  Width="Auto"
-                                  Height="Auto"
-                                  Margin="0"
-                                  Data="M99.5,63 C99.5,97.517797 77.338095,125.5 50,125.5 C22.661905,125.5 0.5,97.517797 0.5,63 C0.5,28.482203 22.661905,0.5 50,0.5 C77.338095,0.5 99.5,28.482203 99.5,63 z"
-                                  Stretch="Fill"
-                                  Stroke="Black" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Application.Resources>
+    <Application.Resources />
 </Application>

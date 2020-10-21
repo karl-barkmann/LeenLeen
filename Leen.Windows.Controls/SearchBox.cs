@@ -14,7 +14,7 @@ namespace Leen.Windows.Controls
     [TemplateVisualState(GroupName = STATEGROUP_WatermarkStates, Name = STATE_WatermarkVisible)]
     [TemplateVisualState(GroupName = STATEGROUP_WatermarkStates, Name = STATE_WatermarkDismiss)]
     [TemplateVisualState(GroupName = STATEGROUP_WatermarkStates, Name = STATE_WatermarkHidden)]
-    public class SearchBox : TextBox
+    public class SearchBox : RoundedTextBox
     {
         #region private fields
 
@@ -26,21 +26,6 @@ namespace Leen.Windows.Controls
 
         private ButtonBase _clearButton;
         private readonly DispatcherTimer _textTransferTimer = new DispatcherTimer();
-
-        #endregion
-
-        #region CornerRadiusProperty
-
-        public static readonly DependencyProperty CornerRadiusProperty =
-            DependencyProperty.Register(nameof(CornerRadius),
-                                        typeof(CornerRadius),
-                                        typeof(SearchBox),
-                                        new PropertyMetadata(default(CornerRadius)));
-        public CornerRadius CornerRadius
-        {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
-        }
 
         #endregion
 

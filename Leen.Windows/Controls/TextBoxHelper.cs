@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace Leen.Windows.Controls.Helper
+namespace Leen.Windows.Controls
 {
     /// <summary>
     /// TextBox控件绑定帮助类，支持按下Enter键时更新绑定源。
