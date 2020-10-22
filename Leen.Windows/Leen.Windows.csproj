@@ -47,6 +47,8 @@
   <ItemGroup>
     <Compile Include="BlinkWindow.cs" />
     <Compile Include="CommandHelpers.cs" />
+    <Compile Include="Controls\ControlAttatched.cs" />
+    <Compile Include="Controls\ToggleButtonAttatched.cs" />
     <Compile Include="Data\ByteToImageSourceConverter.cs" />
     <Compile Include="Data\DateTimeToZhCNStringConverter.cs" />
     <Compile Include="Data\IntegerToBooleanConverter.cs" />
