@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using Microsoft.Windows.Shell;
 
 namespace Leen.Windows.Interaction
 {

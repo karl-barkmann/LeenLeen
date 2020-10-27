@@ -51,31 +51,12 @@
     <Compile Include="BindableEnumValue.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="CanExecuteChangedCommandManager.cs" />
-    <Compile Include="Controls\TooltipAttached.cs" />
-    <Compile Include="Controls\WebBroswerHelper.cs" />
-    <Compile Include="Converters\CompositeConverter.cs" />
-    <Compile Include="Converters\MarkupAccessibleValueConverter.cs" />
-    <Compile Include="Converters\ValueConverters.cs" />
     <Compile Include="EventToCommand.cs" />
     <Compile Include="IEventArgsConverter.cs" />
     <Compile Include="Input\GestureExtensions.cs" />
     <Compile Include="Input\ImprovedMouseGesture.cs" />
-    <Compile Include="Input\InputAttach.cs" />
     <Compile Include="Input\MouseWheelDirection.cs" />
-    <Compile Include="Interactivity\AdaptiveTrigger.cs" />
-    <Compile Include="Interactivity\CommandBehaviorBase.cs" />
-    <Compile Include="Interactivity\DataGridColumnAdjustableBehavior.cs" />
-    <Compile Include="Interactivity\DragBehavior.cs" />
-    <Compile Include="Interactivity\DropBehavior.cs" />
-    <Compile Include="Interactivity\IMouseAwareBomb.cs" />
-    <Compile Include="Interactivity\IncrementalLoadingBehavior.cs" />
-    <Compile Include="Interactivity\RenderSizeReportBehavior.cs" />
-    <Compile Include="Interactivity\RichTextBoxBindingBehavior.cs" />
-    <Compile Include="Interactivity\SupportMultSelectionBehavior.cs" />
-    <Compile Include="Interactivity\SupportSelectionBehavior.cs" />
-    <Compile Include="Interactivity\WatermarkBehavior.cs" />
     <Compile Include="InteropService.cs" />
-    <Compile Include="ISelectable.cs" />
     <Compile Include="IView.cs" />
     <Compile Include="MefBoostrapper.cs" />
     <Compile Include="MefServiceLocatorAdapter.cs" />
@@ -115,6 +96,7 @@
       <Version>2.0.5</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

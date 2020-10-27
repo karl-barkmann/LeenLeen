@@ -4,8 +4,7 @@
         xmlns:Primitives="clr-namespace:Leen.Windows.Controls.Primitives;assembly=Leen.Windows.Controls"
         xmlns:controls="clr-namespace:Leen.Windows.Controls;assembly=Leen.Windows.Controls"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:li="clr-namespace:System.Windows.Interactivity;assembly=Leen.Windows.Controls"
-        xmlns:lie="clr-namespace:System.Windows.Interactivity;assembly=Leen.Practices.Mvvm"
+        xmlns:lie="clr-namespace:System.Windows.Interactivity;assembly=Leen.Windows"
         xmlns:mvvm="clr-namespace:Leen.Practices.Mvvm;assembly=Leen.Practices.Mvvm"
         Title="{Binding Title}"
         Width="525"
@@ -25,7 +24,7 @@
                             TextWrapping="Wrap"
                             WatermarkText="搜索组织机构、设备、用户">
             <i:Interaction.Behaviors>
-                <li:SearchBoxEnterBehavior Command="{Binding SearchCommand}" CommandParameter="{Binding ElementName=searchBox, Path=Text}" />
+                <lie:TextBoxEnterBehavior Command="{Binding SearchCommand}" CommandParameter="{Binding ElementName=searchBox, Path=Text}" />
             </i:Interaction.Behaviors>
         </controls:SearchBox>
         <controls:DoubleUpDown x:Name="input"

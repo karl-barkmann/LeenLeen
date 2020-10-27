@@ -489,13 +489,10 @@ namespace Leen.Practices.Mvvm
                 {
                     var target = (ViewModelBase)state;
                     target.IsBusy = false;
+                    target.HasInitialized = true;
                     if (x.Exception != null)
                     {
                         target.NotifyInitializeError(x.Exception);
-                    }
-                    else
-                    {
-                        target.HasInitialized = true;
                     }
                 }, vm, TaskScheduler.FromCurrentSynchronizationContext());
             }

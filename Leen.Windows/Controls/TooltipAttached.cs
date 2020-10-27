@@ -1,4 +1,7 @@
-﻿namespace System.Windows.Controls
+﻿using System.Windows;
+using System.Windows.Controls;
+
+namespace Leen.Windows.Controls
 {
     /// <summary>
     ///  用于在资源文件中为元素的 <see cref="ToolTip"/> 定义 <see cref="Style"/> 的帮助类，使其支持Markup绑定。

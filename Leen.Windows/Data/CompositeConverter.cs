@@ -1,13 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Markup;
 
-namespace Leen.Practices.Mvvm
+namespace Leen.Windows.Data
 {
     /// <summary>
     /// 组合值转换器，用于使用特定的值转换序列来转换值。
     /// </summary>
+    [ContentProperty(nameof(Converters))]
+    [ContentWrapper(typeof(ValueConverterCollection))]
     public class CompositeConverter : IValueConverter
     {
         /// <summary>
@@ -15,13 +19,14 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         public CompositeConverter()
         {
-            Converters = new List<IValueConverter>();
+            Converters = new ValueConverterCollection();
         }
 
         /// <summary>
         /// 按转换顺序排列的值转换器。
         /// </summary>
-        public List<IValueConverter> Converters { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public ValueConverterCollection Converters { get; }
 
         /// <summary>
         /// 
@@ -69,4 +74,9 @@ namespace Leen.Practices.Mvvm
             return result;
         }
     }
+
+    /// <summary>
+    /// 表示一组值转换器。
+    /// </summary>
+    public class ValueConverterCollection : Collection<IValueConverter> { }
 }

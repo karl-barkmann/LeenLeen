@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using System.Windows.Markup;
 
-namespace Leen.Practices.Mvvm
+namespace Leen.Windows.Data
 {
     /// <summary>
     /// 为值转换器提供扩展标记的抽象基类。

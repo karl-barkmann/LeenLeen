@@ -1,23 +1,32 @@
-﻿using Leen.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace System.Windows.Interactivity
 {
     /// <summary>
-    /// 使SearchBox支持Enter键的附加行为。
+    /// 使TextBox支持Enter键的附加行为。
     /// </summary>
-    public class SearchBoxEnterBehavior : CommandBehaviorBase<SearchBox>
+    public class TextBoxEnterBehavior : CommandBehaviorBase<TextBox>
     {
-        public SearchBoxEnterBehavior()
+        /// <summary>
+        /// 
+        /// </summary>
+        public TextBoxEnterBehavior()
         {
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected override void OnAttached()
         {
             base.OnAttached();
             AssociatedObject.PreviewKeyDown += AssociatedObject_PreviewKeyDown;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected override void OnDetaching()
         {
             base.OnDetaching();

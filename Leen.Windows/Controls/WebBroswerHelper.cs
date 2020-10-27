@@ -1,4 +1,8 @@
-﻿namespace System.Windows.Controls
+﻿using System;
+using System.Windows;
+using System.Windows.Controls;
+
+namespace Leen.Windows.Controls
 {
     /// <summary>
     /// 使 <see cref="WebBrowser"/> 支持在Xaml markUp中的Binding，以便通过MVVM方式进行导航。

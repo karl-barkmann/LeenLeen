@@ -1,6 +1,8 @@
 using Leen.Practices.Mvvm;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Windows.Input;
 
 namespace Demo.Windows.ViewModel
@@ -12,6 +14,7 @@ namespace Demo.Windows.ViewModel
         private string _tile;
         private MainWindowViewModel _inner;
         private MainWindowViewModel _nest;
+        private IEnumerable<int> _numbers;
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -23,6 +26,7 @@ namespace Demo.Windows.ViewModel
             ShowSimpleTraderCrawlerCommand = new RelayCommand(OnShowSimpleTraderCrawler);
             SearchCommand = new RelayCommand<string>(OnSearch, OnCanSerach);
             Title = "Shell";
+            Numbers = Enumerable.Range(0, 60);
         }
 
         public string Title
@@ -58,6 +62,15 @@ namespace Demo.Windows.ViewModel
             set
             {
                 SetProperty(ref _state, value, () => State);
+            }
+        }
+
+        public IEnumerable<int> Numbers
+        {
+            get { return _numbers; }
+            set
+            {
+                SetProperty(ref _numbers, value, () => Numbers);
             }
         }
 

@@ -1,5 +1,8 @@
 ﻿
-namespace System.Windows.Input
+using System.Windows;
+using System.Windows.Input;
+
+namespace Leen.Windows.Controls
 {
     /// <summary>
     /// 用于在 <see cref="Style"/> 中为元素定义 <see cref="InputBindingCollection"/>的帮助类。
@@ -25,8 +28,7 @@ namespace System.Windows.Input
             new FrameworkPropertyMetadata(new InputBindingCollection(),
             (sender, e) =>
             {
-                var element = sender as UIElement;
-                if (element == null) return;
+                if (!(sender is UIElement element)) return;
                 element.InputBindings.Clear();
                 element.InputBindings.AddRange((InputBindingCollection)e.NewValue);
             }));
@@ -79,8 +81,7 @@ namespace System.Windows.Input
 
         private static void AttachedGesturePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var inputBinding = d as InputBinding;
-            if (inputBinding == null) return;
+            if (!(d is InputBinding inputBinding)) return;
 
             inputBinding.Gesture = e.NewValue as InputGesture;
         }

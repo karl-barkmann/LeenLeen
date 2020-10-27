@@ -1,4 +1,4 @@
-﻿namespace Leen.Practices.Mvvm
+﻿namespace Leen.Windows
 {
     /// <summary>
     /// 定义一个通用协定表示此对象可用于在进行选择或取消选择。

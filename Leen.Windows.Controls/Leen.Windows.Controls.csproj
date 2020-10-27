@@ -49,7 +49,6 @@
     <Compile Include="CubeControl.cs" />
     <Compile Include="DoubleUtil.cs" />
     <Compile Include="HeightExpander.cs" />
-    <Compile Include="Interactivity\SearchBoxEnterBehavior.cs" />
     <Compile Include="NumericUpDown.cs" />
     <Compile Include="NonTopMostPopup.cs" />
     <Compile Include="Primitives\Arrow.cs" />

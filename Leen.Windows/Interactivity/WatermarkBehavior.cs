@@ -321,7 +321,6 @@ namespace System.Windows.Interactivity
 
         #endregion
 
-
         #region IsEnable
 
         /// <summary>
