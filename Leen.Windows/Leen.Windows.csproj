@@ -49,7 +49,9 @@
   <ItemGroup>
     <Compile Include="BlinkWindow.cs" />
     <Compile Include="CommandHelpers.cs" />
-    <Compile Include="Controls\InputAttached.cs" />
+
+    <Compile Include="Controls\ControlAttatched.cs" />
+    <Compile Include="Controls\ToggleButtonAttatched.cs" />    <Compile Include="Controls\InputAttached.cs" />
     <Compile Include="Controls\TooltipAttached.cs" />
     <Compile Include="Controls\WebBroswerHelper.cs" />
     <Compile Include="Data\ByteToImageSourceConverter.cs" />
