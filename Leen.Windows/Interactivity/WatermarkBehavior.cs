@@ -456,6 +456,10 @@ namespace System.Windows.Interactivity
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         protected virtual WatermarkAdorner CreateProperAdorner()
         {
             WatermarkAdorner adorner;
@@ -469,6 +473,9 @@ namespace System.Windows.Interactivity
                     break;
                 case ComboBox comboBox:
                     adorner = new ComboBoxWatermarkAdorner(comboBox, WatermarkText);
+                    break;
+                case DatePicker datePicker:
+                    adorner = new DatePickerWatermarkAdorner(datePicker, WatermarkText);
                     break;
                 default:
                     adorner = new WatermarkAdorner(AssociatedObject, WatermarkText);
@@ -486,6 +493,9 @@ namespace System.Windows.Interactivity
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class WatermarkAdorner : Adorner 
     {
         internal WatermarkAdorner(Control target, string watermark)
@@ -511,6 +521,9 @@ namespace System.Windows.Interactivity
 
         internal string Watermark { get; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual new Control AdornedElement
         {
             get
@@ -519,6 +532,9 @@ namespace System.Windows.Interactivity
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual void Hook()
         {
             AdornedElement.Loaded += adornedTextBox_Loaded;
@@ -526,6 +542,9 @@ namespace System.Windows.Interactivity
             AdornedElement.LostFocus += adornedTextBox_LostFocus;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual void UnHook()
         {
             AdornedElement.Loaded -= adornedTextBox_Loaded;
@@ -533,6 +552,10 @@ namespace System.Windows.Interactivity
             AdornedElement.LostFocus -= adornedTextBox_LostFocus;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dc"></param>
         protected override void OnRender(DrawingContext dc)
         {
             if (CanRender())
@@ -551,6 +574,10 @@ namespace System.Windows.Interactivity
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         protected virtual bool CanRender()
         {
             return !AdornedElement.IsFocused;
@@ -667,6 +694,38 @@ namespace System.Windows.Interactivity
         }
 
         private void Target_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            InvalidateVisual();
+        }
+    }
+
+    class DatePickerWatermarkAdorner : WatermarkAdorner
+    {
+        public DatePickerWatermarkAdorner(DatePicker target, string watermark) : base(target, watermark)
+        {
+            Target = target;
+        }
+
+        public DatePicker Target { get; }
+
+        protected override bool CanRender()
+        {
+            return !Target.SelectedDate.HasValue && base.CanRender();
+        }
+
+        public override void Hook()
+        {
+            base.Hook();
+            Target.SelectedDateChanged += Target_SelectionDateChanged;
+        }
+
+        public override void UnHook()
+        {
+            base.UnHook();
+            Target.SelectedDateChanged -= Target_SelectionDateChanged;
+        }
+
+        private void Target_SelectionDateChanged(object sender, SelectionChangedEventArgs e)
         {
             InvalidateVisual();
         }

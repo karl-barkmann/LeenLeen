@@ -99,5 +99,15 @@
         <controls:TimePicker Margin="20,196,0,0"
                              HorizontalAlignment="Left"
                              VerticalAlignment="Top" />
+        <DatePicker Margin="85,250,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top">
+            <i:Interaction.Behaviors>
+                <lie:WatermarkBehavior WatermarkFontSize="16"
+                                       WatermarkForeground="Red"
+                                       WatermarkPadding="5,0"
+                                       WatermarkText="开始时间" />
+            </i:Interaction.Behaviors>
+        </DatePicker>
     </Grid>
 </Window>
