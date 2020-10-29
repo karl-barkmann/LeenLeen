@@ -49,9 +49,9 @@
   <ItemGroup>
     <Compile Include="BlinkWindow.cs" />
     <Compile Include="CommandHelpers.cs" />
-
     <Compile Include="Controls\ControlAttatched.cs" />
-    <Compile Include="Controls\ToggleButtonAttatched.cs" />    <Compile Include="Controls\InputAttached.cs" />
+    <Compile Include="Controls\ToggleButtonAttatched.cs" />
+    <Compile Include="Controls\InputAttached.cs" />
     <Compile Include="Controls\TooltipAttached.cs" />
     <Compile Include="Controls\WebBroswerHelper.cs" />
     <Compile Include="Data\ByteToImageSourceConverter.cs" />
@@ -113,11 +113,6 @@
       <Project>{02fd087d-9eda-4976-8ca2-031c3792736a}</Project>
       <Name>Leen.Native</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.Shell">
-      <Version>3.0.1</Version>
-    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
