@@ -30,8 +30,8 @@ namespace Leen.Practices.Mvvm
         private string _busyMessage = "正在加载中...";
         private bool anyPropertyChanged;
         private bool _hasInitialized;
+        private List<IWatcher> _watchers;
         private readonly static TaskCompletionSource<bool> s_TaskCompletionSource = new TaskCompletionSource<bool>();
-        private Dictionary<string, object> _watchOnProperties;
 
         static ViewModelBase()
         {
@@ -43,7 +43,7 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         public ViewModelBase()
         {
-            
+
         }
 
         /// <summary>
@@ -202,6 +202,7 @@ namespace Leen.Practices.Mvvm
 
         private void WatchProperties()
         {
+            _watchers = new List<IWatcher>();
             var properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(prop => Attribute.IsDefined(prop, typeof(WatchOnAttribute)));
             foreach (var property in properties)
             {
@@ -210,26 +211,35 @@ namespace Leen.Practices.Mvvm
                 {
                     continue;
                 }
+
                 if (typeof(RelayCommand).IsAssignableFrom(propVal.GetType()))
                 {
+                    var raiseCommandCanExecute = new Action(() =>
+                    {
+                        if (propVal is RelayCommand command)
+                        {
+                            UIService.InvokeIfNeeded(() =>
+                            {
+                                command.RaiseCanExecuteChanged();
+                            });
+                        }
+                    });
+
                     var watchOnList = property.GetCustomAttributes<WatchOnAttribute>();
                     if (watchOnList != null)
                     {
-                        if (_watchOnProperties == null)
-                            _watchOnProperties = new Dictionary<string, object>();
-                        _watchOnProperties.Add(property.Name, propVal);
                         foreach (var watchOn in watchOnList)
                         {
-                            Watch(watchOn.PropertyType, watchOn.TargetProperty, () =>
+                            IWatcher watcher;
+                            if (watchOn.PropertyType == null)
                             {
-                                if (propVal is RelayCommand command)
-                                {
-                                    UIService.InvokeIfNeeded(() =>
-                                    {
-                                        command.RaiseCanExecuteChanged();
-                                    });
-                                }
-                            }, false);
+                                watcher = Watch(watchOn.PropertyType, watchOn.TargetProperty, raiseCommandCanExecute);
+                            }
+                            else
+                            {
+                                watcher = DeepWatch(watchOn.PropertyType, watchOn.TargetProperty, raiseCommandCanExecute);
+                            }
+                            _watchers.Add(watcher);
                         }
                     }
                 }
@@ -238,6 +248,7 @@ namespace Leen.Practices.Mvvm
 
         private void WatchMethods()
         {
+            _watchers = new List<IWatcher>();
             var methods = GetType().GetMethods(BindingFlags.Public
                                                | BindingFlags.NonPublic
                                                | BindingFlags.Instance).Where(method => Attribute.IsDefined(method, typeof(WatchOnAttribute)));
@@ -249,7 +260,7 @@ namespace Leen.Practices.Mvvm
                 {
                     foreach (var watchOn in watchOnList)
                     {
-                        Watch(watchOn.PropertyType, watchOn.TargetProperty, (oldVal, newVal) =>
+                        var invokeMethod = new Action<object, object>((oldVal, newVal) =>
                         {
                             if (parameters == null || parameters.Length < 1)
                             {
@@ -264,6 +275,16 @@ namespace Leen.Practices.Mvvm
                                 method.Invoke(this, new object[2] { oldVal, newVal });
                             }
                         });
+                        IWatcher watcher;
+                        if (watchOn.PropertyType == null)
+                        {
+                            watcher = Watch(watchOn.PropertyType, watchOn.TargetProperty, invokeMethod);
+                        }
+                        else
+                        {
+                            watcher = DeepWatch(watchOn.PropertyType, watchOn.TargetProperty, invokeMethod);
+                        }
+                        _watchers.Add(watcher);
                     }
                 }
             }
@@ -273,7 +294,13 @@ namespace Leen.Practices.Mvvm
         /// 清除任何需要清除的资源，退订相关事件订阅。
         /// </summary>
         public virtual void CleanUp()
-        { }
+        {
+            if (_watchers != null)
+            {
+                _watchers.ForEach(x => x.Dispose());
+                _watchers.Clear();
+            }
+        }
 
         /// <summary>
         /// 但初始化发生错误时调用。

@@ -59,12 +59,12 @@ namespace Leen.Common.Utils
         /// <typeparam name="T">属性值的类型。</typeparam>
         /// <param name="src">属性所属对象示例。</param>
         /// <param name="propertyName">属性名称。</param>
+        /// <exception cref="ArgumentException">属性名或属性路径不正确，没有找到匹配的属性。</exception>
         /// <returns></returns>
         public static T GetPropValue<T>(object src, string propertyName)
         {
             object retval = GetPropValue(src, propertyName, typeof(T));
             if (retval == null) { return default; }
-
             return (T)retval;
         }
 

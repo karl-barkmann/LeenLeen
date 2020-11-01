@@ -1,8 +1,11 @@
 ﻿using Leen.Common.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -68,7 +71,7 @@ namespace Leen.Practices.Mvvm
                 }
             } while (expression != null);
 
-            if(properties.Count<1)
+            if (properties.Count < 1)
             {
                 throw new ArgumentException("The expression does not access a property.", nameof(propertyExpression));
             }
@@ -97,22 +100,16 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            var watcher = new PropertyWatcher<T>(this, propertyExpression, callback, deepWatch);
-            return watcher;
-        }
-
-        /// <summary>
-        /// Watch on a property changed.
-        /// </summary>
-        /// <param name="propertyType">Property type.</param>
-        /// <param name="propertyName">Property name.</param>
-        /// <param name="callback">Callback Lambda when the property changed. </param>
-        /// <param name="deepWatch">Where Watch property deeply if a property is a refernce value.</param>
-        /// <returns></returns>
-        private protected IDisposable Watch(Type propertyType, string propertyName, Action callback, bool deepWatch)
-        {
-            var watcher = new PropertyWatcher(this, propertyType, propertyName, callback, deepWatch);
-            return watcher;
+            if (deepWatch)
+            {
+                var watcher = new DeepPropertyWatcher<T>(this, propertyExpression, callback);
+                return watcher;
+            }
+            else
+            {
+                var watcher = new PropertyWatcher<T>(this, propertyExpression, callback);
+                return watcher;
+            }
         }
 
         /// <summary>
@@ -120,7 +117,7 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="propertyName">Property name.</param>
         /// <param name="callback">Callback Lambda when the property changed. </param>
-        private protected IDisposable Watch<T>(string propertyName, Action<T, T> callback)
+        private protected IWatcher Watch<T>(string propertyName, Action<T, T> callback)
         {
             var watcher = new PropertyWatcher<T>(this, propertyName, callback);
             return watcher;
@@ -129,12 +126,62 @@ namespace Leen.Practices.Mvvm
         /// <summary>
         /// Watch on a property changed.
         /// </summary>
+        /// <param name="propertyName">Property name.</param>
+        /// <param name="callback">Callback Lambda when the property changed. </param>
+        private protected IWatcher DeepWatch<T>(string propertyName, Action<T, T> callback)
+        {
+            var watcher = new DeepPropertyWatcher<T>(this, propertyName, callback);
+            return watcher;
+
+        }
+
+        /// <summary>
+        /// Watch on a property changed.
+        /// </summary>
         /// <param name="propertyType">Property type.</param>
         /// <param name="propertyName">Property name.</param>
         /// <param name="callback">Callback Lambda when the property changed. </param>
-        private protected IDisposable Watch(Type propertyType, string propertyName, Action<object, object> callback)
+        /// <returns></returns>
+        private protected IWatcher Watch(Type propertyType, string propertyName, Action callback)
         {
             var watcher = new PropertyWatcher(this, propertyType, propertyName, callback);
+            return watcher;
+        }
+
+        /// <summary>
+        /// Watch on a property changed.
+        /// </summary>
+        /// <param name="propertyType">Property type.</param>
+        /// <param name="propertyName">Property name.</param>
+        /// <param name="callback">Callback Lambda when the property changed. </param>
+        /// <returns></returns>
+        private protected IWatcher DeepWatch(Type propertyType, string propertyName, Action callback)
+        {
+            var watcher = new DeepPropertyWatcher(this, propertyType, propertyName, callback);
+            return watcher;
+        }
+
+        /// <summary>
+        /// Watch on a property changed.
+        /// </summary>
+        /// <param name="propertyType">Property type.</param>
+        /// <param name="propertyName">Property name.</param>
+        /// <param name="callback">Callback Lambda when the property changed. </param>
+        private protected IWatcher Watch(Type propertyType, string propertyName, Action<object, object> callback)
+        {
+            var watcher = new PropertyWatcher(this, propertyType, propertyName, callback);
+            return watcher;
+        }
+
+        /// <summary>
+        /// Watch on a property changed.
+        /// </summary>
+        /// <param name="propertyType">Property type.</param>
+        /// <param name="propertyName">Property name.</param>
+        /// <param name="callback">Callback Lambda when the property changed. </param>
+        private protected IWatcher DeepWatch(Type propertyType, string propertyName, Action<object, object> callback)
+        {
+            var watcher = new DeepPropertyWatcher(this, propertyType, propertyName, callback);
             return watcher;
         }
 
@@ -267,76 +314,117 @@ namespace Leen.Practices.Mvvm
             PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
         }
 
-        private class PropertyWatcher<T> : IDisposable
+        private static IEnumerable<IWatcher> CreateWatcher<T>(Action<T, T> callback, T propertyValue, BindableBase target)
+        {
+            var properties = target.GetType().GetProperties(BindingFlags.Public
+                                                                | BindingFlags.NonPublic
+                                                                | BindingFlags.Instance);
+
+            var invoker = new Action(() =>
+            {
+                callback(propertyValue, propertyValue);
+            });
+
+            var watchers = new List<IWatcher>(properties.Length);
+            foreach (var property in properties)
+            {
+                var watcher = target.Watch(property.PropertyType, property.Name, invoker);
+                watchers.Add(watcher);
+            }
+            return watchers;
+        }
+
+        private static IEnumerable<IWatcher> CreateDeepWatchers<T>(Action<T, T> callback, T propertyValue, BindableBase target)
+        {
+            var properties = target.GetType().GetProperties(BindingFlags.Public
+                                                                | BindingFlags.NonPublic
+                                                                | BindingFlags.Instance);
+            var invoker = new Action(() =>
+            {
+                callback(propertyValue, propertyValue);
+            });
+
+            var watchers = new List<IWatcher>(properties.Length);
+            foreach (var property in properties)
+            {
+                var watcher = target.DeepWatch(property.PropertyType, property.Name, invoker);
+                watchers.Add(watcher);
+            }
+            return watchers;
+        }
+
+        private static IEnumerable<IWatcher> CreateDeepWatchers(Action callback, BindableBase target)
+        {
+            var properties = target.GetType().GetProperties(BindingFlags.Public
+                                                                | BindingFlags.NonPublic
+                                                                | BindingFlags.Instance);
+            var watchers = new List<IWatcher>(properties.Length);
+            foreach (var property in properties)
+            {
+                var watcher = target.DeepWatch(property.PropertyType, property.Name, callback);
+                watchers.Add(watcher);
+            }
+            return watchers;
+        }
+
+        private protected interface IWatcher : IDisposable
+        {
+            object Target { get; }
+        }
+
+        private class PropertyWatcher<T> : IWatcher
         {
             private T oldVal;
             private T newVal;
-            private readonly List<IDisposable> _deepWatchers;
+            private readonly List<IWatcher> _deepWatchers;
 
-            public PropertyWatcher(BindableBase target, Expression<Func<T>> propertyExpression, Action<T, T> callback, bool deepWatch)
+            public PropertyWatcher(BindableBase target, Expression<Func<T>> propertyExpression, Action<T, T> callback)
             {
                 Target = target;
                 PropertyName = ExtractPropertyName(propertyExpression);
                 Callback = callback;
-                DeepWatch = deepWatch;
                 DirectlyWatch = PropertyName.IndexOf('.') > 0;
-
-                if (deepWatch && !DirectlyWatch)
-                {
-                    var propertyValue = ReflectionHelper.GetPropValue<T>(target, PropertyName);
-                    if (propertyValue is BindableBase nestTarget)
-                    {
-                        if (_deepWatchers == null)
-                            _deepWatchers = new List<IDisposable>();
-                        var properties = nestTarget.GetType().GetProperties(BindingFlags.Public
-                                                                            | BindingFlags.NonPublic
-                                                                            | BindingFlags.Instance);
-                        foreach (var property in properties)
-                        {
-                            var watcher = nestTarget.Watch(property.PropertyType, property.Name, () =>
-                            {
-                                callback((T)propertyValue, (T)propertyValue);
-                            }, deepWatch);
-                            _deepWatchers.Add(watcher);
-                        }
-                    }
-                }
 
                 if (DirectlyWatch)
                 {
-                    var lastPropValue = ReflectionHelper.GetPropValue<T>(target, PropertyName);
-                    if (lastPropValue is BindableBase lastTarget)
+                    _deepWatchers = new List<IWatcher>();
+                    var parentPropertyName = PropertyName.Substring(0, PropertyName.LastIndexOf('.'));
+                    var parentValue = ReflectionHelper.GetPropValue(target, parentPropertyName);
+                    if (parentValue is BindableBase parentTarget)
                     {
-                        if (_deepWatchers == null)
-                            _deepWatchers = new List<IDisposable>();
-                        var properties = lastTarget.GetType().GetProperties(BindingFlags.Public
-                                                                       | BindingFlags.NonPublic
-                                                                       | BindingFlags.Instance);
-                        foreach (var property in properties)
-                        {
-                            var watcher = lastTarget.Watch(property.PropertyType, property.Name, () =>
-                            {
-                                callback((T)lastPropValue, (T)lastPropValue);
-                            }, deepWatch);
-                            _deepWatchers.Add(watcher);
-                        }
-                    }
-                    else
-                    {
-                        var preLastPropValue = ReflectionHelper.GetPropValue(target, PropertyName.Substring(0, PropertyName.LastIndexOf('.')));
-                        if (preLastPropValue is BindableBase preTarget)
-                        {
-                            if (_deepWatchers == null)
-                                _deepWatchers = new List<IDisposable>();
-
-                            var propertyName = PropertyName.Substring(PropertyName.LastIndexOf('.') + 1);
-                            var watcher = preTarget.Watch(propertyName, callback);
-                            _deepWatchers.Add(watcher);
-                        }
+                        var propertyName = PropertyName.Substring(PropertyName.LastIndexOf('.') + 1);
+                        var watcher = parentTarget.Watch(propertyName, callback);
+                        _deepWatchers.Add(watcher);
                     }
                 }
-                Target.PropertyChanged += OnTargetPropertyChanged;
-                Target.PropertyChanging += OnTargetPropertyChanging;
+                else
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    var propertyValue = ReflectionHelper.GetPropValue<T>(target, PropertyName);
+                    if (propertyValue is BindableBase bindableTarget)
+                    {
+                        var watchers = CreateWatcher(callback, propertyValue, bindableTarget);
+                        _deepWatchers.AddRange(watchers);
+                    }
+                    else if (propertyValue is INotifyCollectionChanged notifyCollection)
+                    {
+                        var watcher = new NotifyCollectionWatcher<T>(callback, false, notifyCollection);
+                        _deepWatchers.Add(watcher);
+                    }
+                    else if (propertyValue is IEnumerable enumerator)
+                    {
+                        foreach (var item in enumerator)
+                        {
+                            if (item is BindableBase bindableItem)
+                            {
+                                var watchers = CreateWatcher(callback, propertyValue, bindableItem);
+                                _deepWatchers.AddRange(watchers);
+                            }
+                        }
+                    }
+                    Target.PropertyChanged += OnTargetPropertyChanged;
+                    Target.PropertyChanging += OnTargetPropertyChanging;
+                }
             }
 
             public PropertyWatcher(BindableBase target, string propertyName, Action<T, T> callback)
@@ -344,21 +432,61 @@ namespace Leen.Practices.Mvvm
                 Target = target;
                 PropertyName = propertyName;
                 Callback = callback;
-                Target.PropertyChanged += OnTargetPropertyChanged;
-                Target.PropertyChanging += OnTargetPropertyChanging;
+                _deepWatchers = new List<IWatcher>();
+
+                if (DirectlyWatch)
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    var parentPropertyName = PropertyName.Substring(0, PropertyName.LastIndexOf('.'));
+                    var parentValue = ReflectionHelper.GetPropValue(target, parentPropertyName);
+                    if (parentValue is BindableBase parentTarget)
+                    {
+                        var childPropertyName = PropertyName.Substring(PropertyName.LastIndexOf('.') + 1);
+                        var watcher = parentTarget.Watch(childPropertyName, callback);
+                        _deepWatchers.Add(watcher);
+                    }
+                }
+                else
+                {
+                    var propertyValue = ReflectionHelper.GetPropValue<T>(target, PropertyName);
+                    if (propertyValue is BindableBase bindableTarget)
+                    {
+                        var watchers = CreateWatcher(callback, propertyValue, bindableTarget);
+                        _deepWatchers.AddRange(watchers);
+                    }
+                    else if (propertyValue is INotifyCollectionChanged notifyCollection)
+                    {
+                        var watcher = new NotifyCollectionWatcher<T>(callback, false, notifyCollection);
+                        _deepWatchers.Add(watcher);
+                    }
+                    else if (propertyValue is IEnumerable enumerator)
+                    {
+                        foreach (var item in enumerator)
+                        {
+                            if (item is BindableBase bindableItem)
+                            {
+                                var watchers = CreateWatcher(callback, propertyValue, bindableItem);
+                                _deepWatchers.AddRange(watchers);
+                            }
+                        }
+                    }
+
+                    Target.PropertyChanged += OnTargetPropertyChanged;
+                    Target.PropertyChanging += OnTargetPropertyChanging;
+                }
             }
 
             public bool IsDisposed { get; private set; }
 
-            private protected BindableBase Target { get; }
+            public BindableBase Target { get; }
 
-            private protected string PropertyName { get; }
+            public string PropertyName { get; }
 
-            private protected Action<T, T> Callback { get; }
-
-            private protected bool DeepWatch { get; }
+            public Action<T, T> Callback { get; }
 
             public bool DirectlyWatch { get; }
+
+            object IWatcher.Target => Target;
 
             public void Dispose()
             {
@@ -367,8 +495,8 @@ namespace Leen.Practices.Mvvm
                     if (_deepWatchers != null)
                     {
                         _deepWatchers.ForEach(x => x.Dispose());
+                        _deepWatchers.Clear();
                     }
-                    _deepWatchers.Clear();
                     Target.PropertyChanged -= OnTargetPropertyChanged;
                     Target.PropertyChanging -= OnTargetPropertyChanging;
                     IsDisposed = true;
@@ -403,57 +531,104 @@ namespace Leen.Practices.Mvvm
             }
         }
 
-        private class PropertyWatcher : IDisposable
+        private class DeepPropertyWatcher<T> : IWatcher
         {
-            private readonly List<IDisposable> _deepWatchers;
-            private object oldVal;
-            private object newVal;
+            private T oldVal;
+            private T newVal;
+            private readonly List<IWatcher> _deepWatchers;
 
-            public PropertyWatcher(BindableBase target, Type propertyType, string propertyName, Action callback, bool deepWatch)
+            public DeepPropertyWatcher(BindableBase target, Expression<Func<T>> propertyExpression, Action<T, T> callback)
             {
                 Target = target;
-                PropertyType = propertyType;
+                PropertyName = ExtractPropertyName(propertyExpression);
+                Callback = callback;
+                DirectlyWatch = PropertyName.IndexOf('.') > 0;
+
+                if (DirectlyWatch)
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    var parentPropertyName = PropertyName.Substring(0, PropertyName.LastIndexOf('.'));
+                    var parentValue = ReflectionHelper.GetPropValue(target, parentPropertyName);
+                    if (parentValue is BindableBase parentTarget)
+                    {
+                        var propertyName = PropertyName.Substring(PropertyName.LastIndexOf('.') + 1);
+                        var watcher = parentTarget.DeepWatch(propertyName, callback);
+                        _deepWatchers.Add(watcher);
+                    }
+                }
+                else
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    var propertyValue = ReflectionHelper.GetPropValue<T>(target, PropertyName);
+                    if (propertyValue is BindableBase bindableTarget)
+                    {
+                        var watchers = CreateDeepWatchers(callback, propertyValue, bindableTarget);
+                        _deepWatchers.AddRange(watchers);
+                    }
+                    else if (propertyValue is INotifyCollectionChanged notifyCollection)
+                    {
+                        var watcher = new NotifyCollectionWatcher<T>(callback, true, notifyCollection);
+                        _deepWatchers.Add(watcher);
+                    }
+                    else if (propertyValue is IEnumerable enumerator)
+                    {
+                        foreach (var item in enumerator)
+                        {
+                            if (item is BindableBase bindableItem)
+                            {
+                                var watchers = CreateDeepWatchers(callback, propertyValue, bindableItem);
+                                _deepWatchers.AddRange(watchers);
+                            }
+                        }
+                    }
+                    Target.PropertyChanged += OnTargetPropertyChanged;
+                    Target.PropertyChanging += OnTargetPropertyChanging;
+                }
+            }
+
+            public DeepPropertyWatcher(BindableBase target, string propertyName, Action<T, T> callback)
+            {
+                Target = target;
                 PropertyName = propertyName;
                 Callback = callback;
-                DeepWatch = deepWatch;
-                if (deepWatch)
+                _deepWatchers = new List<IWatcher>();
+                var propertyValue = ReflectionHelper.GetPropValue<T>(target, PropertyName);
+                if (propertyValue is BindableBase bindableTarget)
                 {
-                    var propertyValue = ReflectionHelper.GetPropValue(target, propertyName, propertyType);
-                    if (propertyValue is BindableBase nestTarget)
+                    var watchers = CreateDeepWatchers(callback, propertyValue, bindableTarget);
+                    _deepWatchers.AddRange(watchers);
+                }
+                else if (propertyValue is INotifyCollectionChanged notifyCollection)
+                {
+                    var watcher = new NotifyCollectionWatcher<T>(callback, true, notifyCollection);
+                    _deepWatchers.Add(watcher);
+                }
+                else if (propertyValue is IEnumerable enumerator)
+                {
+                    foreach (var item in enumerator)
                     {
-                        _deepWatchers = new List<IDisposable>();
-                        var properties = nestTarget.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                        foreach (var property in properties)
+                        if (item is BindableBase bindableItem)
                         {
-                            var watcher = nestTarget.Watch(property.PropertyType, property.Name, callback, deepWatch);
-                            _deepWatchers.Add(watcher);
+                            var watchers = CreateDeepWatchers(callback, propertyValue, bindableItem);
+                            _deepWatchers.AddRange(watchers);
                         }
                     }
                 }
                 Target.PropertyChanged += OnTargetPropertyChanged;
-            }
-
-            public PropertyWatcher(BindableBase target, Type propertyType, string propertyName, Action<object,object> callback)
-            {
-                Target = target;
-                PropertyType = propertyType;
-                PropertyName = propertyName;
-                ValCallback = callback;
                 Target.PropertyChanging += OnTargetPropertyChanging;
-                Target.PropertyChanged += OnTargetPropertyChanged;
             }
 
             public bool IsDisposed { get; private set; }
 
-            private protected BindableBase Target { get; }
-            public Type PropertyType { get; }
-            private protected string PropertyName { get; }
+            public BindableBase Target { get; }
 
-            public Action Callback { get; }
+            public string PropertyName { get; }
 
-            public Action<object, object> ValCallback { get; }
+            public Action<T, T> Callback { get; }
 
-            public bool DeepWatch { get; }
+            public bool DirectlyWatch { get; }
+
+            object IWatcher.Target => Target;
 
             public void Dispose()
             {
@@ -462,8 +637,138 @@ namespace Leen.Practices.Mvvm
                     if (_deepWatchers != null)
                     {
                         _deepWatchers.ForEach(x => x.Dispose());
+                        _deepWatchers.Clear();
                     }
-                    _deepWatchers.Clear();
+                    Target.PropertyChanged -= OnTargetPropertyChanged;
+                    Target.PropertyChanging -= OnTargetPropertyChanging;
+                    IsDisposed = true;
+                    oldVal = default;
+                    newVal = default;
+                }
+            }
+
+            private void OnTargetPropertyChanged(object sender, PropertyChangedEventArgs e)
+            {
+                if (e.PropertyName == PropertyName)
+                {
+                    newVal = ReflectionHelper.GetPropValue<T>(Target, PropertyName);
+                    try
+                    {
+                        Callback(oldVal, newVal);
+                    }
+                    finally
+                    {
+                        oldVal = default;
+                        newVal = default;
+                    }
+                }
+            }
+
+            private void OnTargetPropertyChanging(object sender, PropertyChangingEventArgs e)
+            {
+                if (e.PropertyName == PropertyName)
+                {
+                    oldVal = ReflectionHelper.GetPropValue<T>(Target, PropertyName);
+                }
+            }
+        }
+
+        private class PropertyWatcher : IWatcher
+        {
+            private readonly List<IWatcher> _deepWatchers;
+            private object oldVal;
+            private object newVal;
+
+            public PropertyWatcher(BindableBase target, Type propertyType, string propertyName, Action callback)
+            {
+                Target = target;
+                PropertyType = propertyType;
+                PropertyName = propertyName;
+                Callback = callback;
+                DirectlyWatch = PropertyName.IndexOf('.') > 0;
+                if (DirectlyWatch)
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    var parentPropertyName = PropertyName.Substring(0, PropertyName.LastIndexOf('.'));
+                    var parentValue = ReflectionHelper.GetPropValue(target, parentPropertyName);
+                    if (parentValue is BindableBase parentTarget)
+                    {
+                        var childPropertyName = PropertyName.Substring(PropertyName.LastIndexOf('.') + 1);
+                        var watcher = parentTarget.Watch(propertyType, childPropertyName, callback);
+                        _deepWatchers.Add(watcher);
+                    }
+                }
+                else
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    var propertyValue = ReflectionHelper.GetPropValue(target, propertyName, propertyType);
+                    if (propertyValue is BindableBase bindableTarget)
+                    {
+                        var watchers = CreateDeepWatchers(callback, bindableTarget);
+                        _deepWatchers.AddRange(watchers);
+                    }
+                    Target.PropertyChanged += OnTargetPropertyChanged;
+                }
+            }
+
+            public PropertyWatcher(BindableBase target, Type propertyType, string propertyName, Action<object, object> callback)
+            {
+                Target = target;
+                PropertyType = propertyType;
+                PropertyName = propertyName;
+                ValCallback = callback;
+                DirectlyWatch = PropertyName.IndexOf('.') > 0;
+                if (DirectlyWatch)
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    var parentPropertyName = PropertyName.Substring(0, PropertyName.LastIndexOf('.'));
+                    var parentValue = ReflectionHelper.GetPropValue(target, parentPropertyName);
+                    if (parentValue is BindableBase parentTarget)
+                    {
+                        var childPropertyName = PropertyName.Substring(PropertyName.LastIndexOf('.') + 1);
+                        var watcher = parentTarget.Watch(propertyType, childPropertyName, callback);
+                        _deepWatchers.Add(watcher);
+                    }
+                }
+                else
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    var propertyValue = ReflectionHelper.GetPropValue(target, propertyName, propertyType);
+                    if (propertyValue is BindableBase bindableTarget)
+                    {
+                        var watchers = CreateDeepWatchers(callback, propertyValue, bindableTarget);
+                        _deepWatchers.AddRange(watchers);
+                    }
+                    Target.PropertyChanging += OnTargetPropertyChanging;
+                    Target.PropertyChanged += OnTargetPropertyChanged;
+                }
+            }
+
+            public bool IsDisposed { get; private set; }
+
+            public BindableBase Target { get; }
+
+            public Type PropertyType { get; }
+
+            public string PropertyName { get; }
+
+            public Action Callback { get; }
+
+            public Action<object, object> ValCallback { get; }
+
+            public bool DirectlyWatch { get; }
+
+            object IWatcher.Target => Target;
+
+            public void Dispose()
+            {
+                if (!IsDisposed)
+                {
+                    if (_deepWatchers != null)
+                    {
+                        _deepWatchers.ForEach(x => x.Dispose());
+                        _deepWatchers.Clear();
+                    }
                     Target.PropertyChanged -= OnTargetPropertyChanged;
                     Target.PropertyChanging -= OnTargetPropertyChanging;
                     IsDisposed = true;
@@ -480,16 +785,259 @@ namespace Leen.Practices.Mvvm
             {
                 if (e.PropertyName == PropertyName)
                 {
-                    newVal = ReflectionHelper.GetPropValue(Target, PropertyName, PropertyType);
                     Callback?.Invoke();
                     try
                     {
+                        newVal = ReflectionHelper.GetPropValue(Target, PropertyName, PropertyType);
                         ValCallback?.Invoke(oldVal, newVal);
                     }
                     finally
                     {
                         oldVal = default;
                         newVal = default;
+                    }
+                }
+            }
+        }
+
+        private class DeepPropertyWatcher : IWatcher
+        {
+            private readonly List<IWatcher> _deepWatchers;
+            private object oldVal;
+            private object newVal;
+
+            public DeepPropertyWatcher(BindableBase target, Type propertyType, string propertyName, Action callback)
+            {
+                Target = target;
+                PropertyType = propertyType;
+                PropertyName = propertyName;
+                Callback = callback;
+                DirectlyWatch = PropertyName.IndexOf('.') > 0;
+                if (DirectlyWatch)
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    var parentPropertyName = PropertyName.Substring(0, PropertyName.LastIndexOf('.'));
+                    var parentValue = ReflectionHelper.GetPropValue(target, parentPropertyName);
+                    if (parentValue is BindableBase parentTarget)
+                    {
+                        var childPropertyName = PropertyName.Substring(PropertyName.LastIndexOf('.') + 1);
+                        var watcher = parentTarget.DeepWatch(propertyType, childPropertyName, callback);
+                        _deepWatchers.Add(watcher);
+                    }
+                }
+                else
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    var propertyValue = ReflectionHelper.GetPropValue(target, propertyName, propertyType);
+                    if (propertyValue is BindableBase bindableTarget)
+                    {
+                        var watchers = CreateDeepWatchers(callback, bindableTarget);
+                        _deepWatchers.AddRange(watchers);
+                    }
+                    else if (propertyValue is IEnumerable enumerator)
+                    {
+                        foreach (var item in enumerator)
+                        {
+                            if (item is BindableBase bindableItem)
+                            {
+                                var watchers = CreateDeepWatchers(callback, bindableItem);
+                                _deepWatchers.AddRange(watchers);
+                            }
+                        }
+                    }
+                    Target.PropertyChanged += OnTargetPropertyChanged;
+                }
+            }
+
+            public DeepPropertyWatcher(BindableBase target, Type propertyType, string propertyName, Action<object, object> callback)
+            {
+                Target = target;
+                PropertyType = propertyType;
+                PropertyName = propertyName;
+                ValCallback = callback;
+                DirectlyWatch = PropertyName.IndexOf('.') > 0;
+                if (DirectlyWatch)
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    var parentPropertyName = PropertyName.Substring(0, PropertyName.LastIndexOf('.'));
+                    var parentValue = ReflectionHelper.GetPropValue(target, parentPropertyName);
+                    if (parentValue is BindableBase parentTarget)
+                    {
+                        var childPropertyName = PropertyName.Substring(PropertyName.LastIndexOf('.') + 1);
+                        var watcher = parentTarget.DeepWatch(propertyType, childPropertyName, callback);
+                        _deepWatchers.Add(watcher);
+                    }
+                }
+                else
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    var propertyValue = ReflectionHelper.GetPropValue(target, propertyName, propertyType);
+                    if (propertyValue is BindableBase bindableTarget)
+                    {
+                        var watchers = CreateDeepWatchers(callback, propertyValue, bindableTarget);
+                        _deepWatchers.AddRange(watchers);
+                    }
+                    else if (propertyValue is IEnumerable enumerator)
+                    {
+                        foreach (var item in enumerator)
+                        {
+                            if (item is BindableBase bindableItem)
+                            {
+                                var watchers = CreateDeepWatchers(callback, propertyValue, bindableItem);
+                                _deepWatchers.AddRange(watchers);
+                            }
+                        }
+                    }
+                    Target.PropertyChanging += OnTargetPropertyChanging;
+                    Target.PropertyChanged += OnTargetPropertyChanged;
+                }
+            }
+
+            public bool IsDisposed { get; private set; }
+
+            public BindableBase Target { get; }
+
+            public Type PropertyType { get; }
+
+            public string PropertyName { get; }
+
+            public Action Callback { get; }
+
+            public Action<object, object> ValCallback { get; }
+
+            public bool DirectlyWatch { get; }
+
+            object IWatcher.Target => Target;
+
+            public void Dispose()
+            {
+                if (!IsDisposed)
+                {
+                    if (_deepWatchers != null)
+                    {
+                        _deepWatchers.ForEach(x => x.Dispose());
+                        _deepWatchers.Clear();
+                    }
+                    Target.PropertyChanged -= OnTargetPropertyChanged;
+                    Target.PropertyChanging -= OnTargetPropertyChanging;
+                    IsDisposed = true;
+                }
+            }
+
+            private void OnTargetPropertyChanging(object sender, PropertyChangingEventArgs e)
+            {
+                if (e.PropertyName == PropertyName)
+                    oldVal = ReflectionHelper.GetPropValue(Target, PropertyName, PropertyType);
+            }
+
+            private void OnTargetPropertyChanged(object sender, PropertyChangedEventArgs e)
+            {
+                if (e.PropertyName == PropertyName)
+                {
+                    Callback?.Invoke();
+                    try
+                    {
+                        newVal = ReflectionHelper.GetPropValue(Target, PropertyName, PropertyType);
+                        ValCallback?.Invoke(oldVal, newVal);
+                    }
+                    finally
+                    {
+                        oldVal = default;
+                        newVal = default;
+                    }
+                }
+            }
+        }
+
+        private class NotifyCollectionWatcher<T> : IWatcher
+        {
+            private readonly List<IWatcher> _deepWatchers;
+
+            public NotifyCollectionWatcher(Action<T, T> callback, bool deepWatch, INotifyCollectionChanged notifyCollection)
+            {
+                Callback = callback;
+                DeepWatch = deepWatch;
+                NotifyCollection = notifyCollection;
+                notifyCollection.CollectionChanged += OnCollectionChanged;
+                if (DeepWatch && NotifyCollection is IEnumerable enumerator)
+                {
+                    _deepWatchers = new List<IWatcher>();
+                    foreach (var item in enumerator)
+                    {
+                        if (item is BindableBase bindableTarget)
+                        {
+                            if (DeepWatch)
+                            {
+                                var watchers = CreateDeepWatchers(callback, (T)NotifyCollection, bindableTarget);
+                                _deepWatchers.AddRange(watchers);
+                            }
+                            else
+                            {
+                                var watchers = CreateWatcher(callback, (T)NotifyCollection, bindableTarget);
+                                _deepWatchers.AddRange(watchers);
+                            }
+                        }
+                    }
+                }
+            }
+
+            public Action<T, T> Callback { get; }
+
+            public bool DeepWatch { get; }
+
+            public INotifyCollectionChanged NotifyCollection { get; }
+
+            object IWatcher.Target => NotifyCollection;
+
+            public void Dispose()
+            {
+                NotifyCollection.CollectionChanged -= OnCollectionChanged;
+                if (_deepWatchers != null)
+                {
+                    _deepWatchers.ForEach(x => x.Dispose());
+                    _deepWatchers.Clear();
+                }
+            }
+
+            private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+            {
+                //集合元素数量发生变更。
+                Callback((T)NotifyCollection, (T)NotifyCollection);
+
+                //探测集合元素属性变更
+                if (DeepWatch)
+                {
+                    if (e.NewItems != null)
+                    {
+                        foreach (var newItem in e.NewItems)
+                        {
+                            if (newItem is BindableBase target)
+                            {
+                                if (DeepWatch)
+                                {
+                                    var watchers = CreateDeepWatchers(Callback, (T)NotifyCollection, target);
+                                    _deepWatchers.AddRange(watchers);
+                                }
+                                else
+                                {
+                                    var watchers = CreateWatcher(Callback, (T)NotifyCollection, target);
+                                    _deepWatchers.AddRange(watchers);
+                                }
+                            }
+                        }
+                    }
+
+                    if (e.OldItems != null)
+                    {
+                        foreach (var oldItem in e.OldItems)
+                        {
+                            if (oldItem is BindableBase target)
+                            {
+                                var watcher = _deepWatchers.Single(x => x.Target == target);
+                                watcher.Dispose();
+                                _deepWatchers.Remove(watcher);
+                            }
+                        }
                     }
                 }
             }
