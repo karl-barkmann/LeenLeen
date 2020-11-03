@@ -87,7 +87,7 @@ namespace Leen.Practices.Mvvm
                 BindableEnumValue<TEnum> value = new BindableEnumValue<TEnum>();
                 value.EnumValue = enumValue;
                 value.DisplayName = EnumHelper.GetDescription(enumValue);
-                value.DisplayValue = value.GetHashCode();
+                value.DisplayValue = enumValue.GetHashCode();
                 yield return value;
             }
         }

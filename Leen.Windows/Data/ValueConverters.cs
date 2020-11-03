@@ -278,7 +278,7 @@ namespace Leen.Windows.Data
             if (value == null)
                 return Visibility.Visible;
 
-            Boolean.TryParse(value.ToString(), out bool result);
+            bool.TryParse(value.ToString(), out bool result);
 
             return result ? Visibility.Collapsed : Visibility.Visible;
         }
@@ -288,9 +288,30 @@ namespace Leen.Windows.Data
             if (value == null)
                 return true;
 
-            Enum.TryParse<Visibility>(value.ToString(), out Visibility result);
+            Enum.TryParse(value.ToString(), out Visibility result);
 
             return result == Visibility.Collapsed;
+        }
+    }
+
+    /// <summary>
+    /// Returns Collapsed if Visible and vice versa.
+    /// </summary>
+    public class ReverseVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null)
+                return Visibility.Visible;
+
+            Enum.TryParse(value.ToString(), out Visibility result);
+
+            return (result == Visibility.Collapsed || result == Visibility.Hidden) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 
