@@ -45,7 +45,7 @@ namespace Leen.Practices.Mvvm
 
             if (!(d is IView view))
             {
-                throw new Exception(string.Format("Your view '{0}' must implement IView interface", d.GetType()));
+                throw new Exception($"The view {d.GetType()} must implement ${nameof(IView)} interface");
             }
 
             if ((bool)e.NewValue)

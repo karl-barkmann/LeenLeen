@@ -224,7 +224,6 @@ namespace Leen.Practices.Mvvm
                     return;
                 }
 
-                //WPF Visual tree has a up to down initializing behavior
                 if (owner.IsLoaded)
                 {
                     views.Add(view);
@@ -318,7 +317,7 @@ namespace Leen.Practices.Mvvm
                 view = defaultViewFactory(viewType);
                 if (view == null)
                 {
-                    throw new ArgumentException($"can not resolve view {viewType} throw view factory", nameof(viewModel));
+                    throw new ArgumentException($"Can not resolve view {viewType} throw view factory", nameof(viewModel));
                 }
 
                 if (!string.IsNullOrEmpty(viewAlias))
@@ -350,9 +349,10 @@ namespace Leen.Practices.Mvvm
 
             if (view == null && ensureView)
             {
-                throw new ArgumentException($"Can not find any view's datacontext matching with {viewModel}.Here is some clue：\r\n" +
-                    $"1、You are not passing a valid view model ;" +
-                    $"2、The view that's related to view model has been closed；" +
+                throw new ArgumentException($"Can not find any view's datacontext matching with {viewModel}.\r\n" +
+                    $"Possible reasons：\r\n" +
+                    $"1、You are not passing a valid view model;\r\n" +
+                    $"2、The view that's related to view model has been closed;\r\n" +
                     $"3、The view type does not implement {nameof(IView)} interaface;",
                     nameof(viewModel));
             }
@@ -372,7 +372,7 @@ namespace Leen.Practices.Mvvm
                 }
                 else
                 {
-                    throw new ArgumentException($"can not resolve view type by alias {viewAlias}", nameof(viewAlias));
+                    throw new ArgumentException($"Can not resolve view type by alias {viewAlias}", nameof(viewAlias));
                 }
             }
 
@@ -389,13 +389,13 @@ namespace Leen.Practices.Mvvm
                 viewType = defaultViewModelTypeToViewTypeResolver(viewModelType);
                 if (viewType == null)
                 {
-                    throw new ArgumentException($"can not resolve view type by {viewModel.GetType()}");
+                    throw new ArgumentException($"Can not resolve view type by {viewModel.GetType()}");
                 }
             }
 
             if (!typeof(IView).IsAssignableFrom(viewType))
             {
-                throw new InvalidOperationException($"The view type \"{viewType}\" does not implement {nameof(IView)} interaface;");
+                throw new InvalidOperationException($"The view {viewType} does not implement {nameof(IView)} interaface;");
             }
 
             return viewType;
