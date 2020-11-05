@@ -172,7 +172,7 @@ namespace Leen.Common
         {
             get
             {
-                return ErrorCode == 0 && Error == null;
+                return ErrorCode == 0 && Error == null && string.IsNullOrEmpty(ErrorMessage) && string.IsNullOrWhiteSpace(ErrorMessage);
             }
         }
 
