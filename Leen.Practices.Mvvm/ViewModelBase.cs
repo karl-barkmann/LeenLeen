@@ -25,12 +25,21 @@ namespace Leen.Practices.Mvvm
     [Serializable]
     public class ViewModelBase : ValidationBase
     {
-        private bool editing;
-        private bool _isBusy;
-        private string _busyMessage = "正在加载中...";
-        private bool anyPropertyChanged;
-        private bool _hasInitialized;
+        private byte _internalStateFlags = 0x00;
+        private const byte IsBusyMask = 0x01;
+        private const byte IsEditingMask = 0x02;
+        private const byte AnyPropertyChangedMask = 0x04;
+
+        private byte _lifetimeStateFlags = 0x00;
+        private const byte IsLoadedMask = 0x01;
+        private const byte IsLoadingMask = 0x02;
+        private const byte IsUnloadedMask = 0x04;
+        private const byte IsUnloadingMask = 0x08;
+        private const byte IsInitializingMask = 0x10;
+        private const byte HasInitializedMask = 0x20;
+
         private List<IWatcher> _watchers;
+        private string _busyMessage = "正在加载中...";
         private readonly static TaskCompletionSource<bool> s_TaskCompletionSource = new TaskCompletionSource<bool>();
 
         static ViewModelBase()
@@ -39,7 +48,7 @@ namespace Leen.Practices.Mvvm
         }
 
         /// <summary>
-        /// 构造ViewModelBase的实例。
+        /// 构造<see cref="ViewModelBase"/>的实例。
         /// </summary>
         public ViewModelBase()
         {
@@ -65,46 +74,98 @@ namespace Leen.Practices.Mvvm
         }
 
         /// <summary>
-        /// 获取或设置一个值指示视图模型自开始编辑以来是否有属性已发生改变。
+        /// 获取一个值指示视图模型对应视图是否已加载。
         /// </summary>
-        public bool AnyPropertyChanged
+        public bool IsLoaded 
         {
-            get { return anyPropertyChanged; }
-            protected set
+            get { return GetLifetimeStateFlag(IsLoadedMask); }
+            internal set
             {
-                if (anyPropertyChanged == value)
-                    return;
-
-                anyPropertyChanged = value;
-
-                RaisePropertyChanged(nameof(AnyPropertyChanged));
+                SetLifetimeStateFlag(value, IsLoadedMask);
             }
         }
 
         /// <summary>
-        /// 获取一个值指示视图模型对应视图是否已加载。
+        /// 获取一个值指示视图模型对应视图是否正在加载中。
         /// </summary>
-        public bool IsLoaded { get; internal set; }
+        public bool IsLoading 
+        {
+            get { return GetLifetimeStateFlag(IsLoadingMask); }
+            internal set
+            {
+                SetLifetimeStateFlag(value, IsLoadingMask);
+            }
+        }
 
         /// <summary>
         /// 获取一个值指示视图模型对应视图是否已卸载。
         /// </summary>
-        public bool IsUnloaded { get; internal set; }
+        public bool IsUnloaded
+        {
+            get { return GetLifetimeStateFlag(IsUnloadedMask); }
+            internal set
+            {
+                SetLifetimeStateFlag(value, IsUnloadedMask);
+            }
+        }
+
+        /// <summary>
+        /// 获取一个值指示视图模型对应视图是否正在卸载中。
+        /// </summary>
+        public bool IsUnloading
+        {
+            get { return GetLifetimeStateFlag(IsUnloadingMask); }
+            internal set
+            {
+                SetLifetimeStateFlag(value, IsUnloadingMask);
+            }
+        }
+
+        /// <summary>
+        /// 获取一个值指示该模型是否已成功初始化。
+        /// </summary>
+        public bool HasInitialized
+        {
+            get { return GetLifetimeStateFlag(HasInitializedMask); }
+            internal set
+            {
+                SetLifetimeStateFlag(value, HasInitializedMask);
+            }
+        }
+
+        /// <summary>
+        /// 获取一个值指示该模型是否正在初始化中。
+        /// </summary>
+        public bool IsInitializing
+        {
+            get { return GetLifetimeStateFlag(IsInitializingMask); }
+            internal set
+            {
+                SetLifetimeStateFlag(value, IsInitializingMask);
+            }
+        }
 
         /// <summary>
         /// 获取或设置一个值指示当前视图模型是否正在编辑中。
         /// </summary>
         public bool IsEditing
         {
-            get { return editing; }
-            protected set
+            get { return GetInternalStateFlag(IsEditingMask); }
+            protected internal set
             {
-                if (editing == value)
-                    return;
+                SetInternalStateFlag(value, IsEditingMask);
+            }
+        }
 
-                editing = value;
-
-                RaisePropertyChanged(nameof(IsEditing));
+        /// <summary>
+        /// 获取或设置一个值指示视图模型自开始编辑以来是否有属性已发生改变。
+        /// </summary>
+        public bool AnyPropertyChanged
+        {
+            get { return GetInternalStateFlag(AnyPropertyChangedMask); }
+            protected internal set
+            {
+                SetInternalStateFlag(value, AnyPropertyChangedMask);
             }
         }
 
@@ -113,10 +174,10 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         public bool IsBusy
         {
-            get { return _isBusy; }
+            get { return GetInternalStateFlag(IsBusyMask); }
             protected internal set
             {
-                SetProperty(ref _isBusy, value, () => IsBusy);
+                SetInternalStateFlag(value, IsBusyMask);
             }
         }
 
@@ -129,18 +190,6 @@ namespace Leen.Practices.Mvvm
             protected internal set
             {
                 SetProperty(ref _busyMessage, value, () => BusyMessage);
-            }
-        }
-
-        /// <summary>
-        /// 获取一个值指示该模型是否已成功初始化。
-        /// </summary>
-        public bool HasInitialized
-        {
-            get { return _hasInitialized; }
-            internal set
-            {
-                SetProperty(ref _hasInitialized, value, () => HasInitialized);
             }
         }
 
@@ -184,11 +233,82 @@ namespace Leen.Practices.Mvvm
         /// </para>
         /// </summary>
         /// <returns></returns>
-        public virtual Task InitializeAsync()
+        public Task InitializeAsync()
         {
             WatchMethods();
             WatchProperties();
             return OnInitializeAsync();
+        }
+
+        /// <summary>
+        /// 清除任何需要清除的资源，退订相关事件订阅。
+        /// </summary>
+        public virtual void CleanUp()
+        {
+            if (_watchers != null)
+            {
+                _watchers.ForEach(x => x.Dispose());
+                _watchers.Clear();
+            }
+        }
+
+        /// <summary>
+        /// 但视图模型关联的视图加载是调用。
+        /// </summary>
+        protected internal virtual Task OnLoadAsync()
+        {
+            return s_TaskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// 但视图模型关联的视图卸载是调用。
+        /// </summary>
+        protected internal virtual Task OnUnloadAsync()
+        {
+            return s_TaskCompletionSource.Task;
+        }
+
+        /// <summary>
+        /// 开始记录属性变更。
+        /// </summary>
+        protected virtual void BeginEdit()
+        {
+            IsEditing = true;
+        }
+
+        /// <summary>
+        /// 忽略属性变更,并重置<see cref="AnyPropertyChanged"/> 属性变更标识。
+        /// </summary>
+        protected virtual void EndEdit()
+        {
+            IsEditing = false;
+            AnyPropertyChanged = false;
+        }
+
+        /// <summary>
+        /// 通知属性值已更改。
+        /// </summary>
+        /// <typeparam name="T">描述属性的类型。</typeparam>
+        /// <param name="expression">用户获取属性名称的表达式。</param>
+        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters"),
+        SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"),
+        SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
+        protected override void RaisePropertyChanged<T>(Expression<Func<T>> expression)
+        {
+            base.RaisePropertyChanged<T>(expression);
+            AnyPropertyChanged = IsEditing & true;
+        }
+
+        /// <summary>
+        /// 通知属性值已更改。
+        /// </summary>
+        /// <param name="propertyName">指定属性名称。</param>
+        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
+        SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
+        protected override void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            base.RaisePropertyChanged(propertyName);
+            AnyPropertyChanged = IsEditing & true && propertyName != nameof(IsEditing);
         }
 
         /// <summary>
@@ -290,89 +410,58 @@ namespace Leen.Practices.Mvvm
             }
         }
 
-        /// <summary>
-        /// 清除任何需要清除的资源，退订相关事件订阅。
-        /// </summary>
-        public virtual void CleanUp()
+        private bool GetInternalStateFlag(byte mask)
         {
-            if (_watchers != null)
+            return (_internalStateFlags & mask) == mask;
+        }
+
+        private bool SetInternalStateFlag(bool? value, byte mask, [CallerMemberName] string propertyName = null)
+        {
+            if (GetInternalStateFlag(mask) == value)
             {
-                _watchers.ForEach(x => x.Dispose());
-                _watchers.Clear();
+                return false;
             }
+
+            if (value.HasValue && value.Value)
+            {
+                _internalStateFlags |= mask;
+            }
+            else
+            {
+                _internalStateFlags ^= mask;
+            }
+
+            if (propertyName != null)
+                RaisePropertyChanged(propertyName);
+
+            return true;
         }
 
-        /// <summary>
-        /// 但初始化发生错误时调用。
-        /// </summary>
-        /// <param name="error">初始化时发生的异常。</param>
-        protected virtual void OnInitializeError(Exception error)
+        private bool GetLifetimeStateFlag(byte mask)
         {
-
+            return (_lifetimeStateFlags & mask) == mask;
         }
 
-        /// <summary>
-        /// 但视图模型关联的视图加载是调用。
-        /// </summary>
-        protected internal virtual void OnLoad()
+        private bool SetLifetimeStateFlag(bool? value, byte mask, [CallerMemberName] string propertyName = null)
         {
+            if (GetLifetimeStateFlag(mask) == value)
+            {
+                return false;
+            }
 
-        }
+            if (value.HasValue && value.Value)
+            {
+                _lifetimeStateFlags |= mask;
+            }
+            else
+            {
+                _lifetimeStateFlags ^= mask;
+            }
 
-        /// <summary>
-        /// 但视图模型关联的视图卸载是调用。
-        /// </summary>
-        protected internal virtual void OnUnload()
-        {
+            if (propertyName != null)
+                RaisePropertyChanged(propertyName);
 
-        }
-
-        /// <summary>
-        /// 开始记录属性变更。
-        /// </summary>
-        protected virtual void BeginEdit()
-        {
-            IsEditing = true;
-        }
-
-        /// <summary>
-        /// 忽略属性变更,并重置<see cref="AnyPropertyChanged"/> 属性变更标识。
-        /// </summary>
-        protected virtual void EndEdit()
-        {
-            IsEditing = false;
-            AnyPropertyChanged = false;
-        }
-
-        /// <summary>
-        /// 通知属性值已更改。
-        /// </summary>
-        /// <typeparam name="T">描述属性的类型。</typeparam>
-        /// <param name="expression">用户获取属性名称的表达式。</param>
-        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters"),
-        SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"),
-        SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        protected override void RaisePropertyChanged<T>(Expression<Func<T>> expression)
-        {
-            base.RaisePropertyChanged<T>(expression);
-            AnyPropertyChanged = editing & true;
-        }
-
-        /// <summary>
-        /// 通知属性值已更改。
-        /// </summary>
-        /// <param name="propertyName">指定属性名称。</param>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
-        SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        protected override void RaisePropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            base.RaisePropertyChanged(propertyName);
-            AnyPropertyChanged = editing & true && propertyName != nameof(IsEditing);
-        }
-
-        internal void NotifyInitializeError(Exception ex)
-        {
-            OnInitializeError(ex);
+            return true;
         }
     }
 }

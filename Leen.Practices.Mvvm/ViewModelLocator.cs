@@ -29,14 +29,8 @@ namespace Leen.Practices.Mvvm
         {
             if (DesignerProperties.GetIsInDesignMode(d)) return;
 
-
-            if (!(d is IView view))
-            {
-                // TODO: Improve exception
-                throw new Exception("Your views must implement IView");
-            }
-
-            ViewModelLocationProvider.AutoWireViewModelChanged(view);
+            if (d is IView view)
+                ViewModelLocationProvider.AutoWireViewModelChanged(view);
         }
 
         /// <summary>

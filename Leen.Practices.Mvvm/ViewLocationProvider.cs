@@ -4,6 +4,7 @@ using Leen.Logging;
 using Leen.Windows.Interaction;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -198,7 +199,7 @@ namespace Leen.Practices.Mvvm
             return presentationSource;
         }
 
-        internal static void Register(IView view)
+        internal async static Task RegisterAsync(IView view)
         {
             if (!views.Contains(view))
             {
@@ -206,75 +207,56 @@ namespace Leen.Practices.Mvvm
                 if (source != null && view.ActualView.IsLoaded)
                 {
                     views.Add(view);
-                    if (view.DataContext is ViewModelBase vm)
-                    {
-                        vm.IsLoaded = true;
-                        vm.IsUnloaded = false;
-                        vm.OnLoad();
-                    }
-                    InitializeAsync(view);
-
+                    await InitializeViewAsync(view);
+                    await LoadViewAsync(view);
                     return;
                 }
 
                 Window owner = GetOwnner(view.ActualView);
                 if (owner == null)
                 {
-                    view.ActualView.Loaded += LancyRegister;
+                    view.ActualView.Loaded += LazyRegister;
                     return;
                 }
 
                 if (owner.IsLoaded)
                 {
                     views.Add(view);
-                    if (view.DataContext is ViewModelBase vm)
-                    {
-                        vm.IsLoaded = true;
-                        vm.IsUnloaded = false;
-                        vm.OnLoad();
-                    }
-                    InitializeAsync(view);
-
+                    await InitializeViewAsync(view);
+                    await LoadViewAsync(view);
                     owner.Closing += OnOwnerClosing;
                     owner.Closed += OnOwnerClosed;
                 }
                 else
                 {
-                    view.ActualView.Loaded += LancyRegister;
+                    view.ActualView.Loaded += LazyRegister;
                 }
             }
         }
 
-        internal static void Unregister(IView view)
+        internal static async Task UnregisterAsync(IView view)
         {
             if (views.Remove(view))
             {
-                view.ActualView.Unloaded -= targetView_Unloaded;
+                view.ActualView.Unloaded -= LazyUnregister;
                 //In case of target view will load again.
-                //Such as TabControl TabItem content view
+                //Such as TabControl's TabItem content view
                 if (ViewLocator.GetIsRegistered(view.ActualView))
                 {
-                    if (view.DataContext is ViewModelBase vm)
-                    {
-                        vm.IsLoaded = false;
-                        vm.IsUnloaded = true;
-                        vm.OnUnload();
-                    }
-                    view.ActualView.Loaded += LancyRegister;
+                    await UnloadViewAsync(view);
+                    view.ActualView.Loaded += LazyRegister;
                 }
                 else
                 {
+                    await UnloadViewAsync(view);
+
+                    //clean up resources , event subscribution, etc..
                     if (view is IDisposable disposableView)
                     {
                         disposableView.Dispose();
                     }
-
-                    //clean up resources,and event subscribution
                     if (view.DataContext is ViewModelBase vm)
                     {
-                        vm.IsLoaded = false;
-                        vm.IsUnloaded = true;
-                        vm.OnUnload();
                         vm.CleanUp();
                     }
                     if (view.DataContext is IDisposable disposable)
@@ -326,9 +308,8 @@ namespace Leen.Practices.Mvvm
                 }
 
                 view.DataContext = viewModel;
+                view.ActualView.Loaded += LazyRegister;
             }
-
-            Register(view);
 
             return view;
         }
@@ -410,59 +391,92 @@ namespace Leen.Practices.Mvvm
             return ownner;
         }
 
-        private static void OnOwnerClosed(object sender, EventArgs e)
+        private static async void OnOwnerClosed(object sender, EventArgs e)
         {
             if (sender is Window ownner)
             {
-                IEnumerable<IView> windowViews = from view in views
-                                                 where GetOwnner(view.ActualView) == ownner
-                                                    || view.ActualView.GetVisualParent<Window>() == ownner
-                                                 select view;
-                foreach (var view in windowViews.ToArray())
-                {
-                    Unregister(view);
-                }
-
-                ownner.Closed -= OnOwnerClosed;
+                await HandleOwnerCloseAsync(ownner);
             }
         }
 
-        static void OnOwnerClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        private static async void OnOwnerClosing(object sender, CancelEventArgs e)
         {
             if (sender is Window ownner)
             {
-                IEnumerable<IView> windowViews = from view in views
-                                                 where GetOwnner(view.ActualView) == ownner
-                                                    || view.ActualView.GetVisualParent<Window>() == ownner
-                                                 select view;
-                foreach (var view in windowViews.ToArray())
-                {
-                    Unregister(view);
-                }
-                ownner.Closing -= OnOwnerClosing;
+                await HandleOwnerCloseAsync(ownner);
             }
         }
 
-        private static void LancyRegister(object sender, RoutedEventArgs e)
+        private static async Task HandleOwnerCloseAsync(Window ownner)
+        {
+            IEnumerable<IView> windowViews = from view in views
+                                             where GetOwnner(view.ActualView) == ownner
+                                                || view.ActualView.GetVisualParent<Window>() == ownner
+                                             select view;
+            foreach (var view in windowViews.ToArray())
+            {
+                await UnregisterAsync(view);
+            }
+
+            ownner.Closed -= OnOwnerClosed;
+        }
+
+        private static async void LazyRegister(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement target)
             {
-                target.Loaded -= LancyRegister;
-                target.Unloaded += targetView_Unloaded;
+                target.Loaded -= LazyRegister;
+                target.Unloaded += LazyUnregister;
                 IView targetView = (IView)target;
-                Register(targetView);
+                await RegisterAsync(targetView);
             }
         }
 
-        private static void targetView_Unloaded(object sender, RoutedEventArgs e)
+        private static async void LazyUnregister(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement target)
             {
-                Unregister((IView)target);
+                await UnregisterAsync((IView)target);
             }
         }
 
-        private static void InitializeAsync(IView targetView)
+        private static async Task LoadViewAsync(IView view)
+        {
+            if (view.DataContext is ViewModelBase vm)
+            {
+                vm.IsLoading = true;
+                try
+                {
+                    await vm.OnLoadAsync();
+                    vm.IsLoaded = true;
+                    vm.IsUnloaded = false;
+                }
+                finally
+                {
+                    vm.IsLoading = false;
+                }
+            }
+        }
+
+        private static async Task UnloadViewAsync(IView view)
+        {
+            if (view.DataContext is ViewModelBase vm)
+            {
+                vm.IsUnloading = true;
+                try
+                {
+                    await vm.OnUnloadAsync();
+                    vm.IsLoaded = false;
+                    vm.IsUnloaded = true;
+                }
+                finally
+                {
+                    vm.IsUnloading = false;
+                }
+            }
+        }
+
+        private static async Task InitializeViewAsync(IView targetView)
         {
             if (targetView.DataContext is ViewModelBase vm && !vm.HasInitialized)
             {
@@ -484,17 +498,16 @@ namespace Leen.Practices.Mvvm
                             vm.Logger = new DebugLogger();
                     }
                 }
-                vm.IsBusy = true;
-                vm.InitializeAsync().ContinueWith((x, state) =>
+                vm.IsInitializing = true;
+                try
                 {
-                    var target = (ViewModelBase)state;
-                    target.IsBusy = false;
-                    target.HasInitialized = true;
-                    if (x.Exception != null)
-                    {
-                        target.NotifyInitializeError(x.Exception);
-                    }
-                }, vm, TaskScheduler.FromCurrentSynchronizationContext());
+                    await vm.InitializeAsync();
+                    vm.HasInitialized = true;
+                }
+                finally
+                {
+                    vm.IsInitializing = false;
+                }
             }
         }
     }

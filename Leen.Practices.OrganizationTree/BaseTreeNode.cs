@@ -29,16 +29,16 @@ namespace Leen.Practices.OrganizationTree
         private readonly static TaskCompletionSource<IEnumerable<BaseTreeNode>> s_TaskCompletionSource = 
             new TaskCompletionSource<IEnumerable<BaseTreeNode>>();
 
-        internal const byte IsCheckedMask = 0x01;
-        internal const byte IsSelectedMask = 0x02;
-        internal const byte IsExpandedMask = 0x04;
-        internal const byte IsLoadingChildrenMask = 0x08;
-        internal const byte HasChildrenMask = 0x10;
+        private const byte IsCheckedMask = 0x01;
+        private const byte IsSelectedMask = 0x02;
+        private const byte IsExpandedMask = 0x04;
+        private const byte IsLoadingChildrenMask = 0x08;
+        private const byte HasChildrenMask = 0x10;
 
-        internal const byte SelectableMask = 0x01;
-        internal const byte CheckableMask = 0x02;
-        internal const byte ExpandableMask = 0x04;
-        internal const byte EnabledMask = 0x08;
+        private const byte SelectableMask = 0x01;
+        private const byte CheckableMask = 0x02;
+        private const byte ExpandableMask = 0x04;
+        private const byte EnabledMask = 0x08;
 
         private byte _internalStateFlags = 0x00;
         private byte _internalBehaviorFlags = 0x00;

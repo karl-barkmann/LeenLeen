@@ -39,7 +39,7 @@ namespace Leen.Practices.Mvvm
             new UIPropertyMetadata(IsRegisterChanged));
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
-        private static void IsRegisterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static async void IsRegisterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (DesignerProperties.GetIsInDesignMode(d)) return;
 
@@ -50,11 +50,11 @@ namespace Leen.Practices.Mvvm
 
             if ((bool)e.NewValue)
             {
-                ViewLocationProvider.Register(view);
+                await ViewLocationProvider.RegisterAsync(view);
             }
             else
             {
-                ViewLocationProvider.Unregister(view);
+                await ViewLocationProvider.UnregisterAsync(view);
             }
         }
 

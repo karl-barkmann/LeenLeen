@@ -22,7 +22,7 @@ namespace Leen.Practices.Mvvm
         /// <summary>
         /// A dictionary that contains all the registered factories for the views.
         /// </summary>
-        static Dictionary<string, Func<object>> factories = new Dictionary<string, Func<object>>();
+        static readonly Dictionary<string, Func<object>> factories = new Dictionary<string, Func<object>>();
         /// <summary>
         /// The default view model factory.
         /// </summary>
@@ -65,7 +65,6 @@ namespace Leen.Practices.Mvvm
             defaultViewTypeToViewModelTypeResolver = viewTypeToViewModelTypeResolver;
         }
 
-
         /// <summary>
         /// Automatically looks up the viewmodel that corresponds to the current view, using two strategies:
         /// It first looks to see if there is a mapping registered for that view, if not it will fallback to the convention based approach.
@@ -81,9 +80,8 @@ namespace Leen.Practices.Mvvm
                 var viewModelType = defaultViewTypeToViewModelTypeResolver(view.GetType());
                 if (viewModelType == null)
                 {
-                    throw new InvalidOperationException(string.Format(@"Trying to automatically look up the viewmodel of {0}, but fail to find any matched type¡£
-                        Probably you are not flowing the naming pattern or your view type to viewmodel type resolver is not working properly.",
-                        view.GetType()));
+                    throw new InvalidOperationException($"Trying to automatically look up the viewmodel of {view.GetType()}, but fail to find any matched type¡£" +
+                        $"Probably you are not flowing the naming pattern or your view type to viewmodel type resolver is not working properly.");
                 }
 
                 // Really need Container or Factories here to deal with injecting dependencies on construction
@@ -108,7 +106,7 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="view">The view that the view model wants.</param>
         /// <returns>The vie wmodel that corresponds to the view passed as a parameter.</returns>
-        private static object GetViewModelForView(IView view)
+        private static object GetViewModelForView(object view)
         {
             // Mapping of view models base on view type (or instance) goes here
             if (factories.ContainsKey(view.GetType().ToString()))
