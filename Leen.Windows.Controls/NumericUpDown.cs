@@ -380,32 +380,7 @@ namespace Leen.Windows.Controls
             };
         }
 
-        protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
-        {
-            base.OnGotKeyboardFocus(e);
-            if (e.NewFocus == _decreaseButton || e.NewFocus == _increaseButton || e.NewFocus == _input)
-                return;
-            _input.SelectAll();
-            _input.Focus();
-        }
-
-        private void OnTimerCallback(object sender, EventArgs e)
-        {
-            _inputValidating = true;
-            bool isValid = double.TryParse(_input.Text, out double value);
-            double validValue = Math.Max(Minimum, Math.Min(value, Maximum));
-            SetCurrentValue(ValueProperty, validValue);
-
-            if (!isValid || validValue != value)
-            {
-                _input.Text = StringFormat == null ? validValue.ToString() : validValue.ToString(StringFormat);
-                _input.CaretIndex = _input.Text.Length;
-            }
-            _inputValidating = false;
-            _timer.Stop();
-        }
-
-        public override void OnApplyTemplate()
+~        public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
@@ -440,15 +415,74 @@ namespace Leen.Windows.Controls
             }
         }
 
-        private void _input_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        protected override void OnValueChanged(double oldValue, double newValue)
         {
-            //仅允许输入数字
-            e.Handled = !IsInputAllowed(_input.Text);
+            base.OnValueChanged(oldValue, newValue);
+            if (_input != null)
+            {
+                _input.Text = StringFormat == null ? newValue.ToString() : newValue.ToString(StringFormat);
+                _input.CaretIndex = _input.Text.Length;
+            }
+
+            CommandManager.InvalidateRequerySuggested();
+        }
+
+        protected override void OnMaximumChanged(double oldMaximum, double newMaximum)
+        {
+            base.OnMaximumChanged(oldMaximum, newMaximum);
+
+            CommandManager.InvalidateRequerySuggested();
+        }
+
+        protected override void OnMinimumChanged(double oldMinimum, double newMinimum)
+        {
+            base.OnMinimumChanged(oldMinimum, newMinimum);
+
+            CommandManager.InvalidateRequerySuggested();
         }
 
         protected virtual bool IsInputAllowed(string text)
         {
             return int.TryParse(text, out _);
+        }
+
+        protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        {
+            base.OnGotKeyboardFocus(e);
+            if (e.NewFocus == _decreaseButton || e.NewFocus == _increaseButton || e.NewFocus == _input)
+                return;
+            _input.SelectAll();
+            _input.Focus();
+        }
+
+        protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        {
+            double.TryParse(_input.Text, out double value);
+            double validValue = Math.Max(Minimum, Math.Min(value, Maximum));
+            SetCurrentValue(ValueProperty, validValue);
+            base.OnLostKeyboardFocus(e);
+        }
+
+        private void OnTimerCallback(object sender, EventArgs e)
+        {
+            _inputValidating = true;
+            bool isValid = double.TryParse(_input.Text, out double value);
+            double validValue = Math.Max(Minimum, Math.Min(value, Maximum));
+            SetCurrentValue(ValueProperty, validValue);
+
+            if (!isValid || validValue != value)
+            {
+                _input.Text = StringFormat == null ? validValue.ToString() : validValue.ToString(StringFormat);
+                _input.CaretIndex = _input.Text.Length;
+            }
+            _inputValidating = false;
+            _timer.Stop();
+        }
+
+        private void _input_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            //仅允许输入数字
+            e.Handled = !IsInputAllowed(_input.Text);
         }
 
         private void _input_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -503,32 +537,6 @@ namespace Leen.Windows.Controls
                     _decreaseButton.Focus();
                 }
             }
-        }
-
-        protected override void OnValueChanged(double oldValue, double newValue)
-        {
-            base.OnValueChanged(oldValue, newValue);
-            if (_input != null)
-            {
-                _input.Text = StringFormat == null ? newValue.ToString() : newValue.ToString(StringFormat);
-                _input.CaretIndex = _input.Text.Length;
-            }
-
-            CommandManager.InvalidateRequerySuggested();
-        }
-
-        protected override void OnMaximumChanged(double oldMaximum, double newMaximum)
-        {
-            base.OnMaximumChanged(oldMaximum, newMaximum);
-
-            CommandManager.InvalidateRequerySuggested();
-        }
-
-        protected override void OnMinimumChanged(double oldMinimum, double newMinimum)
-        {
-            base.OnMinimumChanged(oldMinimum, newMinimum);
-
-            CommandManager.InvalidateRequerySuggested();
         }
 
         private void MoveToNextValue(double change)
