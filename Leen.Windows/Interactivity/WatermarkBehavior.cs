@@ -371,7 +371,7 @@ namespace System.Windows.Interactivity
 
             if (AssociatedObject.IsLoaded)
             {
-                if(IsEnabled && AssociatedObject.Visibility== Visibility.Visible)
+                if(IsEnabled && AssociatedObject.IsVisible)
                     AddAdorner();
             }
             else
@@ -392,7 +392,7 @@ namespace System.Windows.Interactivity
 
         private void AssociatedObject_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if ((bool)e.NewValue && IsEnabled && AssociatedObject.Visibility == Visibility.Visible)
+            if ((bool)e.NewValue && IsEnabled && AssociatedObject.IsVisible)
             {
                 AddAdorner();
             }
@@ -404,7 +404,7 @@ namespace System.Windows.Interactivity
 
         private void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
         {
-            if(IsEnabled && AssociatedObject.Visibility == Visibility.Visible)
+            if(IsEnabled && AssociatedObject.IsVisible)
                 AddAdorner();
             AssociatedObject.Loaded -= AssociatedObject_Loaded;
             base.OnAttached();

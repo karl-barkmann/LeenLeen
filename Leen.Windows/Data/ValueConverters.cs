@@ -394,9 +394,10 @@ namespace Leen.Windows.Data
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            double.TryParse(parameter?.ToString(), out double val);
             if ((Visibility)value == Visibility.Collapsed)
             {
-                return new GridLength(0, GridUnitType.Pixel);
+                return new GridLength(val, GridUnitType.Pixel);
             }
             else
             {

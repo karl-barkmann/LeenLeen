@@ -380,7 +380,7 @@ namespace Leen.Windows.Controls
             };
         }
 
-~        public override void OnApplyTemplate()
+        public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
