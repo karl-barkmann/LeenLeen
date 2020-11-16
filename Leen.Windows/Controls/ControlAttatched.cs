@@ -3,7 +3,7 @@
 namespace Leen.Windows.Controls
 {
     /// <summary>
-    /// 定义一组控件附加行为。
+    /// 定义一组控件附加属性。
     /// </summary>
     public static class ControlAttatched
     {
