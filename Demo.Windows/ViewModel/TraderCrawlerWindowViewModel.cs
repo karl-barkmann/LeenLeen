@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace Demo.Windows.ViewModel
 {
-    class SimpleTraderCrawlerWindowViewModel : ViewModelBase
+    class TraderCrawlerWindowViewModel : ViewModelBase
     {
         private ObservableCollection<OpenTradeInfo> sources = new ObservableCollection<OpenTradeInfo>();
         private ObservableCollection<string> crawlingLogs = new ObservableCollection<string>();
@@ -21,7 +21,7 @@ namespace Demo.Windows.ViewModel
         readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private string nextUrl;
 
-        public SimpleTraderCrawlerWindowViewModel()
+        public TraderCrawlerWindowViewModel()
         {
             BindingOperations.EnableCollectionSynchronization(sources, lockObject);
             BindingOperations.EnableCollectionSynchronization(crawlingLogs, logslockObject);

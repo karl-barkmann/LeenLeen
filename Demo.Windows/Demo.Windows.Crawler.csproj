@@ -55,17 +55,18 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
-    <Compile Include="TestWindow.xaml.cs">
-      <DependentUpon>TestWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewModel\NgaCrawlerWindowViewModel.cs" />
-    <Compile Include="ViewModel\SimpleTraderCrawlerWindowViewModel.cs" />
+    <Compile Include="ViewModel\TraderCrawlerWindowViewModel.cs" />
     <Compile Include="ViewModel\TingCrawlerWindowViewModel.cs" />
+    <Compile Include="ViewModel\WeixinArticleCrawlerViewModel.cs" />
     <Compile Include="View\NgaCrawlerWindow.xaml.cs">
       <DependentUpon>NgaCrawlerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\SimpleTraderCrawlerWindow.xaml.cs">
-      <DependentUpon>SimpleTraderCrawlerWindow.xaml</DependentUpon>
+    <Compile Include="View\WeixinArticleCrawlerView.xaml.cs">
+      <DependentUpon>WeixinArticleCrawlerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\TraderCrawlerWindow.xaml.cs">
+      <DependentUpon>TraderCrawlerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TingCrawlerWindow.xaml.cs">
       <DependentUpon>TingCrawlerWindow.xaml</DependentUpon>
@@ -80,15 +81,15 @@
     <Compile Include="ViewModel\BookSectionViewModel.cs" />
     <Compile Include="ViewModel\BookViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
-    <Page Include="TestWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\NgaCrawlerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\SimpleTraderCrawlerWindow.xaml">
+    <Page Include="View\WeixinArticleCrawlerView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\TraderCrawlerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

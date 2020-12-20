@@ -86,31 +86,28 @@ namespace Demo.Windows.ViewModel
 
         private void OnShowTingCrawler()
         {
-            Inner = new MainWindowViewModel();
-            Inner.Nest = new MainWindowViewModel();
-            Watch(() => Inner.Nest.State, (oldVal, newVal) =>
-            {
-                Console.WriteLine($"ÊôÐÔ¼àÌý£º{nameof(Inner.Nest.State)}=> {newVal}");
-            }, true);
-            Inner.Nest.State++;
-            State++;
-            //var crawler = new TingCrawlerWindowViewModel();
-            //UIService.ShowDialog(crawler, this);
+            //Inner = new MainWindowViewModel();
+            //Inner.Nest = new MainWindowViewModel();
+            //Watch(() => Inner.Nest.State, (oldVal, newVal) =>
+            //{
+            //    Console.WriteLine($"ÊôÐÔ¼àÌý£º{nameof(Inner.Nest.State)}=> {newVal}");
+            //}, true);
+            //Inner.Nest.State++;
+            //State++;
+            var crawler = new TingCrawlerWindowViewModel();
+            UIService.ShowDialog(crawler, this);
         }
 
         private void OnShowNgaCrawler()
         {
-            IsBusy = true;
-            var crawler = new MainWindowViewModel();
-            crawler.Title = "Show at " + DateTime.Now.ToLongTimeString();
+            var crawler = new NgaCrawlerWindowViewModel();
             UIService.Show(crawler, this);
         }
 
         private void OnShowSimpleTraderCrawler()
         {
-            IsBusy = false;
-            var crawler = new MainWindowViewModel();
-            crawler.Title = "ShowDialog at " + DateTime.Now.ToLongTimeString();
+            //var crawler = new TraderCrawlerWindowViewModel();
+            var crawler = new WeixinArticleCrawlerViewModel();
             UIService.ShowDialog(crawler, this);
         }
 
