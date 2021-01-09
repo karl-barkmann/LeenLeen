@@ -2,11 +2,9 @@
 using Leen.Windows.Interaction;
 using Microsoft.Win32;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace Leen.Practices.Mvvm
@@ -54,7 +52,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="icon">消息对话框图标。</param>
         /// <param name="ownerViewModel">父视图模型。</param>
         /// <returns>对话框返回值。</returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public MessageBoxResult ShowMessage(string message,
                                             string title,
                                             MessageBoxButton buttons = MessageBoxButton.OK,
@@ -364,7 +361,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="viewModel">子窗体的视图模型。</param>
         /// <param name="ownerViewModel">父窗体的视图模型。当该值为 null 时，将采用应用程序主窗体作为父视图。</param>
         /// <returns>窗体对话框返回值。</returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? ShowDialog(object viewModel, object ownerViewModel)
         {
             if (viewModel == null)
@@ -440,7 +436,6 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="viewModel">窗体的视图模型。</param>
         /// <param name="dialogResult">窗体关闭时的对话框返回值。</param>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public void Close(object viewModel, bool? dialogResult = null)
         {
             if (viewModel == null)
@@ -517,7 +512,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenSaveFileDialog(ref string fileName, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new SaveFileDialog
@@ -544,7 +538,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenSaveFileDialog(ref string fileName, string title, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new SaveFileDialog
@@ -573,7 +566,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenSaveFileDialog(ref string fileName, string title, string initialDirectory, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new SaveFileDialog
@@ -601,7 +593,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenFileBrowserDialog(ref string fileName, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new OpenFileDialog
@@ -628,7 +619,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenFileBrowserDialog(ref string fileName, string title, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new OpenFileDialog
@@ -657,7 +647,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenFileBrowserDialog(ref string fileName, string title, string initialDirectory, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new OpenFileDialog
@@ -684,7 +673,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="viewModel">子窗体的视图模型。</param>
         /// <param name="view">子视图。</param>
         /// <param name="ownerViewModel">父窗体的视图模型。</param>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         protected virtual void Show(object viewModel, IView view, object ownerViewModel = null)
         {
             IWindow dialog;
@@ -804,7 +792,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="view">子视图。</param>
         /// <param name="ownerViewModel">父窗体的视图模型。</param>
         /// <returns>窗体对话框的返回值。</returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         protected virtual bool? ShowDialog(object viewModel, IView view, object ownerViewModel = null)
         {
             IWindow dialog;
@@ -962,7 +949,7 @@ namespace Leen.Practices.Mvvm
 
         private static void RetrieveWindowStyle(IView view, IWindow dialog)
         {
-            var style = view.ActualView.GetValue(WindowPopupBehavior.ContainerWindowStyleProperty) as Style;
+            var style = WindowPopupBehavior.GetContainerWindowStyle(view.ActualView);
             if (style != WindowPopupBehavior.ContainerWindowStyleProperty.DefaultMetadata.DefaultValue)
             {
                 dialog.Style = style;
@@ -971,37 +958,37 @@ namespace Leen.Practices.Mvvm
 
         private static void RetrieveWindowWidth(IView view, IWindow dialog)
         {
-            var width = view.ActualView.GetValue(WindowPopupBehavior.ContainerWindowWidthProperty);
-            if (width != WindowPopupBehavior.ContainerWindowWidthProperty.DefaultMetadata.DefaultValue)
+            var width = WindowPopupBehavior.GetContainerWindowWidth(view.ActualView);
+            if (width != (double)WindowPopupBehavior.ContainerWindowWidthProperty.DefaultMetadata.DefaultValue)
             {
-                dialog.Width = (double)width;
+                dialog.Width = width;
             }
         }
 
         private static void RetrieveWindowHeight(IView view, IWindow dialog)
         {
-            var height = view.ActualView.GetValue(WindowPopupBehavior.ContainerWindowHeightProperty);
-            if (height != WindowPopupBehavior.ContainerWindowHeightProperty.DefaultMetadata.DefaultValue)
+            var height = WindowPopupBehavior.GetContainerWindowHeight(view.ActualView);
+            if (height != (double)WindowPopupBehavior.ContainerWindowHeightProperty.DefaultMetadata.DefaultValue)
             {
-                dialog.Height = (double)height;
+                dialog.Height = height;
             }
         }
 
         private static void RetrieveWindowIcon(IView view, IWindow dialog)
         {
-            var icon = view.ActualView.GetValue(WindowPopupBehavior.ContainerWindowIconProperty);
+            var icon = WindowPopupBehavior.GetContainerWindowIcon(view.ActualView);
             if (icon != WindowPopupBehavior.ContainerWindowIconProperty.DefaultMetadata.DefaultValue)
             {
-                dialog.Icon = icon as ImageSource;
+                dialog.Icon = icon;
             }
         }
 
         private static void RetrieveWindowTitle(IView view, IWindow dialog)
         {
-            var title = view.ActualView.GetValue(WindowPopupBehavior.ContainerWindowTitleProperty);
-            if (title != WindowPopupBehavior.ContainerWindowTitleProperty.DefaultMetadata.DefaultValue)
+            var title = WindowPopupBehavior.GetContainerWindowTitle(view.ActualView);
+            if (title != (string)WindowPopupBehavior.ContainerWindowTitleProperty.DefaultMetadata.DefaultValue)
             {
-                dialog.Title = title as string;
+                dialog.Title = title;
             }
 
             if (title == null || (title is string strTile) && string.IsNullOrEmpty(strTile) && string.IsNullOrWhiteSpace(strTile))
