@@ -44,6 +44,21 @@ namespace System.Windows.Interactivity
             DependencyProperty.Register(nameof(AdaptiveToScreen), typeof(bool), typeof(AdaptiveTrigger), new PropertyMetadata(false));
 
         /// <summary>
+        /// 获取或设置一个值表示此触发器触发规则计算方式是方向计算。例如MinWidth:1200时，则当目标宽度小于1200时触发此触发器，否则大于等于时触发此触发器。
+        /// </summary>
+        public bool Reverse
+        {
+            get { return (bool)GetValue(ReverseProperty); }
+            set { SetValue(ReverseProperty, value); }
+        }
+
+        /// <summary>
+        /// Identifies the <see cref="ReverseProperty"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ReverseProperty =
+            DependencyProperty.Register("Reverse", typeof(bool), typeof(AdaptiveTrigger), new PropertyMetadata(false));
+
+        /// <summary>
         /// Gets or sets the minimum elemnt width at which the trigger actions should be invoked.
         /// </summary>
         public double MinWidth
@@ -87,6 +102,32 @@ namespace System.Windows.Interactivity
                 AttachPresentationSource();
             }
             base.OnAttached();
+        }
+
+        /// <summary>
+        /// 当触发从对象分离时调用。
+        /// </summary>
+        protected override void OnDetaching()
+        {
+            AssociatedObject.Loaded -= AssociatedObject_Loaded;
+            if (_ownerWindow != null)
+            {
+                _ownerWindow.SizeChanged -= AdaptiveTrigger_SizeChanged;
+                _ownerWindow = null;
+            }
+
+            if (_rootFE != null)
+            {
+                _rootFE.SizeChanged -= AdaptiveTrigger_SizeChanged;
+                _rootFE = null;
+            }
+            if (_rootUE != null)
+            {
+                _rootUE.LayoutUpdated -= Root_LayoutUpdated;
+                _rootUE = null;
+            }
+
+            base.OnDetaching();
         }
 
         private void AssociatedObject_Loaded(object sender, RoutedEventArgs e)
@@ -152,60 +193,86 @@ namespace System.Windows.Interactivity
             //如果第一次已经完成加载，手动触发一次
             if (currentSize != Size.Empty)
             {
-                //var rootUE = _ownerSource.RootVisual as UIElement;
-                if (currentSize.Width >= MinWidth && currentSize.Height >= MinHeight)
-                {
-                    InvokeActions(null);
-                    Console.WriteLine($"Initialization triggered {AssociatedObject.GetHashCode()} for {AssociatedObject.GetType().Name}");
-                }
+                TriggerAction(currentSize);
             }
         }
 
         private void AdaptiveTrigger_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var newSize = e.NewSize;
-            if (newSize.Width >= MinWidth && newSize.Height >= MinHeight)
-            {
-                InvokeActions(null);
-                Console.WriteLine($"Size changing triggered {AssociatedObject.GetHashCode()} for {AssociatedObject.GetType().Name}");
-            }
+            TriggerAction(newSize);
         }
 
         private void Root_LayoutUpdated(object sender, EventArgs e)
         {
             var rootUE = _ownerSource.RootVisual as UIElement;
             var newSize = rootUE.RenderSize;
-            if (newSize.Width >= MinWidth && newSize.Height >= MinHeight)
-            {
-                InvokeActions(null);
-                Console.WriteLine($"Layout updating triggered {AssociatedObject.GetHashCode()} for {AssociatedObject.GetType().Name}");
-            }
+            TriggerAction(newSize);
         }
 
-        /// <summary>
-        /// 当触发从对象分离时调用。
-        /// </summary>
-        protected override void OnDetaching()
+        private void TriggerAction(Size currentSize)
         {
-            AssociatedObject.Loaded -= AssociatedObject_Loaded;
-            if (_ownerWindow != null)
+            var includeWidth = false;
+            if (MinWidth != (double)MinWidthProperty.DefaultMetadata.DefaultValue)
             {
-                _ownerWindow.SizeChanged -= AdaptiveTrigger_SizeChanged;
-                _ownerWindow = null;
+                includeWidth = true;
             }
-
-            if (_rootFE != null)
+            var includeHeight = false;
+            if (MinHeight != (double)MinHeightProperty.DefaultMetadata.DefaultValue)
             {
-                _rootFE.SizeChanged -= AdaptiveTrigger_SizeChanged;
-                _rootFE = null;
+                includeHeight = true;
             }
-            if (_rootUE != null)
+            if (includeWidth && includeHeight)
             {
-                _rootUE.LayoutUpdated -= Root_LayoutUpdated;
-                _rootUE = null;
+                if (Reverse)
+                {
+                    if (currentSize.Width < MinWidth && currentSize.Height < MinHeight)
+                    {
+                        InvokeActions(null);
+                    }
+                }
+                else
+                {
+                    if (currentSize.Width >= MinWidth && currentSize.Height >= MinHeight)
+                    {
+                        InvokeActions(null);
+                    }
+                }
             }
-
-            base.OnDetaching();
+            else if (includeWidth)
+            {
+                if (Reverse)
+                {
+                    if (currentSize.Width < MinWidth)
+                    {
+                        InvokeActions(null);
+                    }
+                }
+                else
+                {
+                    if (currentSize.Width >= MinWidth)
+                    {
+                        InvokeActions(null);
+                    }
+                }
+            }
+            else if (includeHeight)
+            {
+                if (Reverse)
+                {
+                    if (currentSize.Height < MinHeight)
+                    {
+                        InvokeActions(null);
+                    }
+                }
+                else
+                {
+                    if (currentSize.Height >= MinHeight)
+                    {
+                        InvokeActions(null);
+                    }
+                }
+            }
         }
     }
 }
