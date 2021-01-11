@@ -19,6 +19,31 @@ namespace System.Windows
         /// <returns></returns>
         public static T GetVisualParent<T>(this DependencyObject child) where T : DependencyObject
         {
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+
+            if (parentObject == null)
+            {
+                return null;
+            }
+
+            if (parentObject is T parent)
+            {
+                return parent;
+            }
+            else
+            {
+                return GetVisualParent<T>(parentObject);
+            }
+        }
+
+        /// <summary>
+        /// 从当前依赖属性系统对象开始，在视图树自下而上的查找指定类型的依赖属性系统对象（包括当前对象），返回第一个匹配的值。
+        /// </summary>
+        /// <typeparam name="T">要查找的依赖属性系统对象的类型。</typeparam>
+        /// <param name="child">当前依赖属性系统对象。</param>
+        /// <returns></returns>
+        public static T GetVisual<T>(this DependencyObject child) where T : DependencyObject
+        {
             if (child is T)
                 return child as T;
             DependencyObject parentObject = VisualTreeHelper.GetParent(child);
@@ -34,7 +59,7 @@ namespace System.Windows
             }
             else
             {
-                return GetVisualParent<T>(parentObject);
+                return GetVisual<T>(parentObject);
             }
         }
 
