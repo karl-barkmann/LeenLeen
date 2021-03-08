@@ -62,8 +62,7 @@ namespace System.Windows.Interactivity
 
         private static void OnSelectedItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var item = e.NewValue as TreeViewItem;
-            if (item != null)
+            if (e.NewValue is TreeViewItem item)
             {
                 item.SetValue(TreeViewItem.IsSelectedProperty, true);
             }
