@@ -7,8 +7,8 @@
         xmlns:lie="clr-namespace:System.Windows.Interactivity;assembly=Leen.Windows"
         xmlns:mvvm="clr-namespace:Leen.Practices.Mvvm;assembly=Leen.Practices.Mvvm"
         Title="{Binding Title}"
-        Width="525"
-        Height="350"
+        Width="1525"
+        Height="950"
         mvvm:ViewLocator.IsRegistered="True"
         mvvm:ViewModelLocator.AutoWireViewModel="True">
     <Window.Resources />
@@ -109,5 +109,39 @@
                                        WatermarkText="开始时间" />
             </i:Interaction.Behaviors>
         </DatePicker>
+        <controls:SlidablePanel x:Name="sliderPanel"
+                                Width="200"
+                                Height="100"
+                                Margin="281,410,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                EnableAutoScroll="True"
+                                Orientation="Vertical"
+                                ScrollDuration="100.50"
+                                ScrollInterval="5000">
+            <Grid Background="Red">
+                <TextBlock Text="A" />
+            </Grid>
+            <Grid Background="Purple">
+                <TextBlock Text="B" />
+            </Grid>
+            <Grid Background="Orange">
+                <TextBlock Text="C" />
+            </Grid>
+            <Grid Background="Green">
+                <TextBlock Text="D" />
+            </Grid>
+            <Grid Background="Pink">
+                <TextBlock Text="E" />
+            </Grid>
+            <Grid Background="Turquoise">
+                <TextBlock Text="F" />
+            </Grid>
+        </controls:SlidablePanel>
+        <TextBlock Margin="633,305,0,0"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Text="{Binding ElementName=sliderPanel, Path=SelectedIndex}"
+                   TextWrapping="Wrap" />
     </Grid>
 </Window>

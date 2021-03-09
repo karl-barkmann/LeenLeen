@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -286,7 +287,10 @@ namespace Leen.Windows.Controls
         {
             SlidablePanel control = d as SlidablePanel;
             control.Animation((int)e.NewValue, control.ScrollDuration);
-            control._autoScrollTimer.Start();
+            if (control._autoScrollTimer != null && !control._autoScrollTimer.IsEnabled)
+            {
+                control._autoScrollTimer.Start();
+            }
         }
 
         #endregion
@@ -529,32 +533,43 @@ namespace Leen.Windows.Controls
 
         #region 回调
 
+        DebounceDispatcher debouncer = new DebounceDispatcher();
+
         void NewSliderPanel_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (IsMouseOver)
+            debouncer.Throttle((int)ScrollDuration, (state) =>
             {
-                if (e.Delta < 0)
+                if (IsMouseOver)
                 {
-                    var index = SelectedIndex + 1;
-                    if (index > (Children.Count - 1))
+                    if (e.Delta < 0)
                     {
-                        index = 0;
-                    }
+                        var index = SelectedIndex + 1;
+                        if (index > (Children.Count - 1))
+                        {
+                            index = 0;
+                        }
 
-                    _autoScrollTimer.Stop();
-                    SelectedIndex = index;
-                }
-                else
-                {
-                    var index = SelectedIndex - 1;
-                    if (index < 0)
-                    {
-                        index = Children.Count - 1;
+                        if (_autoScrollTimer != null && _autoScrollTimer.IsEnabled)
+                        {
+                            _autoScrollTimer.Stop();
+                        }
+                        SelectedIndex = index;
                     }
-                    _autoScrollTimer.Stop();
-                    SelectedIndex = index;
+                    else
+                    {
+                        var index = SelectedIndex - 1;
+                        if (index < 0)
+                        {
+                            index = Children.Count - 1;
+                        }
+                        if (_autoScrollTimer != null && _autoScrollTimer.IsEnabled)
+                        {
+                            _autoScrollTimer.Stop();
+                        }
+                        SelectedIndex = index;
+                    }
                 }
-            }
+            });
             e.Handled = true;
         }
 
@@ -579,6 +594,7 @@ namespace Leen.Windows.Controls
                     //This is it.
                     //Our work is done,let's our parent scroll it!
                     e.Handled = true;
+                    Console.WriteLine("Mouse Preview Whell");
                     var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
                     eventArg.RoutedEvent = UIElement.MouseWheelEvent;
                     eventArg.Source = sender;
