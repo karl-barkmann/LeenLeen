@@ -6,7 +6,7 @@
     public interface INamedDataEntity : IDataEntity
     {
         /// <summary>
-        /// 获取此业务实体的游戏名称。
+        /// 获取此业务实体的有效名称。
         /// </summary>
         string Name { get; }
     }
