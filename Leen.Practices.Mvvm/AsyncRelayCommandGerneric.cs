@@ -5,17 +5,15 @@ using System.Windows.Input;
 
 namespace Leen.Practices.Mvvm
 {
-    class AsyncRelayCommand<T> : AsyncRelayCommand, IAsyncRelayCommand<T, T>, IAsyncRelayCommand<T>, INotifyCanExecuteChangedCommand, ICommand
+    /// <summary>
+    /// 使用参数委托实现一个<see cref="IAsyncRelayCommand"/>。
+    /// </summary>
+    public class AsyncRelayCommand<T> : AsyncRelayCommand, IAsyncRelayCommand<T, T>, IAsyncRelayCommand<T>, INotifyCanExecuteChangedCommand, ICommand
     {
         private bool _isExecuting;
         private readonly Func<T, Task> _execute;
         private readonly Func<T, bool> _canExecute;
         private readonly Action<Exception> _errorHandler;
-
-        public AsyncRelayCommand()
-        {
-
-        }
 
         /// <summary>
         /// 构造 <see cref="AsyncRelayCommand"/> 的实例。
