@@ -1,4 +1,5 @@
 ﻿using Leen.Windows.Interaction;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Leen.Practices.Mvvm
@@ -18,7 +19,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="buttons">消息对话框显示的按钮。</param>
         /// <param name="icon">消息对话框显示的图标。</param>
         /// <returns></returns>
-        public static MessageBoxResult ShowInfoMessage(this IUIInteractionService interactionService,
+        public static Task<MessageBoxResult> ShowInfoMessage(this IUIInteractionService interactionService,
                                                    string message,
                                                    string title,
                                                    object ownnerViewModel,
@@ -38,7 +39,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="buttons">消息对话框显示的按钮。</param>
         /// <param name="icon">消息对话框显示的图标。</param>
         /// <returns></returns>
-        public static MessageBoxResult ShowErrorMessage(this IUIInteractionService interactionService,
+        public static Task<MessageBoxResult> ShowErrorMessage(this IUIInteractionService interactionService,
                                                         string message,
                                                         string title,
                                                         object ownnerViewModel,
@@ -58,7 +59,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="buttons">消息对话框显示的按钮。</param>
         /// <param name="icon">消息对话框显示的图标。</param>
         /// <returns></returns>
-        public static MessageBoxResult ShowWarningMessage(this IUIInteractionService interactionService,
+        public static Task<MessageBoxResult> ShowWarningMessage(this IUIInteractionService interactionService,
                                                        string message,
                                                        string title,
                                                        object ownnerViewModel,
@@ -78,7 +79,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="buttons">消息对话框显示的按钮。</param>
         /// <param name="icon">消息对话框显示的图标。</param>
         /// <returns></returns>
-        public static MessageBoxResult ShowQuestionMessage(this IUIInteractionService interactionService,
+        public static Task<MessageBoxResult> ShowQuestionMessage(this IUIInteractionService interactionService,
                                                        string message,
                                                        string title,
                                                        object ownnerViewModel,

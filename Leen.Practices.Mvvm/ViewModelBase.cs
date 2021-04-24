@@ -6,7 +6,6 @@ using Leen.Windows.Interaction;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -290,9 +289,6 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <typeparam name="T">描述属性的类型。</typeparam>
         /// <param name="expression">用户获取属性名称的表达式。</param>
-        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters"),
-        SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"),
-        SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
         protected override void RaisePropertyChanged<T>(Expression<Func<T>> expression)
         {
             base.RaisePropertyChanged<T>(expression);
@@ -303,8 +299,6 @@ namespace Leen.Practices.Mvvm
         /// 通知属性值已更改。
         /// </summary>
         /// <param name="propertyName">指定属性名称。</param>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
-        SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
         protected override void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             base.RaisePropertyChanged(propertyName);

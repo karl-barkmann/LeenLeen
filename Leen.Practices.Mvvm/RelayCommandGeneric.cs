@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Input;
 
 namespace Leen.Practices.Mvvm
 {
     /// <summary>
-    /// 使用参数委托<see cref="Execute"/>及<see cref="CanExecute"/>定义一个<see cref="ICommand"/>。
+    /// 使用参数委托实现一个<see cref="IRelayCommand"/>。
     /// </summary>    
     /// <typeparam name="T">命令执行参数的类型。</typeparam>
     /// <remarks>
@@ -31,22 +30,12 @@ namespace Leen.Practices.Mvvm
     /// </code>
     /// </example>
     /// </remarks>
-    public class RelayCommand<T> : RelayCommand, ICommand
+    public class RelayCommand<T> : RelayCommand, IRelayCommand<T>, IRelayCommand<T, T>, IRelayCommand, ICommand
     {
         #region Fields
 
         private readonly Func<T, bool> _canExecute;
         private readonly Action<T> _execute;
-        private string _text;
-        private Key _key;
-        private ModifierKeys _keyModifiers;
-        private KeyGesture _keyGesture;
-        private MouseAction _mouseAction;
-        private string _keyGestureText;
-        private List<WeakReference> _canExecuteChangedHandlers;
-        private ModifierKeys _mouseModifiers;
-        private MouseGesture _mouseGesture;
-        private string _mouseGestureText;
 
         #endregion
 
@@ -207,25 +196,48 @@ namespace Leen.Practices.Mvvm
         #endregion
 
         /// <summary>
-        /// 定义用于确定此命令是否可以在其当前状态下执行的方法。
+        /// 调用此命令时调用的方法。
         /// </summary>
-        /// <param name="parameter">此命令使用的数据。如果此命令不需要传递数据，则该对象可以设置为 null。</param>
-        /// <returns></returns>
-        public override bool CanExecute(object parameter)
-        {
-            return _canExecute == null || _canExecute((T)parameter);
-        }
-
-        /// <summary>
-        /// 定义在调用此命令时调用的方法。
-        /// </summary>
-        /// <param name="parameter">此命令使用的数据。如果此命令不需要传递数据，则该对象可以设置为 null。</param>
-        public override void Execute(object parameter)
+        public virtual void Execute(T parameter)
         {
             if (CanExecute(parameter))
             {
-                _execute((T)parameter);
+                _execute(parameter);
             }
         }
+
+        /// <summary>
+        /// 确定此命令是否可以在其当前状态下执行的方法。
+        /// </summary>
+        /// <param name="parameter">此命令使用的数据。如果此命令不需要传递数据，则该对象可以设置为 null。</param>
+        /// <returns> 如果可执行此命令，则为 true；否则为 false。</returns>
+        public virtual bool CanExecute(T parameter)
+        {
+            return _canExecute(parameter);
+        }
+
+
+        #region ICommand实现
+
+        /// <summary>
+        /// 确定此命令是否可以在其当前状态下执行的方法。
+        /// </summary>
+        /// <param name="parameter">此命令使用的数据。如果此命令不需要传递数据，则该对象可以设置为 null。</param>
+        /// <returns> 如果可执行此命令，则为 true；否则为 false。</returns>
+        bool ICommand.CanExecute(object parameter)
+        {
+            return CanExecute((T)parameter);
+        }
+
+        /// <summary>
+        /// 调用此命令时调用的方法。
+        /// </summary>
+        /// <param name="parameter">此命令使用的数据。如果此命令不需要传递数据，则该对象可以设置为 null。</param>
+        void ICommand.Execute(object parameter)
+        {
+            Execute((T)parameter);
+        }
+
+        #endregion
     }
 }
