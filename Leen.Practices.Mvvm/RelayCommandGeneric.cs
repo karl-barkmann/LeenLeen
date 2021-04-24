@@ -213,7 +213,7 @@ namespace Leen.Practices.Mvvm
         /// <returns> 如果可执行此命令，则为 true；否则为 false。</returns>
         public virtual bool CanExecute(T parameter)
         {
-            return _canExecute(parameter);
+            return _canExecute == null || _canExecute(parameter);
         }
 
 
