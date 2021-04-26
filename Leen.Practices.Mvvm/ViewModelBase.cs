@@ -326,11 +326,11 @@ namespace Leen.Practices.Mvvm
                     continue;
                 }
 
-                if (typeof(RelayCommand).IsAssignableFrom(propVal.GetType()))
+                if (typeof(INotifyCanExecuteChangedCommand).IsAssignableFrom(propVal.GetType()))
                 {
                     var raiseCommandCanExecute = new Action(() =>
                     {
-                        if (propVal is RelayCommand command)
+                        if (propVal is INotifyCanExecuteChangedCommand command)
                         {
                             UIService.InvokeIfNeeded(() =>
                             {
