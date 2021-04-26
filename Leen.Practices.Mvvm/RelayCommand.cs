@@ -5,7 +5,7 @@ using System.Windows.Input;
 namespace Leen.Practices.Mvvm
 {
     /// <summary>
-    /// 使用无参参数委托<see cref="Execute"/>及<see cref="CanExecute"/>定义一个<see cref="ICommand"/>。
+    /// 使用无参数委托实现一个<see cref="IRelayCommand"/>。
     /// </summary>
     /// <remarks>
     /// 如果该命令需要支持快捷键操作或鼠标操作，则应指定对应的组合键和鼠标操作。
@@ -30,7 +30,7 @@ namespace Leen.Practices.Mvvm
     /// </code>
     /// </example>
     /// </remarks>
-    public class RelayCommand : BindableBase, ICommand
+    public class RelayCommand : BindableBase, IRelayCommand, ICommand
     {
         #region Fields
 
@@ -273,7 +273,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="mouseAction">执行命令的鼠标操作。</param>
         /// <param name="execute">执行命令时调用方法。</param>
         /// <param name="canExecute">确定命令是否可以执行时调用方法。</param>
-        public RelayCommand(Key key,  MouseAction mouseAction, Action execute, Func<bool> canExecute)
+        public RelayCommand(Key key, MouseAction mouseAction, Action execute, Func<bool> canExecute)
             : this(key, execute, canExecute)
         {
             MouseGesture = new MouseGesture(mouseAction);
@@ -489,34 +489,54 @@ namespace Leen.Practices.Mvvm
         #region Virtual Functions
 
         /// <summary>
-        /// 定义用于确定此命令是否可以在其当前状态下执行的方法。
+        /// 通知影响是否应执行该命令的更改。
         /// </summary>
-        /// <param name="parameter">此命令使用的数据。如果此命令不需要传递数据，则该对象可以设置为 null。</param>
-        /// <returns></returns>
-        public virtual bool CanExecute(object parameter)
+        public virtual void RaiseCanExecuteChanged()
         {
-            return _canExecute == null || _canExecute();
+            CanExecuteChangedCommandManager.CallWeakReferenceHandlers(_canExecuteChangedHandlers);
         }
 
         /// <summary>
-        /// 定义在调用此命令时调用的方法。
+        /// 调用此命令时调用的方法。
         /// </summary>
-        /// <param name="parameter">此命令使用的数据。如果此命令不需要传递数据，则该对象可以设置为 null。</param>
-        public virtual void Execute(object parameter)
+        public virtual void Execute()
         {
-            if (CanExecute(parameter))
+            if (CanExecute())
             {
                 _execute();
             }
         }
 
         /// <summary>
-        /// 通知影响是否应执行该命令的更改。
+        /// 确定此命令是否可以在其当前状态下执行的方法。
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        public virtual void RaiseCanExecuteChanged()
+		/// <returns> 如果可执行此命令，则为 true；否则为 false。</returns>
+        public virtual bool CanExecute()
         {
-            CanExecuteChangedCommandManager.CallWeakReferenceHandlers(_canExecuteChangedHandlers);
+            return _canExecute == null || _canExecute();
+        }
+
+        #endregion
+
+        #region ICommand实现
+
+        /// <summary>
+        /// 确定此命令是否可以在其当前状态下执行的方法。
+        /// </summary>
+        /// <param name="parameter">此命令使用的数据。如果此命令不需要传递数据，则该对象可以设置为 null。</param>
+        /// <returns> 如果可执行此命令，则为 true；否则为 false。</returns>
+        bool ICommand.CanExecute(object parameter)
+        {
+            return CanExecute();
+        }
+
+        /// <summary>
+        /// 调用此命令时调用的方法。
+        /// </summary>
+        /// <param name="parameter">此命令使用的数据。如果此命令不需要传递数据，则该对象可以设置为 null。</param>
+        void ICommand.Execute(object parameter)
+        {
+            Execute();
         }
 
         #endregion

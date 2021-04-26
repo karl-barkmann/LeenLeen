@@ -62,6 +62,7 @@
     <Compile Include="Data\MarkupAccessibleValueConverter.cs" />
     <Compile Include="Data\RowToIndexConverter.cs" />
     <Compile Include="Data\ValueConverters.cs" />
+    <Compile Include="DebounceDispatcher.cs" />
     <Compile Include="Interaction\CrossProcessHwndSource.cs" />
     <Compile Include="Interaction\CrossProcessInteropService.cs" />
     <Compile Include="Interaction\DefaultInteropService.cs" />

@@ -2,11 +2,10 @@
 using Leen.Windows.Interaction;
 using Microsoft.Win32;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace Leen.Practices.Mvvm
@@ -20,6 +19,12 @@ namespace Leen.Practices.Mvvm
     public class UIInteractionService : IUIInteractionService
     {
         private object _pushedModal;
+        private readonly static TaskCompletionSource<bool> s_TaskCompletionSource = new TaskCompletionSource<bool>();
+
+        static UIInteractionService()
+        {
+            s_TaskCompletionSource.SetResult(true);
+        }
 
         /// <summary>
         /// 构造 <see cref="UIInteractionService"/> 的实例。
@@ -54,8 +59,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="icon">消息对话框图标。</param>
         /// <param name="ownerViewModel">父视图模型。</param>
         /// <returns>对话框返回值。</returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
-        public MessageBoxResult ShowMessage(string message,
+        public async Task<MessageBoxResult> ShowMessage(string message,
                                             string title,
                                             MessageBoxButton buttons = MessageBoxButton.OK,
                                             MessageBoxImage icon = MessageBoxImage.Information,
@@ -68,7 +72,7 @@ namespace Leen.Practices.Mvvm
 
             if (ownerViewModel == null)
                 ownerViewModel = _pushedModal ?? Shell;
-            MessageBoxResult result = InvokeIfNeeded(() => ShowMessageImpl(content.ToString(), title, buttons, icon, null));
+            MessageBoxResult result = await await InvokeIfNeeded(async () => await ShowMessageImpl(content.ToString(), title, buttons, icon, ownerViewModel));
             return result;
         }
 
@@ -78,7 +82,7 @@ namespace Leen.Practices.Mvvm
         /// <typeparam name="T">要获取的值或对象的类型。</typeparam>
         /// <param name="func">值或对象的获取操作。</param>
         /// <returns>值或对象的获取操作的返回值。</returns>
-        public T InvokeIfNeeded<T>(Func<T> func)
+        public async Task<T> InvokeIfNeeded<T>(Func<T> func)
         {
             if (func == null)
             {
@@ -89,7 +93,7 @@ namespace Leen.Practices.Mvvm
             if (application == null)
                 application = new Application();
             var dispatcher = application.Dispatcher;
-            return Invoke(func, dispatcher);
+            return await Invoke(func, dispatcher);
         }
 
         /// <summary>
@@ -99,7 +103,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="func">值或对象的获取操作。</param>
         /// <param name="viewModel">对应的视图模型。</param>
         /// <returns>获取到的值或对象。</returns>
-        public T InvokeIfNeeded<T>(Func<T> func, object viewModel)
+        public async Task<T> InvokeIfNeeded<T>(Func<T> func, object viewModel)
         {
             if (func == null)
             {
@@ -113,14 +117,14 @@ namespace Leen.Practices.Mvvm
 
             var viewForViewModel = ViewLocationProvider.FindViewForViewModel(viewModel);
             var dispatcher = viewForViewModel.ActualView.Dispatcher;
-            return Invoke(func, dispatcher);
+            return await Invoke(func, dispatcher);
         }
 
         /// <summary>
         /// 如果需要，将操作调度到默认UI线程上执行，否则在当前线程上执行。
         /// </summary>
         /// <param name="action">要执行的操作。</param>
-        public void InvokeIfNeeded(Action action)
+        public async Task InvokeIfNeeded(Action action)
         {
             if (action == null)
             {
@@ -131,7 +135,7 @@ namespace Leen.Practices.Mvvm
             if (application == null)
                 application = new Application();
             var dispatcher = application.Dispatcher;
-            Invoke(action, dispatcher);
+            await Invoke(action, dispatcher);
         }
 
         /// <summary>
@@ -139,7 +143,7 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="action">要执行的操作。</param>
         /// <param name="viewModel">对应的视图模型。</param>
-        public void InvokeIfNeeded(Action action, object viewModel)
+        public async Task InvokeIfNeeded(Action action, object viewModel)
         {
             if (action == null)
             {
@@ -153,7 +157,7 @@ namespace Leen.Practices.Mvvm
 
             var viewForViewModel = ViewLocationProvider.FindViewForViewModel(viewModel);
             var dispatcher = viewForViewModel.ActualView.Dispatcher;
-            Invoke(action, dispatcher);
+            await Invoke(action, dispatcher);
         }
 
         /// <summary>
@@ -162,7 +166,7 @@ namespace Leen.Practices.Mvvm
         /// <typeparam name="T">要执行的操作需要的参数类型。</typeparam>
         /// <param name="action">要执行的操作。</param>
         /// <param name="args">要执行的操作的参数。</param>
-        public void InvokeIfNeeded<T>(Action<T> action, T args)
+        public async Task InvokeIfNeeded<T>(Action<T> action, T args)
         {
             if (action == null)
             {
@@ -173,7 +177,7 @@ namespace Leen.Practices.Mvvm
             if (application == null)
                 application = new Application();
             var dispatcher = application.Dispatcher;
-            Invoke(action, args, dispatcher);
+            await Invoke(action, args, dispatcher);
         }
 
         /// <summary>
@@ -183,7 +187,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="action">要执行的操作。</param>
         /// <param name="args">要执行的操作的参数。</param>
         /// <param name="viewModel">对应的视图模型。</param>
-        public void InvokeIfNeeded<T>(Action<T> action, T args, object viewModel)
+        public async Task InvokeIfNeeded<T>(Action<T> action, T args, object viewModel)
         {
             if (action == null)
             {
@@ -197,91 +201,7 @@ namespace Leen.Practices.Mvvm
 
             var viewForViewModel = ViewLocationProvider.FindViewForViewModel(viewModel);
             var dispatcher = viewForViewModel.ActualView.Dispatcher;
-            Invoke(action, args, dispatcher);
-        }
-
-        /// <summary>
-        /// 如果需要，将操作调度到默认UI线程上异步执行，否则在当前线程上立即执行。
-        /// </summary>
-        /// <param name="action">要执行的操作。</param>
-        public void BeginInvokeIfNeeded(Action action)
-        {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-
-            var application = Application.Current;
-            if (application == null)
-                application = new Application();
-            var dispatcher = application.Dispatcher;
-            BeginInvoke(action, dispatcher);
-        }
-
-        /// <summary>
-        /// 如果需要，将操作调度到拥有指定视图模型关联的视图的线程上异步执行，否则在当前线程上立即执行。
-        /// </summary>
-        /// <param name="action">要执行的操作。</param>
-        /// <param name="viewModel">对应的视图模型。</param>
-        public void BeginInvokeIfNeeded(Action action, object viewModel)
-        {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-
-            if (viewModel == null)
-            {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
-            var viewForViewModel = ViewLocationProvider.FindViewForViewModel(viewModel);
-            var dispatcher = viewForViewModel.ActualView.Dispatcher;
-            BeginInvoke(action, dispatcher);
-        }
-
-        /// <summary>
-        /// 如果需要，将操作调度到默认UI线程上异步执行，否则在当前线程上立即执行。
-        /// </summary>
-        /// <typeparam name="T">要执行的操作需要的参数类型。</typeparam>
-        /// <param name="action">要执行的操作。</param>
-        /// <param name="args">要执行的操作的参数。</param>
-        public void BeginInvokeIfNeeded<T>(Action<T> action, T args)
-        {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-
-            var application = Application.Current;
-            if (application == null)
-                application = new Application();
-            var dispatcher = application.Dispatcher;
-            BeginInvoke(action, args, dispatcher);
-        }
-
-        /// <summary>
-        /// 如果需要，将操作调度到拥有指定视图模型关联的视图的线程上异步执行，否则在当前线程上立即执行。
-        /// </summary>
-        /// <typeparam name="T">要执行的操作需要的参数类型。</typeparam>
-        /// <param name="action">要执行的操作。</param>
-        /// <param name="args">要执行的操作的参数。</param>
-        /// <param name="viewModel">对应的视图模型。</param>
-        public void BeginInvokeIfNeeded<T>(Action<T> action, T args, object viewModel)
-        {
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-
-            if (viewModel == null)
-            {
-                throw new ArgumentNullException(nameof(viewModel));
-            }
-
-            var viewForViewModel = ViewLocationProvider.FindViewForViewModel(viewModel);
-            var dispatcher = viewForViewModel.ActualView.Dispatcher;
-            BeginInvoke(action, args, dispatcher);
+            await Invoke (action, args, dispatcher);
         }
 
         /// <summary>
@@ -289,32 +209,26 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="viewModel">子窗体的视图模型。</param>
         /// <param name="ownerViewModel">父窗体的视图模型。当该值为 null 时，将采用应用程序主窗体作为父视图。</param>
-        public void Show(object viewModel, object ownerViewModel)
+        public async Task Show(object viewModel, object ownerViewModel)
         {
             if (viewModel == null)
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            void showCallback()
+            async Task showCallback()
             {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel);
-                Show(viewModel, view, ownerViewModel);
+                await Show(viewModel, view, ownerViewModel);
             }
 
             if (ownerViewModel != null)
             {
-                InvokeIfNeeded(() =>
-                {
-                    showCallback();
-                }, ownerViewModel);
+                await await InvokeIfNeeded(showCallback, ownerViewModel);
             }
             else
             {
-                InvokeIfNeeded(() =>
-                {
-                    showCallback();
-                });
+                await await InvokeIfNeeded(showCallback);
             }
         }
 
@@ -324,7 +238,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="viewModel">子视图模型。</param>
         /// <param name="viewAlias">子视图别名，与Xaml中定义的 ViewLocator.Alias 对应。</param>
         /// <param name="ownerViewModel">父视图模型。当该值为 null 时，将采用应用程序主窗体作为父视图。</param>
-        public void Show(object viewModel, string viewAlias, object ownerViewModel)
+        public async Task Show(object viewModel, string viewAlias, object ownerViewModel)
         {
             if (viewModel == null)
             {
@@ -336,25 +250,19 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentException($"{nameof(viewAlias)} can not be null or empty", nameof(viewAlias));
             }
 
-            void showCallback()
+            async Task showCallback()
             {
-                IView view = ViewLocationProvider.GetViewForViewModel(viewModel);
-                Show(viewModel, view, ownerViewModel);
+                IView view = ViewLocationProvider.GetViewForViewModel(viewModel, viewAlias);
+                await Show(viewModel, view, ownerViewModel);
             }
 
             if (ownerViewModel != null)
             {
-                InvokeIfNeeded(() =>
-                {
-                    showCallback();
-                }, ownerViewModel);
+                await await InvokeIfNeeded(showCallback, ownerViewModel);
             }
             else
             {
-                InvokeIfNeeded(() =>
-                {
-                    showCallback();
-                });
+                await await InvokeIfNeeded(showCallback);
             }
         }
 
@@ -364,33 +272,26 @@ namespace Leen.Practices.Mvvm
         /// <param name="viewModel">子窗体的视图模型。</param>
         /// <param name="ownerViewModel">父窗体的视图模型。当该值为 null 时，将采用应用程序主窗体作为父视图。</param>
         /// <returns>窗体对话框返回值。</returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
-        public bool? ShowDialog(object viewModel, object ownerViewModel)
+        public async Task<bool?> ShowDialog(object viewModel, object ownerViewModel)
         {
             if (viewModel == null)
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            bool? showCallback()
+            async Task<bool?> showCallback()
             {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel);
-                return ShowDialog(viewModel, view, ownerViewModel);
+                return await ShowDialog(viewModel, view, ownerViewModel);
             }
 
             if (ownerViewModel != null)
             {
-                return InvokeIfNeeded(() =>
-                {
-                    return showCallback();
-                }, ownerViewModel);
+                return await await InvokeIfNeeded(showCallback, ownerViewModel);
             }
             else
             {
-                return InvokeIfNeeded(() =>
-                {
-                    return showCallback();
-                });
+                return await await InvokeIfNeeded(showCallback);
             }
         }
 
@@ -401,7 +302,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="viewAlias">子视图别名，与Xaml中定义的 ViewLocator.Alias 对应。</param>
         /// <param name="ownerViewModel">父视图模型。当该值为 null 时，将采用应用程序主窗体作为父视图。</param>
         /// <returns>对话框返回值。</returns>
-        public bool? ShowDialog(object viewModel, string viewAlias, object ownerViewModel)
+        public async Task<bool?> ShowDialog(object viewModel, string viewAlias, object ownerViewModel)
         {
             if (viewModel == null)
             {
@@ -413,25 +314,19 @@ namespace Leen.Practices.Mvvm
                 throw new ArgumentException($"{nameof(viewAlias)} can not be null or empty", nameof(viewAlias));
             }
 
-            bool? showCallback()
+            async Task<bool?> showCallback()
             {
                 IView view = ViewLocationProvider.GetViewForViewModel(viewModel, viewAlias);
-                return ShowDialog(viewModel, view, ownerViewModel);
+                return await ShowDialog(viewModel, view, ownerViewModel);
             }
 
             if (ownerViewModel != null)
             {
-                return InvokeIfNeeded(() =>
-                {
-                    return showCallback();
-                }, ownerViewModel);
+                return await await InvokeIfNeeded(showCallback, ownerViewModel);
             }
             else
             {
-                return InvokeIfNeeded(() =>
-                {
-                    return showCallback();
-                });
+                return await await InvokeIfNeeded(showCallback);
             }
         }
 
@@ -440,15 +335,14 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="viewModel">窗体的视图模型。</param>
         /// <param name="dialogResult">窗体关闭时的对话框返回值。</param>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
-        public void Close(object viewModel, bool? dialogResult = null)
+        public async Task Close(object viewModel, bool? dialogResult = null)
         {
             if (viewModel == null)
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            InvokeIfNeeded(() =>
+            await await InvokeIfNeeded(async () =>
             {
                 IView view = ViewLocationProvider.FindViewForViewModel(viewModel);
 
@@ -458,7 +352,7 @@ namespace Leen.Practices.Mvvm
                 }
 
                 ViewLocator.SetIsRegistered(view.ActualView, false);
-                Close(viewModel, view, dialogResult);
+                await Close(viewModel, view, dialogResult);
 
                 if (view.DataContext is ViewModelBase viewModelBase)
                 {
@@ -478,17 +372,17 @@ namespace Leen.Practices.Mvvm
         /// 查找指定视图模型对应的视图并尝试最小化它，如果需要将委托到UI线程上执行。
         /// </summary>
         /// <param name="viewModel">子窗体的视图模型。</param>
-        public void Minimize(object viewModel)
+        public async Task Minimize(object viewModel)
         {
             if (viewModel == null)
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            InvokeIfNeeded(() =>
+            await await InvokeIfNeeded(async () =>
             {
                 IView view = ViewLocationProvider.FindViewForViewModel(viewModel);
-                Minimize(viewModel, view);
+                await Minimize(viewModel, view);
             }, viewModel);
         }
 
@@ -496,17 +390,17 @@ namespace Leen.Practices.Mvvm
         /// 查找指定视图模型对应的视图并尝试激活它，如果需要将委托到UI线程上执行。
         /// </summary>
         /// <param name="viewModel">窗体的视图模型。</param>
-        public void Activate(object viewModel)
+        public async Task Activate(object viewModel)
         {
             if (viewModel == null)
             {
                 throw new ArgumentNullException(nameof(viewModel));
             }
 
-            InvokeIfNeeded(() =>
+            await await InvokeIfNeeded(async () =>
             {
                 IView view = ViewLocationProvider.FindViewForViewModel(viewModel);
-                Activate(viewModel, view);
+                await Activate (viewModel, view);
             }, viewModel);
         }
 
@@ -517,7 +411,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenSaveFileDialog(ref string fileName, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new SaveFileDialog
@@ -544,7 +437,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenSaveFileDialog(ref string fileName, string title, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new SaveFileDialog
@@ -573,7 +465,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenSaveFileDialog(ref string fileName, string title, string initialDirectory, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new SaveFileDialog
@@ -601,7 +492,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenFileBrowserDialog(ref string fileName, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new OpenFileDialog
@@ -628,7 +518,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenFileBrowserDialog(ref string fileName, string title, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new OpenFileDialog
@@ -657,7 +546,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="defaultExit">默认文件扩展。</param>
         /// <param name="filter">文件扩展过滤。</param>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         public bool? OpenFileBrowserDialog(ref string fileName, string title, string initialDirectory, string defaultExit = ".*", string filter = "*.*")
         {
             var dlg = new OpenFileDialog
@@ -684,8 +572,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="viewModel">子窗体的视图模型。</param>
         /// <param name="view">子视图。</param>
         /// <param name="ownerViewModel">父窗体的视图模型。</param>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
-        protected virtual void Show(object viewModel, IView view, object ownerViewModel = null)
+        protected virtual Task Show(object viewModel, IView view, object ownerViewModel = null)
         {
             IWindow dialog;
             if (view is Window dialogView)
@@ -713,6 +600,7 @@ namespace Leen.Practices.Mvvm
 
             dialog.DataContext = viewModel;
             dialog.Show();
+            return s_TaskCompletionSource.Task;
         }
 
         /// <summary>
@@ -721,7 +609,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="viewModel">子窗体视图模型。</param>
         /// <param name="view">子视图。</param>
         /// <param name="dialogResult">窗体对话框返回值。</param>
-        protected virtual void Close(object viewModel, IView view, bool? dialogResult)
+        protected virtual Task Close(object viewModel, IView view, bool? dialogResult)
         {
             if (ViewLocationProvider.IsRootView(view) && !(view is Window))
             {
@@ -750,6 +638,7 @@ namespace Leen.Practices.Mvvm
             }
 
             dialog.Close();
+            return s_TaskCompletionSource.Task;
         }
 
         /// <summary>
@@ -757,7 +646,7 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="viewModel">子窗体的视图模型。</param>
         /// <param name="view">子视图。</param>
-        protected virtual void Minimize(object viewModel, IView view)
+        protected virtual Task Minimize(object viewModel, IView view)
         {
             if (ViewLocationProvider.IsRootView(view) && !(view is Window))
             {
@@ -772,6 +661,7 @@ namespace Leen.Practices.Mvvm
                 throw new InvalidOperationException($"Call {nameof(Show)} or {nameof(ShowDialog)} before trying to minimize it.");
             }
             dialog.WindowState = WindowState.Minimized;
+            return s_TaskCompletionSource.Task;
         }
 
         /// <summary>
@@ -779,14 +669,14 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="viewModel">子窗体的视图模型。</param>
         /// <param name="view">子视图。</param>
-        protected virtual void Activate(object viewModel, IView view)
+        protected virtual Task Activate(object viewModel, IView view)
         {
             if (ViewLocationProvider.IsRootView(view) && !(view is Window))
             {
                 //Root view can not be closed.
                 //此时的视图可能是跨进程的插件界面根视图
                 User32.SetActiveWindow(InteropService.Shell.Handle);
-                return;
+                return s_TaskCompletionSource.Task;
             }
 
             Window dialog = ViewLocationProvider.FindOwnerWindow(view);
@@ -795,6 +685,7 @@ namespace Leen.Practices.Mvvm
                 throw new InvalidOperationException($"Call {nameof(Show)} or {nameof(ShowDialog)} before trying to activate it.");
             }
             dialog.Activate();
+            return s_TaskCompletionSource.Task;
         }
 
         /// <summary>
@@ -804,8 +695,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="view">子视图。</param>
         /// <param name="ownerViewModel">父窗体的视图模型。</param>
         /// <returns>窗体对话框的返回值。</returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
-        protected virtual bool? ShowDialog(object viewModel, IView view, object ownerViewModel = null)
+        protected virtual Task<bool?> ShowDialog(object viewModel, IView view, object ownerViewModel = null)
         {
             IWindow dialog;
             if (view is Window dialogView)
@@ -837,7 +727,8 @@ namespace Leen.Practices.Mvvm
             _pushedModal = viewModel;
             try
             {
-                return dialog.ShowDialog();
+                var dialogResult = dialog.ShowDialog();
+                return Task.FromResult(dialogResult);
             }
             finally
             {
@@ -855,7 +746,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="icon">消息对话框图标。</param>
         /// <param name="ownerViewModel">父视图模型。</param>
         /// <returns>对话框返回值。</returns>
-        protected virtual MessageBoxResult ShowMessageImpl(string message,
+        protected virtual Task<MessageBoxResult> ShowMessageImpl(string message,
                                                            string title,
                                                            MessageBoxButton buttons,
                                                            MessageBoxImage icon,
@@ -865,24 +756,19 @@ namespace Leen.Practices.Mvvm
             if (ownerViewModel != null)
                 owner = ViewLocationProvider.FindOwnerWindow(ownerViewModel);
 
+            MessageBoxResult dialogResult;
             if (owner == null)
-                return MessageBox.Show(message, title, buttons, icon);
+                dialogResult = MessageBox.Show(message, title, buttons, icon);
             else
-                return MessageBox.Show(owner, message, title, buttons, icon);
+                dialogResult = MessageBox.Show(owner, message, title, buttons, icon);
+            return Task.FromResult(dialogResult);
         }
 
-        private static T Invoke<T>(Func<T> func, Dispatcher dispatcher)
+        private async Task<T> Invoke<T>(Func<T> func, Dispatcher dispatcher)
         {
             if (!dispatcher.CheckAccess())
             {
-                T result = default;
-
-                dispatcher.Invoke(new Action(() =>
-                {
-                    result = func();
-                }));
-
-                return result;
+                return await dispatcher.InvokeAsync(func);
             }
             else
             {
@@ -890,14 +776,11 @@ namespace Leen.Practices.Mvvm
             }
         }
 
-        private void Invoke(Action action, Dispatcher dispatcher)
+        private async Task Invoke(Action action, Dispatcher dispatcher)
         {
             if (!dispatcher.CheckAccess())
             {
-                dispatcher.Invoke(new Action(() =>
-                {
-                    action();
-                }));
+                await dispatcher.InvokeAsync(action);
             }
             else
             {
@@ -905,48 +788,15 @@ namespace Leen.Practices.Mvvm
             }
         }
 
-        private void Invoke<T>(Action<T> action, T args, Dispatcher dispatcher)
+        private async Task Invoke<T>(Action<T> action, T args, Dispatcher dispatcher)
         {
             if (!dispatcher.CheckAccess())
             {
-                dispatcher.Invoke(new Action(() =>
-                {
-                    action(args);
-                }));
+                await dispatcher.InvokeAsync(() => action(args));
             }
             else
             {
                 action(args);
-            }
-        }
-
-        private void BeginInvoke(Action action, Dispatcher dispatcher)
-        {
-            if (!dispatcher.CheckAccess())
-            {
-                dispatcher.BeginInvoke(new Action(() =>
-                {
-                    action();
-                }));
-            }
-            else
-            {
-                action();
-            }
-        }
-
-        private void BeginInvoke<T>(Action<T> action, T args, Dispatcher dispatcher)
-        {
-            if (!dispatcher.CheckAccess())
-            {
-                dispatcher.Invoke(new Action(() =>
-                {
-                    action(args);
-                }));
-            }
-            else
-            {
-                action.Invoke(args);
             }
         }
 
@@ -962,7 +812,7 @@ namespace Leen.Practices.Mvvm
 
         private static void RetrieveWindowStyle(IView view, IWindow dialog)
         {
-            var style = view.ActualView.GetValue(WindowPopupBehavior.ContainerWindowStyleProperty) as Style;
+            var style = WindowPopupBehavior.GetContainerWindowStyle(view.ActualView);
             if (style != WindowPopupBehavior.ContainerWindowStyleProperty.DefaultMetadata.DefaultValue)
             {
                 dialog.Style = style;
@@ -971,37 +821,37 @@ namespace Leen.Practices.Mvvm
 
         private static void RetrieveWindowWidth(IView view, IWindow dialog)
         {
-            var width = view.ActualView.GetValue(WindowPopupBehavior.ContainerWindowWidthProperty);
-            if (width != WindowPopupBehavior.ContainerWindowWidthProperty.DefaultMetadata.DefaultValue)
+            var width = WindowPopupBehavior.GetContainerWindowWidth(view.ActualView);
+            if (width != (double)WindowPopupBehavior.ContainerWindowWidthProperty.DefaultMetadata.DefaultValue)
             {
-                dialog.Width = (double)width;
+                dialog.Width = width;
             }
         }
 
         private static void RetrieveWindowHeight(IView view, IWindow dialog)
         {
-            var height = view.ActualView.GetValue(WindowPopupBehavior.ContainerWindowHeightProperty);
-            if (height != WindowPopupBehavior.ContainerWindowHeightProperty.DefaultMetadata.DefaultValue)
+            var height = WindowPopupBehavior.GetContainerWindowHeight(view.ActualView);
+            if (height != (double)WindowPopupBehavior.ContainerWindowHeightProperty.DefaultMetadata.DefaultValue)
             {
-                dialog.Height = (double)height;
+                dialog.Height = height;
             }
         }
 
         private static void RetrieveWindowIcon(IView view, IWindow dialog)
         {
-            var icon = view.ActualView.GetValue(WindowPopupBehavior.ContainerWindowIconProperty);
+            var icon = WindowPopupBehavior.GetContainerWindowIcon(view.ActualView);
             if (icon != WindowPopupBehavior.ContainerWindowIconProperty.DefaultMetadata.DefaultValue)
             {
-                dialog.Icon = icon as ImageSource;
+                dialog.Icon = icon;
             }
         }
 
         private static void RetrieveWindowTitle(IView view, IWindow dialog)
         {
-            var title = view.ActualView.GetValue(WindowPopupBehavior.ContainerWindowTitleProperty);
-            if (title != WindowPopupBehavior.ContainerWindowTitleProperty.DefaultMetadata.DefaultValue)
+            var title = WindowPopupBehavior.GetContainerWindowTitle(view.ActualView);
+            if (title != (string)WindowPopupBehavior.ContainerWindowTitleProperty.DefaultMetadata.DefaultValue)
             {
-                dialog.Title = title as string;
+                dialog.Title = title;
             }
 
             if (title == null || (title is string strTile) && string.IsNullOrEmpty(strTile) && string.IsNullOrWhiteSpace(strTile))

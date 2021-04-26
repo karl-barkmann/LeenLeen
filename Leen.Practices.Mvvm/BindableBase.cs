@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -42,8 +41,6 @@ namespace Leen.Practices.Mvvm
         /// <typeparam name="T">Type of the property.</typeparam>
         /// <param name="propertyExpression">A Lambda expression representing the property that has a new value.</param>
         /// <returns>The property name.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters"),
-        SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public static string ExtractPropertyName<T>(Expression<Func<T>> propertyExpression)
         {
             if (propertyExpression == null)
@@ -189,8 +186,6 @@ namespace Leen.Practices.Mvvm
         /// 通知属性值已更改。
         /// </summary>
         /// <param name="propertyName">属性名称。</param>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
-        SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
         protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             OnRaisePropertyChanged(propertyName);
@@ -200,8 +195,6 @@ namespace Leen.Practices.Mvvm
         /// 通知属性值正在更改。
         /// </summary>
         /// <param name="propertyName">属性名称。</param>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
-        SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
         protected virtual void RaisePropertyChanging([CallerMemberName] string propertyName = null)
         {
             OnRaisePropertyChanged(propertyName);
@@ -212,9 +205,6 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <typeparam name="T">描述属性的类型。</typeparam>
         /// <param name="propertyExpression">用户获取属性名称的表达式。</param>
-        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters"),
-        SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"),
-        SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
         protected virtual void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
         {
             string propertyName = ExtractPropertyName(propertyExpression);
@@ -226,9 +216,6 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <typeparam name="T">描述属性的类型。</typeparam>
         /// <param name="propertyExpression">用户获取属性名称的表达式。</param>
-        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters"),
-        SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"),
-        SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
         protected virtual void RaisePropertyChanging<T>(Expression<Func<T>> propertyExpression)
         {
             string propertyName = ExtractPropertyName(propertyExpression);
@@ -246,8 +233,6 @@ namespace Leen.Practices.Mvvm
         /// <param name="propertyName">Name of the property used to notify listeners. This value is optional and
         ///     can be provided automatically when invoked from compilers that support CallerMemberName.</param>
         /// <returns> True if the value was changed, false if the existing value matched the desired value.</returns>
-        [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed"),
-        SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#")]
         protected virtual bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
         {
             if (!Equals(storage, value))

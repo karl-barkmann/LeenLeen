@@ -47,16 +47,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncObservableCollection.cs" />
+    <Compile Include="AsyncRelayCommand.cs" />
+    <Compile Include="AsyncRelayCommandGerneric.cs" />
     <Compile Include="BindableBase.cs" />
     <Compile Include="BindableEnumValue.cs" />
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="CanExecuteChangedCommandManager.cs" />
     <Compile Include="EventToCommand.cs" />
+    <Compile Include="IAsyncRelayCommand.cs" />
     <Compile Include="IEventArgsConverter.cs" />
+    <Compile Include="INotifyCanExecuteChangedCommand.cs" />
     <Compile Include="Input\GestureExtensions.cs" />
     <Compile Include="Input\ImprovedMouseGesture.cs" />
     <Compile Include="Input\MouseWheelDirection.cs" />
     <Compile Include="InteropService.cs" />
+    <Compile Include="IRelayCommand.cs" />
     <Compile Include="IView.cs" />
     <Compile Include="MefBoostrapper.cs" />
     <Compile Include="MefServiceLocatorAdapter.cs" />

@@ -231,40 +231,22 @@ namespace Leen.Media.Renderer
         /// <param name="buffers">帧数据缓冲，以不同的帧格式对应不同的帧数据数组。</param>
         public void Render(IntPtr[] buffers)
         {
+            if (buffers == null || buffers.Length < 1)
+                return;
             lock (r_renderLock)
             {
-                if (m_FrameFormat == FrameFormat.NV12 ||
-                    m_FrameFormat == FrameFormat.YUY2 ||
-                    m_FrameFormat == FrameFormat.YV12 ||
-                    m_FrameFormat == FrameFormat.UYVY)
-                {
-                    FillBuffer(buffers[0], buffers[1], buffers[2]);
-                }
-                else
+                if (buffers.Length == 1)
                 {
                     FillBuffer(buffers[0]);
                 }
-
-                StretchSurface();
-
-                CreateScene();
-            }
-
-            if (m_InputSurface != null)
-                BackBufferRefreshed?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// 渲染一帧YUV帧采样的视频图像。
-        /// </summary>
-        /// <param name="uBuffer">U分量数据缓冲。</param>
-        /// <param name="vBuffer">V分量数据缓冲。</param>
-        /// <param name="yBuffer">Y分量数据缓冲。</param>
-        public void Render(IntPtr yBuffer, IntPtr uBuffer, IntPtr vBuffer)
-        {
-            lock (r_renderLock)
-            {
-                FillBuffer(yBuffer, uBuffer, vBuffer);
+                else if (buffers.Length == 2)
+                {
+                    FillBuffer(buffers[0], buffers[1], IntPtr.Zero);
+                }
+                else
+                {
+                    FillBuffer(buffers[0], buffers[1], buffers[2]);
+                }
 
                 StretchSurface();
 
@@ -496,6 +478,11 @@ namespace Leen.Media.Renderer
 
         private void FillBuffer(IntPtr bufferPtr)
         {
+            if (m_InputSurface == null)
+            {
+                return;
+            }
+
             DataRectangle rect = m_InputSurface.LockRectangle(LockFlags.None);
             IntPtr surfaceBufferPtr = rect.DataPointer;
             switch (m_FrameFormat)
@@ -578,6 +565,11 @@ namespace Leen.Media.Renderer
                     break;
             }
 
+            if (m_InputSurface == null)
+            {
+                return;
+            }
+
             m_InputSurface.UnlockRectangle();
         }
 
@@ -593,6 +585,7 @@ namespace Leen.Media.Renderer
             switch (m_FrameFormat)
             {
                 case FrameFormat.YV12:
+                case FrameFormat.I420:
                     #region 填充YV12数据
                     if (rect.Pitch == m_YStride)
                     {

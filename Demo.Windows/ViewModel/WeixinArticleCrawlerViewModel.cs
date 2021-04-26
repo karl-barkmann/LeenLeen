@@ -85,8 +85,11 @@ namespace Demo.Windows.ViewModel
             ThreadPool.QueueUserWorkItem((state) =>
             {
                 CrawlConfiguration crawlConfig = new CrawlConfiguration();
-                crawlConfig.MaxConcurrentThreads = 10;
+                crawlConfig.MaxConcurrentThreads = 1;
                 crawlConfig.MaxPagesToCrawl = 10000;
+                crawlConfig.CrawlTimeoutSeconds = 500;
+                crawlConfig.MinCrawlDelayPerDomainMilliSeconds = 5000;
+                crawlConfig.HttpRequestTimeoutInSeconds = 500;
                 crawlConfig.UserAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36";
                 PoliteWebCrawler crawler = new PoliteWebCrawler(crawlConfig, null, null, null, null, null, null, null, null);
                 crawler.PageCrawlStartingAsync += crawler_ProcessPageCrawlStarting;
@@ -127,7 +130,15 @@ namespace Demo.Windows.ViewModel
 
         private void Crawl1()
         {
-            var candidateIndexes = new List<string> { "2", "3", "7", "9", "11", "12", "13", "16", "17", "23", "24", "25", "27", "29", "30", "31", "32", "33", "34", "35", "38", "40" };
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            var candidateIndexes = new List<string> { 
+                "2", "3", "4", "5", "6", "7", "8", "9", "10",
+                "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+                "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
+                "31", "32", "33", "34", "35", "36", "37", "38", "39", "40" };
             ThreadPool.QueueUserWorkItem((state) =>
             {
                 CrawTarget(crawlTarget);
@@ -138,14 +149,13 @@ namespace Demo.Windows.ViewModel
                 }
             });
         }
-
         private void CrawTarget(string crawlingPage)
         {
-            var candidateIndexes = new List<string> { "2", "3", "7", "9", "11", "12", "13", "16", "17", "23", "24", "25", "27", "29", "30", "31", "32", "33", "34", "35", "38", "40" };
             CrawlConfiguration crawlConfig = new CrawlConfiguration();
-            crawlConfig.MaxConcurrentThreads = 10;
+            crawlConfig.MaxConcurrentThreads = 1;
             crawlConfig.MaxPagesToCrawl = 10000;
             crawlConfig.CrawlTimeoutSeconds = 500;
+            crawlConfig.MinCrawlDelayPerDomainMilliSeconds = 5000;
             crawlConfig.HttpRequestTimeoutInSeconds = 500;
             crawlConfig.UserAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36";
             PoliteWebCrawler crawler = new PoliteWebCrawler(crawlConfig, null, null, null, null, null, null, null, null);
