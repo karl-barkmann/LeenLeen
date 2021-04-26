@@ -16,7 +16,7 @@ namespace Leen.Practices.OrganizationTree
     /// <summary>
     /// 定义组织结构和设备树节点。
     /// </summary>
-    public abstract class BaseTreeNode : BindableBase, IEquatable<BaseTreeNode>, IEqualityComparer<BaseTreeNode>, IComparer<BaseTreeNode>, IComparable<BaseTreeNode>
+    public abstract class BaseTreeNode : UIBindableBase, IEquatable<BaseTreeNode>, IEqualityComparer<BaseTreeNode>, IComparer<BaseTreeNode>, IComparable<BaseTreeNode>
     {
         #region fields
 
@@ -29,16 +29,11 @@ namespace Leen.Practices.OrganizationTree
         private readonly static TaskCompletionSource<IEnumerable<BaseTreeNode>> s_TaskCompletionSource = 
             new TaskCompletionSource<IEnumerable<BaseTreeNode>>();
 
-        private const byte IsCheckedMask = 0x01;
-        private const byte IsSelectedMask = 0x02;
         private const byte IsExpandedMask = 0x04;
         private const byte IsLoadingChildrenMask = 0x08;
         private const byte HasChildrenMask = 0x10;
 
-        private const byte SelectableMask = 0x01;
-        private const byte CheckableMask = 0x02;
         private const byte ExpandableMask = 0x04;
-        private const byte EnabledMask = 0x08;
 
         private byte _internalStateFlags = 0x00;
         private byte _internalBehaviorFlags = 0x00;
@@ -181,18 +176,6 @@ namespace Leen.Practices.OrganizationTree
         }
 
         /// <summary>
-        /// 获取或设置一个值，指示该节点是否启用。
-        /// </summary>
-        public bool IsEnabled
-        {
-            get { return GetInternalBehaviorFlag(EnabledMask); }
-            set
-            {
-                SetInternalBehaviorFlag(value, EnabledMask);
-            }
-        }
-
-        /// <summary>
         /// 获取或设置一个值，指示该节点是否支持展开。
         /// </summary>
         public bool Expandable
@@ -253,67 +236,6 @@ namespace Leen.Practices.OrganizationTree
         }
 
         /// <summary>
-        /// 获取或设置一个值，指示该节点是否支持选中。
-        /// </summary>
-        public bool Selectable
-        {
-            get { return GetInternalBehaviorFlag(SelectableMask); }
-            set
-            {
-                SetInternalBehaviorFlag(value, SelectableMask);
-            }
-        }
-
-        /// <summary>
-        /// 获取或设置一个值，指示该节点是否支持勾选。
-        /// </summary>
-        public bool Checkable
-        {
-            get { return GetInternalBehaviorFlag(CheckableMask); }
-            set
-            {
-                SetInternalBehaviorFlag(value, CheckableMask);
-            }
-        }
-
-        /// <summary>
-        /// 获取或设置一个值，指示该节点是否被选中。
-        /// </summary>
-        public bool IsSelected
-        {
-            get { return GetInternalStateFlag(IsSelectedMask); }
-            set
-            {
-                if (!IsEnabled || !Selectable)
-                    return;
-                SetInternalStateFlag(value, IsSelectedMask);
-            }
-        }
-
-        /// <summary>
-        /// 获取或设置一个值，指示该节点是否被勾选。
-        /// </summary>
-        public bool? IsChecked
-        {
-            get { return GetInternalStateFlag(IsCheckedMask); }
-            set
-            {
-                if (!IsEnabled || !Checkable)
-                    return;
-                if (SetInternalStateFlag(value, IsCheckedMask))
-                {
-                    if (Children != null && Behavior.CanCheckedBeInherited)
-                    {
-                        for (int i = 0; i < Children.Count; i++)
-                        {
-                            Children[i].IsChecked = value;
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// 获取此节点的标识。
         /// </summary>
         public string NodeId { get; }
@@ -357,7 +279,6 @@ namespace Leen.Practices.OrganizationTree
         /// <summary>
         /// 获取或设置该节点的直接子节点集合。
         /// </summary>
-        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public ObservableCollection<BaseTreeNode> Children
         {
@@ -970,7 +891,6 @@ namespace Leen.Practices.OrganizationTree
         /// 加载子节点。
         /// </summary>
         /// <returns></returns>
-        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         protected async virtual Task<IEnumerable<BaseTreeNode>> LoadChildrenAsync()
         {
             return await s_TaskCompletionSource.Task;
