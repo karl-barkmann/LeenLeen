@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using Leen.Windows.Utils;
+using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -142,30 +143,12 @@ namespace System.Windows.Interactivity
             base.OnDetaching();
         }
 
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool GetCursorPos(ref Win32Point pt);
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct Win32Point
-        {
-            public int X;
-            public int Y;
-        };
-
-        private static Point GetMousePosition()
-        {
-            Win32Point w32Mouse = new Win32Point();
-            GetCursorPos(ref w32Mouse);
-            return new Point(w32Mouse.X, w32Mouse.Y);
-        }
-
         private void AssociatedObject_GiveFeedback(object sender, GiveFeedbackEventArgs e)
         {
             if (_adorner != null && IsPreviewEnabled)
             {
                 UIElement element = sender as UIElement;
-                var pos = element.PointFromScreen(GetMousePosition());
+                var pos = element.PointFromScreen(MouseUtil.GetMousePosition());
                 _adorner.UpdatePosition(pos);
             }
         }
@@ -287,7 +270,7 @@ namespace System.Windows.Interactivity
         {
             if (!(AssociatedObject is DataGrid dataGrid))
             {
-                throw new ArgumentException("AssociatedObject is not a type of 'DataGrid'!");
+                throw new ArgumentException("AssociatedObject is not a instance of 'DataGrid'!");
             }
 
             if (dataGrid.SelectedIndex < 0 || dataGrid.Items.Count < 1)
@@ -325,7 +308,6 @@ namespace System.Windows.Interactivity
             }
 
             DataGridRow row = (DataGridRow)dataGrid.ItemContainerGenerator.ContainerFromIndex(dataGrid.SelectedIndex);
-
             if (dataGridRow == row)
             {
                 //This's the row which user wish to drag.

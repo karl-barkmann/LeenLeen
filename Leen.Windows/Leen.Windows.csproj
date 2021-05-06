@@ -102,6 +102,7 @@
     <Compile Include="Controls\RichTextBoxHelper.cs" />
     <Compile Include="Controls\TextBoxHelper.cs" />
     <Compile Include="Utils\KeyboardUtil.cs" />
+    <Compile Include="Utils\MouseUtil.cs" />
     <Compile Include="Utils\UriHelper.cs" />
     <Compile Include="Utils\WpfExtensions.cs" />
     <Compile Include="VisualTreeExtensions.cs" />

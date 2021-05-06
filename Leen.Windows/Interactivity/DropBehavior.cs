@@ -1,4 +1,9 @@
 ﻿
+using Leen.Windows.Utils;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+
 namespace System.Windows.Interactivity
 {
     /// <summary>
@@ -91,6 +96,55 @@ namespace System.Windows.Interactivity
         protected virtual object GetProperDroppingData(IDataObject droppingData)
         {
             return droppingData.GetData(DataFormat);
+        }
+    }
+
+    /// <summary>
+    /// 使数据表表格支持鼠标拖放。
+    /// </summary>
+    public class DataGridDropBehavior : DropBehavior
+    {
+        /// <summary>
+        /// 是否识别鼠标拖放目标行元素。
+        /// </summary>
+        public bool DetectDropingTarget
+        {
+            get { return (bool)GetValue(DetectDropingTargetProperty); }
+            set { SetValue(DetectDropingTargetProperty, value); }
+        }
+
+        /// <summary>
+        /// <see cref="DetectDropingTarget"/> 依赖属性。
+        /// </summary>
+        public static readonly DependencyProperty DetectDropingTargetProperty =
+            DependencyProperty.Register(nameof(DetectDropingTarget), typeof(bool), typeof(DataGridDropBehavior), new PropertyMetadata(true));
+
+
+        /// <summary>
+        /// 提取适当的拖放数据。
+        /// </summary>
+        /// <param name="droppingData"></param>
+        /// <returns></returns>
+        protected override object GetProperDroppingData(IDataObject droppingData)
+        {
+            if (DetectDropingTarget)
+            {
+                if (!(AssociatedObject is DataGrid))
+                {
+                    throw new ArgumentException("AssociatedObject is not a instance of 'DataGrid'!");
+                }
+
+                var mousePos = AssociatedObject.PointFromScreen(MouseUtil.GetMousePosition());
+                HitTestResult testResult = VisualTreeHelper.HitTest(AssociatedObject, mousePos);
+                if (testResult == null || testResult.VisualHit == null)
+                {
+                    return null;
+                }
+
+                var dataGridRow = testResult.VisualHit.GetVisualParent<DataGridRow>();
+                return dataGridRow.DataContext;
+            }
+            return base.GetProperDroppingData(droppingData);
         }
     }
 }
