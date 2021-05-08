@@ -34,14 +34,14 @@ namespace System.Windows.Interactivity
             if (AssociatedObject.Columns == null || !AssociatedObject.Columns.Any())
                 return;
 
-            AssociatedObject.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
+            AssociatedObject.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
 
-            double fixWidth = AssociatedObject.Columns.Where(c => !c.Width.IsStar).Sum(c => c.Width.DesiredValue);
+            double fixedWidth = AssociatedObject.Columns.Where(c => !c.Width.IsStar).Sum(c => c.Width.DesiredValue);
             double starValue = AssociatedObject.Columns.Where(c => c.Width.IsStar).Sum(c => c.Width.Value);
 
             var horizontalScrollbarVisibility = ScrollViewer.GetHorizontalScrollBarVisibility(AssociatedObject);
             /* REMAIN 2 PIXEL */
-            double eachWidth = (e.NewSize.Width - fixWidth - 0 - (horizontalScrollbarVisibility == ScrollBarVisibility.Disabled? 0 : SystemParameters.ScrollWidth)) / starValue;
+            double eachWidth = (e.NewSize.Width - fixedWidth - 0 - (horizontalScrollbarVisibility == ScrollBarVisibility.Disabled? 0 : SystemParameters.ScrollWidth)) / starValue;
 
             for (int i = 0; i < AssociatedObject.Columns.Count; i++)
             {

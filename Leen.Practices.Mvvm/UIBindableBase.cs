@@ -17,6 +17,16 @@ namespace Leen.Practices.Mvvm
         private const byte CheckableMask = 0x02;
 
         /// <summary>
+        /// 构造 <see cref="UIBindableBase"/> 的实例。
+        /// </summary>
+        public UIBindableBase()
+        {
+            Selectable = true;
+            Checkable = true;
+            IsEnabled = true;
+        }
+
+        /// <summary>
         /// 获取或设置一个值，指示该视图项是否支持选中。
         /// </summary>
         public bool Selectable
