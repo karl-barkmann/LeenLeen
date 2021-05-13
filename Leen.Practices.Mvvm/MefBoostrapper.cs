@@ -3,6 +3,7 @@ using Leen.Logging;
 using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.Windows;
 
 namespace Leen.Practices.Mvvm
 {
@@ -54,9 +55,6 @@ namespace Leen.Practices.Mvvm
         /// The base implementation registers a default MEF catalog of exports of key Prism types.
         /// Exporting your own types will replace these defaults.
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability",
-            "CA2000:Dispose objects before losing scope",
-            Justification = "The default export provider is in the container and disposed by MEF.")]
         protected virtual CompositionContainer CreateContainer()
         {
             CompositionContainer container = new CompositionContainer(AggregateCatalog);
@@ -105,26 +103,49 @@ namespace Leen.Practices.Mvvm
         /// <remarks>
         /// The base implementation ensures the shell is composed in the container.
         /// </remarks>
-        protected override void InitializeShell(object[] args)
+        protected override void InitializeShell(string[] args)
         {
             Container.ComposeParts(Shell);
+        }
+
+        /// <summary>
+        /// 在启动程序之前执行，确定是否可以执行启动步骤。
+        /// </summary>
+        /// <param name="args">Startup arguments.</param>
+        /// <returns></returns>
+        protected virtual bool BeforeRun(string[] args)
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// 执行程序启动认证步骤。
+        /// </summary>
+        /// <param name="args">Startup arguments.</param>
+        /// <returns></returns>
+        protected virtual bool Authenticate(string[] args)
+        {
+            return true;
         }
 
         /// <summary>
         /// Start up application framework.
         /// </summary>
         /// <param name="args">Startup arguments.</param>
-        public override void Run(string[] args)
+        public sealed override void Run(string[] args)
         {
-            base.Run(args);
-
             Logger = CreateLogger();
             if (Logger == null)
             {
                 throw new InvalidOperationException("Logger can not be null.");
             }
-
             Logger.Log("Logger Created.", LogLevel.Debug, LogPriority.Medium);
+
+            base.Run(args);
+
+            Logger.Log("Checking system requirements.", LogLevel.Debug, LogPriority.Medium);
+            if (!BeforeRun(args))
+                return;
 
             Logger.Log("Configuring process PATH environment variable.", LogLevel.Debug, LogPriority.Medium);
             ConfigureEnvironment();
@@ -147,11 +168,48 @@ namespace Leen.Practices.Mvvm
             Logger.Log("Adding missing type mapping for naming conventions.", LogLevel.Debug, LogPriority.Medium);
             ConfigureMissingTypeMapping();
 
-            Logger.Log("Creating application shell.", LogLevel.Debug, LogPriority.Medium);
-            Shell = CreateShell();
+            var application = Application.Current;
+            var shutdown = ShutdownMode.OnMainWindowClose;
+            if (application != null)
+            {
+                shutdown = application.ShutdownMode;
+            }
 
-            Logger.Log("Initializing application shell.", LogLevel.Debug, LogPriority.Medium);
-            InitializeShell(args);
+            Action shellCreater = () =>
+            {
+                Logger.Log("Creating application shell.", LogLevel.Debug, LogPriority.Medium);
+                Shell = CreateShell(args);
+            };
+
+            if (shutdown == ShutdownMode.OnLastWindowClose || shutdown == ShutdownMode.OnMainWindowClose)
+            {
+                shellCreater();
+            }
+
+            Logger.Log("Beginning application authentication.", LogLevel.Debug, LogPriority.Medium);
+            if (Authenticate(args))
+            {
+                if (shutdown == ShutdownMode.OnExplicitShutdown)
+                    shellCreater();
+
+                Logger.Log("Initializing application shell.", LogLevel.Debug, LogPriority.Medium);
+                InitializeShell(args);
+            }
+            else
+            {
+                Logger.Log("Application authentication failed.", LogLevel.Debug, LogPriority.Medium);
+                if (shutdown == ShutdownMode.OnExplicitShutdown)
+                {
+                    application?.Shutdown();
+                }
+                else if (shutdown == ShutdownMode.OnMainWindowClose || shutdown == ShutdownMode.OnLastWindowClose)
+                {
+                    if (application?.MainWindow != null)
+                    {
+                        application?.MainWindow?.Close();
+                    }
+                }
+            }
         }
     }
 }

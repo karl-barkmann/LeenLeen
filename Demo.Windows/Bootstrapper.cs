@@ -8,7 +8,7 @@ namespace Demo.Windows
 {
     class Bootstrapper : MefBoostrapper
     {
-        protected override DependencyObject CreateShell()
+        protected override DependencyObject CreateShell(string[] args)
         {
             return new MainWindow();
         }
@@ -19,7 +19,7 @@ namespace Demo.Windows
             Container.ComposeExportedValue<IUIInteractionService>(new UIInteractionService());
         }
 
-        protected override void InitializeShell(object[] args)
+        protected override void InitializeShell(string[] args)
         {
             base.InitializeShell(args);
 

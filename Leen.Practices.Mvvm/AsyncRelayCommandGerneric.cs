@@ -10,7 +10,7 @@ namespace Leen.Practices.Mvvm
     /// </summary>
     public class AsyncRelayCommand<T> : AsyncRelayCommand, IAsyncRelayCommand<T, T>, IAsyncRelayCommand<T>, INotifyCanExecuteChangedCommand, ICommand
     {
-        private bool _isExecuting;
+        private readonly bool _multicast;
         private readonly Func<T, Task> _execute;
         private readonly Func<T, bool> _canExecute;
         private readonly Action<Exception> _errorHandler;
@@ -20,12 +20,15 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="execute">调用命令时执行的异步委托。</param>
         /// <param name="canExecute">确定此命令是否可在其当前状态下执行的委托。</param>
+        /// <param name="multicast">确定此异步命令是否可以连续触发，而无需前一命令完成。</param>
         /// <param name="onException">调用命令执行时发生异常的委托。</param>
         public AsyncRelayCommand(
             Func<T, Task> execute,
             Func<T, bool> canExecute = null,
+            bool multicast = false,
             Action<Exception> onException = null)
         {
+            _multicast = multicast;
             _execute = execute;
             _canExecute = canExecute;
             _errorHandler = onException;
@@ -38,7 +41,9 @@ namespace Leen.Practices.Mvvm
 		/// <param name="parameter">此命令使用的数据。如果此命令不需要传递数据，则该对象可以设置为 null。</param>
         public bool CanExecute(T parameter)
         {
-            return !_isExecuting && (_canExecute?.Invoke(parameter) ?? true);
+            if (!_multicast)
+                return !IsExecuting && (_canExecute?.Invoke(parameter) ?? true);
+            return (_canExecute?.Invoke(parameter) ?? true);
         }
 
         /// <summary>
@@ -48,19 +53,19 @@ namespace Leen.Practices.Mvvm
 		/// <returns>返回命令执行生成的 <see cref="Task"/> 对象。</returns>
         public async Task ExecuteAsync(T parameter)
         {
-            if (CanExecute())
+            if (CanExecute(parameter))
             {
                 try
                 {
-                    _isExecuting = true;
+                    IsExecuting = true;
+                    RaiseCanExecuteChanged();
                     await _execute(parameter);
                 }
                 finally
                 {
-                    _isExecuting = false;
+                    IsExecuting = false;
                 }
             }
-
             RaiseCanExecuteChanged();
         }
 

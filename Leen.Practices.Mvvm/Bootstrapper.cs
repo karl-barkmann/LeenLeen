@@ -48,13 +48,13 @@ namespace Leen.Practices.Mvvm
         /// Creates the shell or main window of the application.
         /// </summary>
         /// <returns>The shell of the application.</returns>
-        protected abstract DependencyObject CreateShell();
+        protected abstract DependencyObject CreateShell(string[] args);
 
         /// <summary>
         /// Initializes the shell.
         /// </summary>
         /// <param name="args">program startup parameters</param>
-        protected virtual void InitializeShell(object[] args)
+        protected virtual void InitializeShell(string[] args)
         {
 
         }
