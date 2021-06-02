@@ -1,11 +1,12 @@
 ﻿
+using System;
 using System.Windows;
 using System.Windows.Input;
 
 namespace Leen.Windows.Controls
 {
     /// <summary>
-    /// 用于在 <see cref="Style"/> 中为元素定义 <see cref="InputBindingCollection"/>的帮助类。
+    /// 用于在 <see cref="Style"/> 中为元素定义输入行为，比如<see cref="InputBindingCollection"/>输入绑定或触碰按键控制。
     /// </summary>
     /// <remarks>
     /// <example>
@@ -52,6 +53,88 @@ namespace Leen.Windows.Controls
         {
             element.SetValue(InputBindingsProperty, inputBindings);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool GetTouchAttached(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(TouchAttachedProperty);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="value"></param>
+        public static void SetTouchAttached(DependencyObject obj, bool value)
+        {
+            obj.SetValue(TouchAttachedProperty, value);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly DependencyProperty TouchAttachedProperty =
+            DependencyProperty.RegisterAttached("TouchAttached", typeof(bool), typeof(InputAttached), new PropertyMetadata(false, OnTouchAttachedPropertyChanged));
+
+        private static void OnTouchAttachedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (!(d is UIElement sender))
+                return;
+
+            if ((bool)e.NewValue)
+            {
+                sender.GotFocus += Sender_GotFocus;
+                sender.LostFocus += Sender_LostFocus;
+            }
+            else
+            {
+                sender.GotFocus -= Sender_GotFocus;
+                sender.LostFocus -= Sender_LostFocus;
+            }
+        }
+
+        private static void Sender_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TouchKeyboardProvider.HideTouchKeyboard();
+        }
+
+        private static void Sender_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TouchKeyboardProvider.ShowTouchKeyboard((error) =>
+            {
+                GetTouchCommand(sender as DependencyObject)?.Execute(error);
+            });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static ICommand GetTouchCommand(DependencyObject obj)
+        {
+            return (ICommand)obj.GetValue(TouchCommandProperty);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="value"></param>
+        public static void SetTouchCommand(DependencyObject obj, ICommand value)
+        {
+            obj.SetValue(TouchCommandProperty, value);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly DependencyProperty TouchCommandProperty =
+            DependencyProperty.RegisterAttached("TouchCommand", typeof(ICommand), typeof(InputAttached), new PropertyMetadata(null));
 
         /// <summary>
         /// 

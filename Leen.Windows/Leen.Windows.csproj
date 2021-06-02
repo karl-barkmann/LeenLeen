@@ -101,6 +101,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controls\RichTextBoxHelper.cs" />
     <Compile Include="Controls\TextBoxHelper.cs" />
+    <Compile Include="TouchKeyboardProvider.cs" />
     <Compile Include="Utils\KeyboardUtil.cs" />
     <Compile Include="Utils\MouseUtil.cs" />
     <Compile Include="Utils\UriHelper.cs" />
