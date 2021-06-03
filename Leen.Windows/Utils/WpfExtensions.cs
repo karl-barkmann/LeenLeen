@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
@@ -178,6 +179,20 @@ namespace Leen.Windows.Utils
             {
                 GDI32.DeleteObject(hBitmap);
             }
+        }
+
+        private static FieldInfo _cachedShowAsDialogField = null;
+
+        /// <summary>
+        /// 判断一个窗体是否或模态窗体。
+        /// </summary>
+        /// <param name="window">目标窗体。</param>
+        /// <returns></returns>
+        public static bool IsModal(this Window window)
+        {
+            if (_cachedShowAsDialogField == null)
+                _cachedShowAsDialogField = typeof(Window).GetField("_showingAsDialog", BindingFlags.Instance | BindingFlags.NonPublic);
+            return (bool)_cachedShowAsDialogField.GetValue(window);
         }
     }
 }

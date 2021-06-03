@@ -1,4 +1,5 @@
 ﻿using Leen.Native;
+using Leen.Windows.Utils;
 using Leen.Windows.Interaction;
 using Microsoft.Win32;
 using System;
@@ -626,7 +627,7 @@ namespace Leen.Practices.Mvvm
             var interopHelper = new WindowInteropHelper(dialog);
             if (interopHelper.Handle != InteropService.Shell.Handle)
             {
-                if (ComponentDispatcher.IsThreadModal)
+                if (Extensions.IsModal(dialog))
                 {
                     dialog.DialogResult = dialogResult;
                 }
