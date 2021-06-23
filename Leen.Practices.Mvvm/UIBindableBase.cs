@@ -7,7 +7,7 @@ namespace Leen.Practices.Mvvm
     /// </summary>
     public class UIBindableBase : BindableBase
     {
-        private int _displayOrder;
+        private int? _displayOrder;
         private byte _internalStateFlags = 0x00;
         private const byte IsCheckedMask = 0x01;
         private const byte IsSelectedMask = 0x02;
@@ -30,7 +30,7 @@ namespace Leen.Practices.Mvvm
         /// <summary>
         /// 获取或设置界面显示序号。
         /// </summary>
-        public int DisplayOrder
+        public int? DisplayOrder
         {
             get { return _displayOrder; }
             set
