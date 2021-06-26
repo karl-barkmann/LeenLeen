@@ -541,10 +541,6 @@ namespace Leen.Windows.Data
     /// </summary>
     public class BitmapImageBindingSourceConverter : IValueConverter
     {
-        public int DecodeWidth { get; set; }
-
-        public int DecodeHeight { get; set; }
-
         public BitmapCacheOption CacheOption { get; set; }
 
         public BitmapCreateOptions CreateOptions { get; set; }
@@ -558,6 +554,7 @@ namespace Leen.Windows.Data
 
             Uri sourceUri = null;
             Stream sourceStream = null;
+            Stream memoryStream = null;
             switch (value)
             {
                 case string sourceStr:
@@ -576,23 +573,38 @@ namespace Leen.Windows.Data
                 case Stream stream:
                     sourceStream = stream;
                     break;
+                case byte[] buffer:
+                    memoryStream = new MemoryStream(buffer);
+                    sourceStream = memoryStream;
+                    break;
             }
 
-            if (sourceUri != null || sourceStream != null)
+            try
             {
-                var source = new BitmapImage();
-                source.BeginInit();
-                source.UriSource = sourceUri;
-                source.StreamSource = sourceStream;
-                if (DecodeWidth >= 0)
-                    source.DecodePixelWidth = DecodeWidth;
-                if (DecodeHeight >= 0)
-                    source.DecodePixelHeight = DecodeHeight;
-                source.CacheOption = CacheOption;
-                source.CreateOptions = CreateOptions;
-                source.EndInit();
-                source.Freeze();
-                return source;
+
+                if (sourceUri != null || sourceStream != null)
+                {
+                    var source = new BitmapImage();
+                    source.BeginInit();
+                    source.UriSource = sourceUri;
+                    source.StreamSource = sourceStream;
+                    int targetDecodeWidth = 0;
+                    bool validDecodeWidth = false;
+                    if (parameter != null)
+                        validDecodeWidth = int.TryParse(parameter.ToString(), out targetDecodeWidth);
+                    if (validDecodeWidth)
+                        source.DecodePixelWidth = targetDecodeWidth;
+                    source.CacheOption = CacheOption;
+                    source.CreateOptions = CreateOptions;
+                    source.EndInit();
+                    source.Freeze();
+                    return source;
+                }
+            }
+            finally
+            {
+                if (memoryStream != null)
+                    memoryStream.Dispose();
             }
 
             return DependencyProperty.UnsetValue;
