@@ -564,7 +564,7 @@ namespace Leen.Windows.Data
                     }
                     catch (UriFormatException)
                     {
-                        sourceUri = DefaultSource;
+                        return DefaultSource;
                     }
                     break;
                 case Uri uri:
@@ -607,7 +607,7 @@ namespace Leen.Windows.Data
                     memoryStream.Dispose();
             }
 
-            return DependencyProperty.UnsetValue;
+            return DefaultSource;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

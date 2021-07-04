@@ -34,5 +34,31 @@ namespace Leen.Windows.Controls
         {
             d.SetValue(CornerRadiusProperty, value);
         }
+
+        /// <summary>
+        /// 获取此依赖对象附加的图标属性。
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static object GetIcon(DependencyObject obj)
+        {
+            return (object)obj.GetValue(IconProperty);
+        }
+
+        /// <summary>
+        /// 设置此依赖对象附加的图标属性。
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="value"></param>
+        public static void SetIcon(DependencyObject obj, object value)
+        {
+            obj.SetValue(IconProperty, value);
+        }
+
+        /// <summary>
+        /// 图标附加依赖属性。
+        /// </summary>
+        public static readonly DependencyProperty IconProperty =
+            DependencyProperty.RegisterAttached("Icon", typeof(object), typeof(ControlAttatched), new PropertyMetadata(null));
     }
 }
