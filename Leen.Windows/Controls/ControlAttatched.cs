@@ -42,7 +42,7 @@ namespace Leen.Windows.Controls
         /// <returns></returns>
         public static object GetIcon(DependencyObject obj)
         {
-            return (object)obj.GetValue(IconProperty);
+            return obj.GetValue(IconProperty);
         }
 
         /// <summary>
@@ -60,5 +60,58 @@ namespace Leen.Windows.Controls
         /// </summary>
         public static readonly DependencyProperty IconProperty =
             DependencyProperty.RegisterAttached("Icon", typeof(object), typeof(ControlAttatched), new PropertyMetadata(null));
+
+        /// <summary>
+        /// 获取此依赖对象附加的图标宽度属性。
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static double GetIconWidth(DependencyObject obj)
+        {
+            return (double)obj.GetValue(IconWidthProperty);
+        }
+
+        /// <summary>
+        /// 设置此依赖对象附加的图标宽度。
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="value"></param>
+        public static void SetIconWidth(DependencyObject obj, double value)
+        {
+            obj.SetValue(IconWidthProperty, value);
+        }
+
+        /// <summary>
+        /// 图标宽度附加依赖属性。
+        /// </summary>
+        public static readonly DependencyProperty IconWidthProperty =
+            DependencyProperty.RegisterAttached("IconWidth", typeof(double), typeof(ControlAttatched), new PropertyMetadata(double.NaN));
+
+
+        /// <summary>
+        /// 获取此依赖对象附加的图标高度属性。
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static double GetIconHeight(DependencyObject obj)
+        {
+            return (double)obj.GetValue(IconHeightProperty);
+        }
+
+        /// <summary>
+        /// 设置此依赖对象附加的图标高度。
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="value"></param>
+        public static void SetIconHeight(DependencyObject obj, double value)
+        {
+            obj.SetValue(IconHeightProperty, value);
+        }
+
+        /// <summary>
+        /// 图标高度附加依赖属性。
+        /// </summary>
+        public static readonly DependencyProperty IconHeightProperty =
+            DependencyProperty.RegisterAttached("IconHeight", typeof(double), typeof(ControlAttatched), new PropertyMetadata(double.NaN));
     }
 }
