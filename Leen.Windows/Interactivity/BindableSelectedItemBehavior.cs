@@ -24,14 +24,8 @@ namespace System.Windows.Interactivity
         /// </summary>
         public object SelectedItem
         {
-            get
-            {
-                return this.GetValue(SelectedItemProperty);
-            }
-            set
-            {
-                this.SetValue(SelectedItemProperty, value);
-            }
+            get => GetValue(SelectedItemProperty);
+            set => SetValue(SelectedItemProperty, value);
         }
 
         #region 私有方法
@@ -42,9 +36,9 @@ namespace System.Windows.Interactivity
         protected override void OnAttached()
         {
             base.OnAttached();
-            if (this.AssociatedObject != null)
+            if (AssociatedObject != null)
             {
-                this.AssociatedObject.SelectedItemChanged += OnTreeViewSelectedItemChanged;
+                AssociatedObject.SelectedItemChanged += OnTreeViewSelectedItemChanged;
             }
         }
 
@@ -54,9 +48,9 @@ namespace System.Windows.Interactivity
         protected override void OnDetaching()
         {
             base.OnDetaching();
-            if (this.AssociatedObject != null)
+            if (AssociatedObject != null)
             {
-                this.AssociatedObject.SelectedItemChanged -= OnTreeViewSelectedItemChanged;
+                AssociatedObject.SelectedItemChanged -= OnTreeViewSelectedItemChanged;
             }
         }
 
@@ -70,7 +64,7 @@ namespace System.Windows.Interactivity
 
         private void OnTreeViewSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            this.SelectedItem = e.NewValue;
+            SelectedItem = e.NewValue;
         }
 
         #endregion

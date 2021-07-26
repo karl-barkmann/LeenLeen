@@ -6,6 +6,7 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:lie="clr-namespace:System.Windows.Interactivity;assembly=Leen.Windows"
         xmlns:mvvm="clr-namespace:Leen.Practices.Mvvm;assembly=Leen.Practices.Mvvm"
+        xmlns:tree="clr-namespace:Leen.Practices.Tree;assembly=Leen.Practices.Tree"
         Title="{Binding Title}"
         Width="1525"
         Height="950"
@@ -24,7 +25,8 @@
                             TextWrapping="Wrap"
                             WatermarkText="搜索组织机构、设备、用户">
             <i:Interaction.Behaviors>
-                <lie:TextBoxEnterBehavior Command="{Binding SearchCommand}" CommandParameter="{Binding ElementName=searchBox, Path=Text}" />
+                <lie:TextBoxEnterBehavior Command="{Binding SearchCommand}"
+                                          CommandParameter="{Binding ElementName=searchBox, Path=Text}" />
             </i:Interaction.Behaviors>
         </controls:SearchBox>
         <controls:DoubleUpDown x:Name="input"
@@ -69,11 +71,15 @@
                                    StrokeCap="Round"
                                    Thickness="32">
             <Primitives:ProgressCircle.Stroke>
-                <LinearGradientBrush StartPoint="0.04904099, 0.5" EndPoint="1.048927, 0.5661898">
+                <LinearGradientBrush StartPoint="0.04904099, 0.5"
+                                     EndPoint="1.048927, 0.5661898">
                     <LinearGradientBrush.GradientStops>
-                        <GradientStop Offset="0" Color="#5E4FED" />
-                        <GradientStop Offset="0.4525105" Color="#42DDF1" />
-                        <GradientStop Offset="1" Color="#2ABFF9" />
+                        <GradientStop Offset="0"
+                                      Color="#5E4FED" />
+                        <GradientStop Offset="0.4525105"
+                                      Color="#42DDF1" />
+                        <GradientStop Offset="1"
+                                      Color="#2ABFF9" />
                     </LinearGradientBrush.GradientStops>
                 </LinearGradientBrush>
             </Primitives:ProgressCircle.Stroke>
@@ -143,5 +149,33 @@
                    VerticalAlignment="Top"
                    Text="{Binding ElementName=sliderPanel, Path=SelectedIndex}"
                    TextWrapping="Wrap" />
+        <controls:TreeSelect Background="Transparent"
+                             BorderBrush="Gray"
+                             BorderThickness="1"
+                             x:Name="treeSelect"
+                             HorizontalAlignment="Left"
+                             Margin="787,259,0,0"
+                             VerticalAlignment="Top"
+                             Width="244"
+                             Height="47">
+            <controls:TreeSelect.Resources>
+                <Style TargetType="TreeViewItem"
+                       BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                    <Setter Property="IsExpanded"
+                            Value="{Binding IsExpanded,Mode=TwoWay}" />
+                </Style>
+                <HierarchicalDataTemplate DataType="{x:Type tree:OrganizationNode}"
+                                          ItemsSource="{Binding Path=Children}">
+                    <StackPanel Orientation="Horizontal">
+                        <Grid Margin="2,0,2,0">
+                            <TextBlock x:Name="txtName"
+                                       Text="{Binding NodeName, Mode=OneWay}"
+                                       Width="Auto" />
+                        </Grid>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </controls:TreeSelect.Resources>
+        </controls:TreeSelect>
+        <CheckBox Content="CheckBox" HorizontalAlignment="Left" Margin="970,485,0,0" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}"/>
     </Grid>
 </Window>

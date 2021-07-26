@@ -25,11 +25,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Windows.Controls", "Le
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Windows.Crawler", "Demo.Windows\Demo.Windows.Crawler.csproj", "{C5FCE168-7968-4D9F-B33A-9653E269EE5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Practices.OrganizationTree", "Leen.Practices.OrganizationTree\Leen.Practices.OrganizationTree.csproj", "{32C647B2-835D-40F0-BB64-AD8AEC42EC4C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Practices.Tree", "Leen.Practices.OrganizationTree\Leen.Practices.Tree.csproj", "{32C647B2-835D-40F0-BB64-AD8AEC42EC4C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Media", "Leen.Media\Leen.Media.csproj", "{92BB6AB5-1487-4247-991F-EED6A02C2A21}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leen.Media.Controls", "Leen.Media.Controls\Leen.Media.Controls.csproj", "{674CD0FB-9488-4660-83DB-8C4C19627887}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{26F6D1AB-E67D-4CB1-97B1-67CC5119F0CB}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

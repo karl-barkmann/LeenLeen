@@ -1,17 +1,17 @@
-﻿using Leen.Practices.Mvvm;
+﻿using CommonServiceLocator;
+using Leen.Practices.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Leen.Practices.OrganizationTree
+namespace Leen.Practices.Tree
 {
     /// <summary>
     /// 定义组织结构和设备树节点。
@@ -26,8 +26,6 @@ namespace Leen.Practices.OrganizationTree
         /// </summary>
         internal static readonly PlaceholderNode Placeholder = new PlaceholderNode();
         internal static readonly ObservableCollection<BaseTreeNode> PlaceHolderChildren = new ObservableCollection<BaseTreeNode>(new List<BaseTreeNode>(1) { Placeholder });
-        private readonly static TaskCompletionSource<IEnumerable<BaseTreeNode>> s_TaskCompletionSource = 
-            new TaskCompletionSource<IEnumerable<BaseTreeNode>>();
 
         private const byte IsExpandedMask = 0x04;
         private const byte IsLoadingChildrenMask = 0x08;
@@ -39,50 +37,45 @@ namespace Leen.Practices.OrganizationTree
         private byte _internalBehaviorFlags = 0x00;
         private string _nodeName;
         private ObservableCollection<BaseTreeNode> _children;
+        private IEnumerable<BaseTreeNode> _presetChildren;
         private TreeNodeType _nodeType;
         private int _level;
         private int _childrenCount;
-
-        //private bool? _isChecked;
-        //private bool _isSelected;
-        //private bool _checkable = false;
-        //private bool _selectable = true;
-        //private bool _isExpanded;
-        //private bool _isLoadingChildren;
-
-        private readonly RelayCommand _expandCommand;
-        private readonly RelayCommand _collapseCommand;
-        private readonly RelayCommand _expandAllCommand;
-        private readonly RelayCommand _collapseAllCommand;
-        private readonly RelayCommand _toggleCommand;
+        private bool _ignoreIsChecked;
 
         #endregion
 
         #region consturctor
 
-        static BaseTreeNode()
-        {
-            s_TaskCompletionSource.SetResult(null);
-        }
-
         /// <summary>
         /// 构造<see cref="BaseTreeNode"/>的实例。
-        /// <paramref name="nodeId">节点唯一标识</paramref>。
-        /// <paramref name="nodeType">节点类型。</paramref>
+        /// <param name="nodeId">节点唯一标识</param>。
+        /// <param name="nodeType">节点类型。</param>
         /// </summary>
-        protected BaseTreeNode(string nodeId, TreeNodeType nodeType)
+        protected BaseTreeNode(string nodeId, TreeNodeType nodeType) : this(nodeId, null, nodeType)
         {
-            if (string.IsNullOrEmpty(nodeId))
-                throw new ArgumentException("节点标识不应为空", nameof(nodeId));
-            NodeId = nodeId;
-            NodeType = nodeType;
-            Behavior = DefaultBehavior;
-            Behave();
             //_toggleCommand = new RelayCommand(Toggle, CanToggle);
             //_expandCommand = new RelayCommand(InternalExpand, CanExpand);
             //_expandAllCommand = new RelayCommand(async () => await InternalExpandAll(), CanExpand);
             //_collapseCommand = new RelayCommand(InternalCollapse, CanCollapse);
             //_collapseAllCommand = new RelayCommand(CollapseAll, CanCollapse);
+        }
+
+        /// <summary>
+        /// 构造<see cref="BaseTreeNode"/>的实例。
+        /// </summary>
+        /// <param name="nodeId">节点唯一标识</param>。
+        /// <param name="children">子节点集合。</param>
+        /// <param name="nodeType">节点类型。</param>
+        protected BaseTreeNode(string nodeId, IEnumerable<BaseTreeNode> children, TreeNodeType nodeType)
+        {
+            if (string.IsNullOrEmpty(nodeId))
+                throw new ArgumentException("节点标识不应为空", nameof(nodeId));
+            NodeId = nodeId;
+            NodeType = nodeType;
+            _presetChildren = children;
+            Behavior = DefaultBehavior;
+            Behave();
         }
 
         #endregion
@@ -92,52 +85,7 @@ namespace Leen.Practices.OrganizationTree
         /// <summary>
         /// 获取树节点行为描述接口。
         /// </summary>
-        public ITreeNodeBehavior Behavior { get; private set; }
-
-        /// <summary>
-        /// 提供切换该节点的展开/收起的命令。
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public ICommand ToggleCommand
-        {
-            get { return _toggleCommand; }
-        }
-
-        /// <summary>
-        /// 提供展开该节点的命令。
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public ICommand ExpandCommand
-        {
-            get { return _expandCommand; }
-        }
-
-        /// <summary>
-        /// 提供收起该节点的命令。
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public ICommand CollapseCommand
-        {
-            get { return _collapseCommand; }
-        }
-
-        /// <summary>
-        /// 提供展开该节点及其所有子节点的命令。
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public ICommand ExpandAllCommand
-        {
-            get { return _expandAllCommand; }
-        }
-
-        /// <summary>
-        /// 提供收起该节点及其所有子节点的命令。
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public ICommand CollapseAllCommand
-        {
-            get { return _collapseAllCommand; }
-        }
+        public ITreeNodeBehaviorDescriptor Behavior { get; private set; }
 
         /// <summary>
         /// 获取该组织机构节点上包含的直属子组织节点数目和直属设备数量。
@@ -300,11 +248,6 @@ namespace Leen.Practices.OrganizationTree
             }
         }
 
-        private void OnChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            HasChildren = Children != null && Children.Count > 0;
-        }
-
         /// <summary>
         /// 获取一个值指示是否包含子节点。
         /// </summary>
@@ -326,14 +269,14 @@ namespace Leen.Practices.OrganizationTree
         /// </summary>
         /// <remarks>设置新行为时，将自动应用到当前节点。</remarks>
         /// <param name="loadingBehavior">行为接口。</param>
-        public void SetBehavior(ITreeNodeBehavior loadingBehavior)
+        public void SetBehavior(ITreeNodeBehaviorDescriptor loadingBehavior)
         {
             Behavior = loadingBehavior ?? throw new ArgumentNullException(nameof(loadingBehavior));
             Behave();
         }
 
         /// <summary>
-        /// 使用已配置的 <see cref="ITreeNodeBehavior"/> 设置当前节点的行为。
+        /// 使用已配置的 <see cref="ITreeNodeBehaviorDescriptor"/> 设置当前节点的行为。
         /// </summary>
         public void Behave()
         {
@@ -341,7 +284,7 @@ namespace Leen.Practices.OrganizationTree
         }
 
         /// <summary>
-        /// 使用已配置的 <see cref="ITreeNodeBehavior"/> 设置节点的行为。
+        /// 使用已配置的 <see cref="ITreeNodeBehaviorDescriptor"/> 设置节点的行为。
         /// </summary>
         /// <param name="node">指定的节点。</param>
         public void Behave(BaseTreeNode node)
@@ -386,6 +329,37 @@ namespace Leen.Practices.OrganizationTree
                 }
             }
             return selectedNodes;
+        }
+
+        /// <summary>
+        /// 获取已勾选的子节点。
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<BaseTreeNode> GetCheckedNodes()
+        {
+            return Children?.Where(x => x.IsChecked == true);
+        }
+
+        /// <summary>
+        /// 获取已勾选的子节点，包括子节点的子节点。
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<BaseTreeNode> GetCheckedNodesRecursive()
+        {
+            var nodes = new List<BaseTreeNode>();
+            var checkedNodes = GetCheckedNodes();
+            if (checkedNodes != null)
+            {
+                nodes.AddRange(checkedNodes);
+
+                foreach (var node in checkedNodes)
+                {
+                    var subCheckedNodes = node.GetCheckedNodesRecursive();
+                    if (subCheckedNodes != null)
+                        nodes.AddRange(subCheckedNodes);
+                }
+            }
+            return checkedNodes;
         }
 
         /// <summary>
@@ -887,13 +861,50 @@ namespace Leen.Practices.OrganizationTree
             }
         }
 
+        #endregion
+
+        #region protected methods
+
         /// <summary>
         /// 加载子节点。
         /// </summary>
         /// <returns></returns>
         protected async virtual Task<IEnumerable<BaseTreeNode>> LoadChildrenAsync()
         {
-            return await s_TaskCompletionSource.Task;
+            var children = new List<BaseTreeNode>();
+            var nodeDataProvier = ServiceLocator.Current.GetInstance<ITreeNodeDataProvider>();
+            var nodeDatas = await nodeDataProvier.GetNodes(NodeId);
+            if (nodeDatas != null)
+            {
+                foreach (var nodeData in nodeDatas)
+                {
+                    var node = new OrganizationNode(nodeData);
+                    children.Add(node);
+                }
+            }
+            return children;
+        }
+
+        /// <summary>
+        /// 通知属性值已更改。
+        /// </summary>
+        /// <param name="propertyName">属性名称。</param>
+        protected override void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            base.RaisePropertyChanged(propertyName);
+            if (propertyName == nameof(BaseTreeNode.IsChecked) && !_ignoreIsChecked && IsExpanded)
+            {
+                if (Children != null && Children != PlaceHolderChildren)
+                {
+                    foreach (var child in Children)
+                    {
+                        if (child.Checkable && Behavior.CanCheckedBeInherited)
+                        {
+                            child.IsChecked = IsChecked;
+                        }
+                    }
+                }
+            }
         }
 
         #endregion
@@ -932,10 +943,8 @@ namespace Leen.Practices.OrganizationTree
         private async Task PopulateChildren()
         {
             IsLoadingChildren = true;
-            IEnumerable<BaseTreeNode> children = await LoadChildrenAsync().ConfigureAwait(false);
-            if (children != null && children.Any())
+            if (_presetChildren != null)
             {
-                ChildrenCount = children.Count();
                 if (Children == PlaceHolderChildren || Children == null)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
@@ -944,31 +953,67 @@ namespace Leen.Practices.OrganizationTree
                         Children = new AsyncObservableCollection<BaseTreeNode>();
                     });
                 }
-                foreach (var child in children)
+
+                foreach (var child in _presetChildren)
                 {
-                    if (Behavior.CanBehaviorBeInherited)
+                    if (Behavior.CanBehaviorBeInherited && child.Behavior == null)
                         child.SetBehavior(Behavior);
                     if (!Children.Contains(child))
                     {
                         child.Level = Level + 1;
-                        _children.Add(child);
-                        if (child.Checkable && Behavior.CanCheckedBeInherited && IsChecked.HasValue && IsChecked.Value)
+                        Children.Add(child);
+                        child.PropertyChanged += OnChildPropertyChanged;
+                        if (Behavior.CanCheckedBeInherited && child.Checkable && IsChecked.HasValue && IsChecked.Value)
                         {
                             child.IsChecked = true;
                         }
                     }
                 }
+            }
+            else
+            {
+                IEnumerable<BaseTreeNode> children = await LoadChildrenAsync().ConfigureAwait(false);
+                if (children != null && children.Any())
+                {
+                    ChildrenCount = children.Count();
+                    if (Children == PlaceHolderChildren || Children == null)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            //initialize an asynchronous observable collection which allow cross-thread accessing
+                            Children = new AsyncObservableCollection<BaseTreeNode>();
+                        });
+                    }
 
+                    foreach (var child in children)
+                    {
+                        if (Behavior.CanBehaviorBeInherited && child.Behavior == null)
+                            child.SetBehavior(Behavior);
+                        if (!Children.Contains(child))
+                        {
+                            child.Level = Level + 1;
+                            Children.Add(child);
+                            child.PropertyChanged += OnChildPropertyChanged;
+                            if (Behavior.CanCheckedBeInherited && child.Checkable && IsChecked.HasValue && IsChecked.Value)
+                            {
+                                child.IsChecked = true;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Children = null;
+                }
+            }
+            if (Children != null && Children.Any())
+            {
                 if (Behavior.SelectFirstChildOnExpanded && Children.Any(x => x.IsSelected))
                 {
                     var first = Children.First();
                     if (first.Selectable && first.IsEnabled)
                         first.IsSelected = true;
                 }
-            }
-            else
-            {
-                Children = null;
             }
             IsLoadingChildren = false;
         }
@@ -996,6 +1041,7 @@ namespace Leen.Practices.OrganizationTree
 
         private void ClearChild(BaseTreeNode child)
         {
+            child.PropertyChanged -= OnChildPropertyChanged;
             child.CleanUp();
             _children.Remove(child);
         }
@@ -1052,6 +1098,33 @@ namespace Leen.Practices.OrganizationTree
                 RaisePropertyChanged(propertyName);
 
             return true;
+        }
+
+        private void OnChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            HasChildren = Children != null && Children.Count > 0;
+        }
+
+
+        private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (sender is BaseTreeNode child && e.PropertyName == nameof(child.IsChecked))
+            {
+                _ignoreIsChecked = true;
+                if (Children.All(x => x.IsChecked == true))
+                {
+                    IsChecked = true;
+                }
+                else if (Children.All(x => x.IsChecked == false))
+                {
+                    IsChecked = false;
+                }
+                else
+                {
+                    IsChecked = null;
+                }
+                _ignoreIsChecked = false;
+            }
         }
 
         #endregion

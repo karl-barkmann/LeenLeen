@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Leen.Practices.OrganizationTree
+namespace Leen.Practices.Tree
 {
     /// <summary>
     /// 组织机构和设备树节点的类型。

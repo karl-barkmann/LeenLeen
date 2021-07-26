@@ -60,6 +60,7 @@
     <Compile Include="SlidablePanel.cs" />
     <Compile Include="TextInput.cs" />
     <Compile Include="TimePicker.cs" />
+    <Compile Include="TreeSelect.cs" />
     <Compile Include="UIThreadHostControl.cs" />
     <Compile Include="UpDownDatePicker.cs" />
     <Compile Include="VirtualizingUniformGrid.cs" />
@@ -99,6 +100,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Leen.Common\Leen.Common.csproj">
+      <Project>{31813404-1063-43C3-9271-69F8009FA9DA}</Project>
+      <Name>Leen.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Leen.Practices.Mvvm\Leen.Practices.Mvvm.csproj">
       <Project>{4DB7758A-9434-4230-8B69-7DDD39898E4B}</Project>
       <Name>Leen.Practices.Mvvm</Name>

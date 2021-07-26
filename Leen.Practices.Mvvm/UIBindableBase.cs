@@ -8,8 +8,8 @@ namespace Leen.Practices.Mvvm
     public class UIBindableBase : BindableBase
     {
         private int? _displayOrder;
+        private bool? _ischecked = false;
         private byte _internalStateFlags = 0x00;
-        private const byte IsCheckedMask = 0x01;
         private const byte IsSelectedMask = 0x02;
         private const byte EnabledMask = 0x08;
 
@@ -94,12 +94,12 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         public bool? IsChecked
         {
-            get { return GetInternalStateFlag(IsCheckedMask); }
+            get => _ischecked;
             set
             {
                 if (!IsEnabled || !Checkable)
                     return;
-                SetInternalStateFlag(value, IsCheckedMask);
+                SetProperty(ref _ischecked, value, () => IsChecked);
             }
         }
 
@@ -135,14 +135,14 @@ namespace Leen.Practices.Mvvm
             return (_internalStateFlags & mask) == mask;
         }
 
-        private bool SetInternalStateFlag(bool? value, byte mask, [CallerMemberName] string propertyName = null)
+        private bool SetInternalStateFlag(bool value, byte mask, [CallerMemberName] string propertyName = null)
         {
             if (GetInternalStateFlag(mask) == value)
             {
                 return false;
             }
 
-            if (value.HasValue && value.Value)
+            if (value)
             {
                 _internalStateFlags |= mask;
             }

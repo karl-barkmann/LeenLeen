@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace Leen.Practices.OrganizationTree
+namespace Leen.Practices.Tree
 {
     /// <summary>
     /// 定义组织结构及设备树的视图模型。
     /// </summary>
-    public interface IOrganizationTreeViewModel
+    public interface ITreeViewModel
     {
         /// <summary>
         /// 获取组织机构的根节点集合。
@@ -14,16 +15,16 @@ namespace Leen.Practices.OrganizationTree
         IList<BaseTreeNode> Nodes { get; }
 
         /// <summary>
-        /// 获取已勾选的设备Id集合。
+        /// 获取已勾选的节点集合。
         /// </summary>
         /// <returns></returns>
-        IEnumerable<string> GetCheckedDeviceIds();
+        IEnumerable<IGrouping<TreeNodeType, BaseTreeNode>> GetCheckedNodes();
 
         /// <summary>
-        /// 获取已勾选的组织机构Id集合。
+        /// 获取已选中的节点集合。
         /// </summary>
         /// <returns></returns>
-        IEnumerable<string> GetCheckedOrganizationIds();
+        IEnumerable<BaseTreeNode> GetSelectedNodes();
 
         /// <summary>
         /// 获取指定Id的树节点。
@@ -33,10 +34,15 @@ namespace Leen.Practices.OrganizationTree
         Task<BaseTreeNode> FindNodeAsync(string nodeId);
 
         /// <summary>
-        /// 获取指定Id的组织机构树节点。
+        /// 
         /// </summary>
-        /// <param name="organizationId">组织机构Id。</param>
-        /// <returns></returns>
-        Task<OrganizationTreeNode> FindOrganizationNodeAsync(string organizationId);
+        /// <param name="association"></param>
+        void AddAssociation(ITreeAssociatedViewModel association);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="assoication"></param>
+        void RemoveAssociation(ITreeAssociatedViewModel assoication);
     }
 }

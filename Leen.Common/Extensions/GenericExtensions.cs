@@ -219,5 +219,17 @@ namespace Leen.Common
             values = converterdValues;
             return true;
         }
+
+        /// <summary>
+        /// 截取字符串
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="maxLength"></param>
+        /// <param name="replacer"></param>
+        /// <returns></returns>
+        public static string Omit(this string source,int maxLength, string replacer)
+        {
+            return source.Substring(0, maxLength) + replacer;
+        }
     }
 }

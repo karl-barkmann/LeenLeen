@@ -150,6 +150,10 @@
       <Project>{4db7758a-9434-4230-8b69-7ddd39898e4b}</Project>
       <Name>Leen.Practices.Mvvm</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Leen.Practices.OrganizationTree\Leen.Practices.Tree.csproj">
+      <Project>{32C647B2-835D-40F0-BB64-AD8AEC42EC4C}</Project>
+      <Name>Leen.Practices.Tree</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Leen.Windows.Controls\Leen.Windows.Controls.csproj">
       <Project>{2c0bce42-4d89-401e-b3b9-8faf92edad15}</Project>
       <Name>Leen.Windows.Controls</Name>

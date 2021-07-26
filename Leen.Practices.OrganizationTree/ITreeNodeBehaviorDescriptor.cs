@@ -1,9 +1,11 @@
-﻿namespace Leen.Practices.OrganizationTree
+﻿using System;
+
+namespace Leen.Practices.Tree
 {
     /// <summary>
     /// 定义描述树节点行为的接口。
     /// </summary>
-    public interface ITreeNodeBehavior
+    public interface ITreeNodeBehaviorDescriptor
     {
         /// <summary>
         /// 获取一个值指示改行为是否可以被继承。

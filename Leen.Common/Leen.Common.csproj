@@ -57,6 +57,8 @@
     <Compile Include="IDataEntity.cs" />
     <Compile Include="INamedCascadeDataEntity.cs" />
     <Compile Include="INamedDataEntity.cs" />
+    <Compile Include="ObservableAction.cs" />
+    <Compile Include="ObservableContainer.cs" />
     <Compile Include="OperationResult.cs" />
     <Compile Include="ServiceLocatorExtensions.cs" />
     <Compile Include="Utils\CsvReader.cs" />
@@ -114,6 +116,11 @@
     <PackageReference Include="CommonServiceLocator">
       <Version>2.0.5</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

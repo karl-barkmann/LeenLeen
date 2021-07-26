@@ -1,4 +1,4 @@
-﻿namespace Leen.Practices.OrganizationTree
+﻿namespace Leen.Practices.Tree
 {
     internal class PlaceholderNode : BaseTreeNode
     {

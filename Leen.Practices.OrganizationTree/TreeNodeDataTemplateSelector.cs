@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace Leen.Practices.OrganizationTree
+namespace Leen.Practices.Tree
 {
     /// <summary>
     /// 提供一种方式来根据树节点对象的具体类型和数据绑定元素选择树节点的数据模板。

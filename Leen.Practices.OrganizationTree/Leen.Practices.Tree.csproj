@@ -7,8 +7,8 @@
     <ProjectGuid>{32C647B2-835D-40F0-BB64-AD8AEC42EC4C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Leen.Practices.OrganizationTree</RootNamespace>
-    <AssemblyName>Leen.Practices.OrganizationTree</AssemblyName>
+    <RootNamespace>Leen.Practices.Tree</RootNamespace>
+    <AssemblyName>Leen.Practices.Tree</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -26,7 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>..\Bin\Leen.Practices.OrganizationTree.xml</DocumentationFile>
+    <DocumentationFile>..\Bin\Leen.Practices.Tree.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,10 +48,17 @@
   <ItemGroup>
     <Compile Include="AllEnabledNodeBehavior.cs" />
     <Compile Include="BaseTreeNode.cs" />
+    <Compile Include="ITreeAssociatedViewModel.cs" />
+    <Compile Include="ITreeAwareViewModel.cs" />
+    <Compile Include="ITreeBehaviorDescriptor.cs" />
     <Compile Include="ITreeNodeDataProvider.cs" />
-    <Compile Include="IOrganizationTreeViewModel.cs" />
-    <Compile Include="ITreeNodeBehavior.cs" />
-    <Compile Include="OrganizationTreeNode.cs" />
+    <Compile Include="ITreeViewModel.cs" />
+    <Compile Include="ITreeNodeBehaviorDescriptor.cs" />
+    <Compile Include="TreeAwareViewModel.cs" />
+    <Compile Include="OrganizationNode.cs" />
+    <Compile Include="TreetopNodeBehavior.cs" />
+    <Compile Include="TreeViewModel.cs" />
+    <Compile Include="TreeViewModel.Search.cs" />
     <Compile Include="PlaceholderNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TreeNodeDataTemplateSelector.cs" />

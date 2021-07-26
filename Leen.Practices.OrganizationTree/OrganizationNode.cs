@@ -4,26 +4,35 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Leen.Practices.OrganizationTree
+namespace Leen.Practices.Tree
 {
     /// <summary>
     /// 定义组织机构和设备树上的组织机构节点。
     /// </summary>
-    public class OrganizationTreeNode : BaseTreeNode
+    public class OrganizationNode : BaseTreeNode
     {
         /// <summary>
-        /// 构造<see cref="OrganizationTreeNode"/>的实例。
+        /// 构造<see cref="OrganizationNode"/>的实例。
         /// </summary>
         /// <param name="organizationId">机构节点标识。</param>
-        public OrganizationTreeNode(string organizationId) : base(organizationId, TreeNodeType.Organization)
+        public OrganizationNode(string organizationId) : base(organizationId, TreeNodeType.Organization)
         {
         }
 
         /// <summary>
-        /// 构造<see cref="OrganizationTreeNode"/>的实例。
+        /// 构造<see cref="OrganizationNode"/>的实例。
+        /// </summary>
+        /// <param name="organizationId">机构节点标识。</param>
+        /// <param name="children">子节点集合。</param>
+        public OrganizationNode(string organizationId, IEnumerable<BaseTreeNode> children) : base(organizationId, children, TreeNodeType.Organization)
+        {
+        }
+
+        /// <summary>
+        /// 构造<see cref="OrganizationNode"/>的实例。
         /// </summary>
         /// <param name="entity">此组织结构节点对应的组织机构实体。</param>
-        public OrganizationTreeNode(INamedDataEntity entity) : this(entity.Id)
+        public OrganizationNode(INamedCascadeDataEntity entity) : this(entity.Id)
         {
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
             NodeName = entity.Name;
@@ -32,7 +41,7 @@ namespace Leen.Practices.OrganizationTree
         /// <summary>
         /// 获取节点实体对象。
         /// </summary>
-        public INamedDataEntity Entity { get; }
+        public INamedCascadeDataEntity Entity { get; }
 
         /// <summary>
         /// 加载子节点。
@@ -47,11 +56,10 @@ namespace Leen.Practices.OrganizationTree
             {
                 foreach (var nodeData in nodeDatas)
                 {
-                    var node = new OrganizationTreeNode(nodeData);
+                    var node = new OrganizationNode(nodeData);
                     children.Add(node);
                 }
             }
-
             return children;
         }
     }

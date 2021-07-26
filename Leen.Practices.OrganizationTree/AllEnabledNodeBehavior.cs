@@ -1,6 +1,6 @@
-﻿namespace Leen.Practices.OrganizationTree
+﻿namespace Leen.Practices.Tree
 {
-    class AllEnabledNodeBehavior : ITreeNodeBehavior
+    class AllEnabledNodeBehavior : ITreeNodeBehaviorDescriptor
     {
         public bool CanBehaviorBeInherited => true;
 

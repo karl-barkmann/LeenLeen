@@ -208,7 +208,7 @@ namespace Leen.Practices.Mvvm
         protected virtual void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression)
         {
             string propertyName = ExtractPropertyName(propertyExpression);
-            OnRaisePropertyChanged(propertyName);
+            RaisePropertyChanged(propertyName);
         }
 
         /// <summary>
@@ -220,7 +220,7 @@ namespace Leen.Practices.Mvvm
         {
             string propertyName = ExtractPropertyName(propertyExpression);
 
-            OnRaisePropertyChanging(propertyName);
+            RaisePropertyChanging(propertyName);
         }
 
         /// <summary>
@@ -233,13 +233,13 @@ namespace Leen.Practices.Mvvm
         /// <param name="propertyName">Name of the property used to notify listeners. This value is optional and
         ///     can be provided automatically when invoked from compilers that support CallerMemberName.</param>
         /// <returns> True if the value was changed, false if the existing value matched the desired value.</returns>
-        protected virtual bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
+        protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
         {
             if (!Equals(storage, value))
             {
-                OnRaisePropertyChanging(propertyName);
+                RaisePropertyChanging(propertyName);
                 storage = value;
-                OnRaisePropertyChanged(propertyName);
+                RaisePropertyChanged(propertyName);
                 return true;
             }
             else
@@ -257,7 +257,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="value">Desired value for the property.</param>
         /// <param name="propertyExpression">A Lambda expression representing the property that has a new value.</param>
         /// <returns> True if the value was changed, false if the existing value matched the desired value.</returns>
-        protected virtual bool SetProperty<T>(ref T storage, T value, Expression<Func<T>> propertyExpression)
+        protected bool SetProperty<T>(ref T storage, T value, Expression<Func<T>> propertyExpression)
         {
             if (!Equals(storage, value))
             {
