@@ -25,6 +25,6 @@ namespace Leen.Practices.Tree
         /// <summary>
         /// 获取结构树对树节点是否支持选中的过滤回调方法。
         /// </summary>
-        Func<BaseTreeNode, bool> NodeSelectableFilter { get; }
+        bool CanNodeSelectable(BaseTreeNode node);
     }
 }

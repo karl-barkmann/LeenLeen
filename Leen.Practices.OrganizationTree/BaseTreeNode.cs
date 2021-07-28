@@ -20,7 +20,7 @@ namespace Leen.Practices.Tree
     {
         #region fields
 
-        private static readonly AllEnabledNodeBehavior DefaultBehavior = new AllEnabledNodeBehavior();
+        private static readonly DefaultTreeNodeBehavior DefaultBehavior = new DefaultTreeNodeBehavior();
         /// <summary>
         /// 一个占位节点，用于在父节点折叠时使其仍然显示展开符号。
         /// </summary>

@@ -46,16 +46,19 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AllEnabledNodeBehavior.cs" />
+    <Compile Include="DefaultTreeNodeBehavior.cs" />
     <Compile Include="BaseTreeNode.cs" />
+    <Compile Include="DefaultTreeBehavior.cs" />
     <Compile Include="ITreeAssociatedViewModel.cs" />
     <Compile Include="ITreeAwareViewModel.cs" />
     <Compile Include="ITreeBehaviorDescriptor.cs" />
     <Compile Include="ITreeNodeDataProvider.cs" />
     <Compile Include="ITreeViewModel.cs" />
     <Compile Include="ITreeNodeBehaviorDescriptor.cs" />
+    <Compile Include="TreeNodeBehaviorDescriptor.cs" />
     <Compile Include="TreeAwareViewModel.cs" />
     <Compile Include="OrganizationNode.cs" />
+    <Compile Include="TreeBehaviorDescriptor.cs" />
     <Compile Include="TreetopNodeBehavior.cs" />
     <Compile Include="TreeViewModel.cs" />
     <Compile Include="TreeViewModel.Search.cs" />

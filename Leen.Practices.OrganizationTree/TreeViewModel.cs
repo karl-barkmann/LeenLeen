@@ -31,6 +31,14 @@ namespace Leen.Practices.Tree
         /// <summary>
         /// 构造 <see cref="TreeViewModel"/> 的实例。
         /// </summary>
+        public TreeViewModel():this(new DefaultTreeBehavior())
+        {
+           
+        }
+
+        /// <summary>
+        /// 构造 <see cref="TreeViewModel"/> 的实例。
+        /// </summary>
         /// <param name="treeBehavior">树行为描述接口。</param>
         public TreeViewModel(ITreeBehaviorDescriptor treeBehavior)
         {
@@ -280,10 +288,7 @@ namespace Leen.Practices.Tree
                 var rootNode = Nodes.FirstOrDefault();
                 if (rootNode != null)
                 {
-                    if (Behavior.NodeSelectableFilter != null)
-                        rootNode.IsSelected = Behavior.NodeSelectableFilter(rootNode);
-                    else
-                        rootNode.IsSelected = true;
+                    rootNode.IsSelected = Behavior.CanNodeSelectable(rootNode);
                 }
 
                 IsBusy = false;

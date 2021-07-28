@@ -39,6 +39,17 @@ namespace Leen.Practices.Tree
         }
 
         /// <summary>
+        /// 构造<see cref="OrganizationNode"/>的实例。
+        /// </summary>
+        /// <param name="entity">此组织结构节点对应的组织机构实体。</param>
+        /// <param name="children">子节点集合。</param>
+        public OrganizationNode(INamedCascadeDataEntity entity, IEnumerable<BaseTreeNode> children) : this(entity.Id,  children)
+        {
+            Entity = entity ?? throw new ArgumentNullException(nameof(entity));
+            NodeName = entity.Name;
+        }
+
+        /// <summary>
         /// 获取节点实体对象。
         /// </summary>
         public INamedCascadeDataEntity Entity { get; }

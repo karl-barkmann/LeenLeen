@@ -29,11 +29,18 @@ namespace Leen.Practices.Tree
         Task<INamedCascadeDataEntity> GetNode(string id);
 
         /// <summary>
-        /// 获取指定标识的节点的父节点数据实体。
+        /// 获取指定节点的父节点数据实体。
         /// </summary>
         /// <param name="id">节点标识。</param>
         /// <returns></returns>
         Task<INamedCascadeDataEntity> GetParentNode(string id);
+
+        /// <summary>
+        /// 获取指定标识的节点的父节点数据实体。
+        /// </summary>
+        /// <param name="target">节点。</param>
+        /// <returns></returns>
+        Task<INamedCascadeDataEntity> GetParentNode(INamedCascadeDataEntity target);
 
         /// <summary>
         /// 获取指定标识节点下的直属节点实体集合。
