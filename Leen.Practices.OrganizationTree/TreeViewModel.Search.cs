@@ -114,7 +114,7 @@ namespace Leen.Practices.Tree
             var parent = await nodeDataProvier.GetParentNode(item.NodeId);
             if (parent != null)
             {
-                var parentNode = await FindNodeAsync(parent.Id);
+                var parentNode = await GetNodeAggressivelyAsync(parent.Id);
                 if (parentNode != null)
                 {
                     await parentNode.ExpandAsync();

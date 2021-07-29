@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -18,22 +17,22 @@ namespace Leen.Practices.Tree
     public abstract partial class TreeViewModel : TreeAwareViewModel, ITreeViewModel, ITreeAwareViewModel, ISearchableViewModel
     {
         private readonly object _nodesLocker = new object();
-        private ObservableCollection<BaseTreeNode> _nodes = new ObservableCollection<BaseTreeNode>();
+        private ObservableCollection<BaseTreeNode> _nodes;
         private List<ITreeAssociatedViewModel> _associations;
         private BaseTreeNode _selectedNode;
 
-        private readonly AsyncRelayCommand<BaseTreeNode> _expandAllCommand;
-        private readonly RelayCommand<BaseTreeNode> _collapseAllCommand;
-        private readonly AsyncRelayCommand<BaseTreeNode> _expandCommand;
-        private readonly AsyncRelayCommand<BaseTreeNode> _collapseCommand;
-        private readonly AsyncRelayCommand<BaseTreeNode> _toggleCommand;
+        private AsyncRelayCommand<BaseTreeNode> _expandAllCommand;
+        private RelayCommand<BaseTreeNode> _collapseAllCommand;
+        private AsyncRelayCommand<BaseTreeNode> _expandCommand;
+        private AsyncRelayCommand<BaseTreeNode> _collapseCommand;
+        private AsyncRelayCommand<BaseTreeNode> _toggleCommand;
 
         /// <summary>
         /// 构造 <see cref="TreeViewModel"/> 的实例。
         /// </summary>
-        public TreeViewModel():this(new DefaultTreeBehavior())
+        public TreeViewModel() : this(new DefaultTreeBehavior())
         {
-           
+
         }
 
         /// <summary>
@@ -44,11 +43,34 @@ namespace Leen.Practices.Tree
         {
             Behavior = treeBehavior;
             BindingOperations.EnableCollectionSynchronization(_nodes, _nodesLocker);
-            _expandAllCommand = new AsyncRelayCommand<BaseTreeNode>(ExpandAllAsync, CanExpand);
-            _collapseAllCommand = new RelayCommand<BaseTreeNode>(CollapseAll, CanCollapse);
-            _toggleCommand = new AsyncRelayCommand<BaseTreeNode>(Toggle, CanToggle);
-            _expandCommand = new AsyncRelayCommand<BaseTreeNode>(Expand, CanExpand);
-            _collapseCommand = new AsyncRelayCommand<BaseTreeNode>(Collapse, CanCollapse);
+            InitializeCommands();
+        }
+
+        /// <summary>
+        /// 构造 <see cref="TreeViewModel"/> 的实例。
+        /// </summary>
+        /// <param name="children">初始化的节点集合。</param>
+        public TreeViewModel(IEnumerable<BaseTreeNode> children) : this(children, new DefaultTreeBehavior())
+        {
+
+        }
+
+        /// <summary>
+        /// 构造 <see cref="TreeViewModel"/> 的实例。
+        /// </summary>
+        /// <param name="treeBehavior">树行为描述接口。</param>
+        /// <param name="children">初始化的节点集合。</param>
+        public TreeViewModel(IEnumerable<BaseTreeNode> children, ITreeBehaviorDescriptor treeBehavior)
+        {
+            if (children is null)
+            {
+                throw new ArgumentNullException(nameof(children));
+            }
+
+            Behavior = treeBehavior;
+            Nodes = new ObservableCollection<BaseTreeNode>(children);
+            BindingOperations.EnableCollectionSynchronization(_nodes, _nodesLocker);
+            InitializeCommands();
         }
 
         /// <summary>
@@ -141,6 +163,8 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         public IEnumerable<IGrouping<TreeNodeType, BaseTreeNode>> GetCheckedNodes()
         {
+            if (Nodes != null)
+                return null;
             var result = new List<BaseTreeNode>();
             foreach (var node in Nodes)
             {
@@ -163,6 +187,8 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         public IEnumerable<BaseTreeNode> GetSelectedNodes()
         {
+            if (Nodes != null)
+                return null;
             var result = new List<BaseTreeNode>();
             foreach (var node in Nodes)
             {
@@ -177,17 +203,120 @@ namespace Leen.Practices.Tree
         }
 
         /// <summary>
-        /// 根据指定标识查找树节点。
+        /// 根据指定标识查找树根节点。
         /// </summary>
         /// <param name="nodeId">节点标识。</param>
         /// <returns></returns>
-        public async Task<BaseTreeNode> FindNodeAsync(string nodeId)
+        public BaseTreeNode GetRootNode(string nodeId)
         {
+            if (Nodes != null)
+                return null;
+            return Nodes.FirstOrDefault(x => x.NodeId == nodeId);
+        }
+
+        /// <summary>
+        /// 积极地根据指定标识查找树节点。
+        /// </summary>
+        /// <param name="nodeId">节点标识。</param>
+        /// <returns></returns>
+        public async Task<BaseTreeNode> GetNodeAggressivelyAsync(string nodeId)
+        {
+            if (Nodes != null)
+                return null;
             foreach (var node in Nodes)
             {
                 if (node.NodeId == nodeId)
                     return node;
-                var result = await node.GetNodeRecursiveAsync(nodeId);
+                var result = await node.GetNodeAggressivelyAsync(nodeId);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 被动地根据指定标识查找树节点。
+        /// </summary>
+        /// <param name="nodeId">节点标识。</param>
+        /// <returns></returns>
+        public async Task<BaseTreeNode> GetNodePassivelyAsync(string nodeId)
+        {
+            if (Nodes != null)
+                return null;
+            foreach (var node in Nodes)
+            {
+                if (node.NodeId == nodeId)
+                    return node;
+                var result = await node.GetNodePassivelyAsync(nodeId);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+
+
+        /// <summary>
+        /// 根据指定标识查找树根节点。
+        /// </summary>
+        /// <param name="predicate">判断节点是否符合条件的方法。</param>
+        /// <returns></returns>
+        public BaseTreeNode FindRootNode(Predicate<BaseTreeNode> predicate)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (Nodes != null)
+                return null;
+
+            return Nodes.FirstOrDefault(x => predicate(x));
+        }
+
+        /// <summary>
+        /// 积极地查找符合条件的第一个子节点。
+        /// </summary>
+        /// <param name="predicate">判断节点是否符合条件的方法。</param>
+        /// <returns></returns>
+        public async Task<BaseTreeNode> FindNodeAggressivelyAsync(Predicate<BaseTreeNode> predicate)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (Nodes != null)
+                return null;
+            foreach (var node in Nodes)
+            {
+                if (predicate(node))
+                    return node;
+                var result = await node.FindNodeAggressivelyAsync(predicate);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 被动地查找符合条件的第一个子节点。
+        /// </summary>
+        /// <param name="predicate">判断节点是否符合条件的方法。</param>
+        /// <returns></returns>
+        public async Task<BaseTreeNode> FindNodePassivelyeAsync(Predicate<BaseTreeNode> predicate)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            if (Nodes != null)
+                return null;
+            foreach (var node in Nodes)
+            {
+                if (predicate(node))
+                    return node;
+                var result = await node.FindNodePassivelyeAsync(predicate);
                 if (result != null)
                     return result;
             }
@@ -232,9 +361,12 @@ namespace Leen.Practices.Tree
                 throw new ArgumentNullException(nameof(predicate));
             }
 
+            if (Nodes != null)
+                return null;
+
             foreach (var root in Nodes)
             {
-                var salerOrgNode = await root.FindNodeRecursiveAsync(predicate);
+                var salerOrgNode = await root.FindNodeAggressivelyAsync(predicate);
                 if (salerOrgNode != null)
                 {
                     salerOrgNode.IsSelected = true;
@@ -272,37 +404,45 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         protected async override Task OnInitializeAsync()
         {
-            IsBusy = true;
-
-            var treeDataProvider = GetInstance<ITreeNodeDataProvider>();
-            var rootNodeData = await treeDataProvider.GetRootNodes();
-            if (rootNodeData != null)
+            if (Nodes != null)
             {
-                foreach (var nodeData in rootNodeData)
+                return;
+            }
+            IsBusy = true;
+            try
+            {
+                var treeDataProvider = GetInstance<ITreeNodeDataProvider>();
+                var rootNodeData = await treeDataProvider.GetRootNodes();
+                if (rootNodeData != null)
                 {
-                    var node = CreateNode(nodeData);
-                    node.PropertyChanged += OnNodePropertyChanged;
-                    Nodes.Add(node);
-                }
+                    var nodes = new List<BaseTreeNode>();
+                    foreach (var nodeData in rootNodeData)
+                    {
+                        var node = CreateNode(nodeData);
+                        node.PropertyChanged += OnNodePropertyChanged;
+                        nodes.Add(node);
+                    }
 
-                var rootNode = Nodes.FirstOrDefault();
-                if (rootNode != null)
-                {
-                    rootNode.IsSelected = Behavior.CanNodeSelectable(rootNode);
-                }
+                    Nodes = new ObservableCollection<BaseTreeNode>(nodes);
 
-                IsBusy = false;
+                    var rootNode = Nodes.FirstOrDefault();
+                    if (rootNode != null)
+                    {
+                        rootNode.IsSelected = Behavior.CanNodeSelectable(rootNode);
+                    }
 
-                if (Behavior.IsExpanded)
-                {
-                    await ExpandAllAsync(Nodes.FirstOrDefault());
-                }
-                else if (Nodes.Count > 0)
-                {
-                    await Nodes.First().ExpandAsync();
+
+                    if (Behavior.IsExpanded)
+                    {
+                        await ExpandAllAsync(Nodes.FirstOrDefault());
+                    }
+                    else if (Nodes.Count > 0)
+                    {
+                        await Nodes.First().ExpandAsync();
+                    }
                 }
             }
-            else
+            finally
             {
                 IsBusy = false;
             }
@@ -362,7 +502,7 @@ namespace Leen.Practices.Tree
             }
             else
             {
-                var parent = await FindNodeAsync(payload.ParentId);
+                var parent = await GetNodeAggressivelyAsync(payload.ParentId);
                 if (parent == null)
                     return;
                 var node = CreateNode(payload);
@@ -376,14 +516,19 @@ namespace Leen.Practices.Tree
         /// <param name="payload">节点实体。</param>
         protected override async void OnNodeDelete(INamedCascadeDataEntity payload)
         {
-            var parent = await FindNodeAsync(payload.ParentId);
-            if (parent == null || !parent.IsExpanded)
-                return;
-            var node = await FindNodeAsync(payload.Id);
+            var node = await GetNodeAggressivelyAsync(payload.Id);
             if (node == null)
                 return;
 
-            parent.RemoveNode(node);
+            var parent = await GetNodeAggressivelyAsync(payload.ParentId);
+            if (parent == null || !parent.IsExpanded)
+            {
+                parent.RemoveNode(node);
+            }
+            else
+            {
+                Nodes?.Remove(node);
+            }
         }
 
         /// <summary>
@@ -392,11 +537,11 @@ namespace Leen.Practices.Tree
         /// <param name="payload">节点实体。</param>
         protected override async void OnNodeUpdate(INamedCascadeDataEntity payload)
         {
-            var parent = await FindNodeAsync(payload.ParentId);
+            var parent = await GetNodeAggressivelyAsync(payload.ParentId);
             if (parent == null || !parent.IsExpanded)
                 return;
 
-            var node = await FindNodeAsync(payload.Id);
+            var node = await GetNodeAggressivelyAsync(payload.Id);
             if (node == null)
                 return;
 
@@ -485,10 +630,19 @@ namespace Leen.Practices.Tree
             BaseTreeNode target = sender as BaseTreeNode;
             if (target == null)
                 return;
-            if (e.PropertyName == ExtractPropertyName(() => target.IsLoadingChildren))
+            if (e.PropertyName == ExtractPropertyName(() => target.IsLoadingChildren) && Nodes != null)
             {
                 IsBusy = Nodes.Any(node => node.IsLoadingChildren);
             }
+        }
+
+        private void InitializeCommands()
+        {
+            _expandAllCommand = new AsyncRelayCommand<BaseTreeNode>(ExpandAllAsync, CanExpand);
+            _collapseAllCommand = new RelayCommand<BaseTreeNode>(CollapseAll, CanCollapse);
+            _toggleCommand = new AsyncRelayCommand<BaseTreeNode>(Toggle, CanToggle);
+            _expandCommand = new AsyncRelayCommand<BaseTreeNode>(Expand, CanExpand);
+            _collapseCommand = new AsyncRelayCommand<BaseTreeNode>(Collapse, CanCollapse);
         }
     }
 }

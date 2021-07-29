@@ -306,7 +306,9 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         public virtual IEnumerable<BaseTreeNode> GetSelectedNodes()
         {
-            return Children?.Where(x => x.IsSelected);
+            if (Children != null && Children != PlaceHolderChildren)
+                return Children.Where(x => x.IsSelected);
+            return null;
         }
 
         /// <summary>
@@ -315,20 +317,24 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         public virtual IEnumerable<BaseTreeNode> GetSelectedNodesRecursive()
         {
-            var nodes = new List<BaseTreeNode>();
-            var selectedNodes = GetSelectedNodes();
-            if (selectedNodes != null)
+            if (Children != null && Children != PlaceHolderChildren)
             {
-                nodes.AddRange(selectedNodes);
-
-                foreach (var node in selectedNodes)
+                var nodes = new List<BaseTreeNode>();
+                var selectedNodes = GetSelectedNodes();
+                if (selectedNodes != null)
                 {
-                    var subSelectedNodes = node.GetSelectedNodesRecursive();
-                    if (subSelectedNodes != null)
-                        nodes.AddRange(subSelectedNodes);
+                    nodes.AddRange(selectedNodes);
+
+                    foreach (var node in selectedNodes)
+                    {
+                        var subSelectedNodes = node.GetSelectedNodesRecursive();
+                        if (subSelectedNodes != null)
+                            nodes.AddRange(subSelectedNodes);
+                    }
                 }
+                return selectedNodes;
             }
-            return selectedNodes;
+            return null;
         }
 
         /// <summary>
@@ -337,7 +343,9 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         public virtual IEnumerable<BaseTreeNode> GetCheckedNodes()
         {
-            return Children?.Where(x => x.IsChecked == true);
+            if (Children != null && Children != PlaceHolderChildren)
+                return Children.Where(x => x.IsChecked == true);
+            return null;
         }
 
         /// <summary>
@@ -346,20 +354,24 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         public virtual IEnumerable<BaseTreeNode> GetCheckedNodesRecursive()
         {
-            var nodes = new List<BaseTreeNode>();
-            var checkedNodes = GetCheckedNodes();
-            if (checkedNodes != null)
+            if (Children != null && Children != PlaceHolderChildren)
             {
-                nodes.AddRange(checkedNodes);
-
-                foreach (var node in checkedNodes)
+                var nodes = new List<BaseTreeNode>();
+                var checkedNodes = GetCheckedNodes();
+                if (checkedNodes != null)
                 {
-                    var subCheckedNodes = node.GetCheckedNodesRecursive();
-                    if (subCheckedNodes != null)
-                        nodes.AddRange(subCheckedNodes);
+                    nodes.AddRange(checkedNodes);
+
+                    foreach (var node in checkedNodes)
+                    {
+                        var subCheckedNodes = node.GetCheckedNodesRecursive();
+                        if (subCheckedNodes != null)
+                            nodes.AddRange(subCheckedNodes);
+                    }
                 }
+                return checkedNodes;
             }
-            return checkedNodes;
+            return null;
         }
 
         /// <summary>
@@ -455,15 +467,19 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         public virtual BaseTreeNode GetNode(string nodeId)
         {
-            return Children?.Where(x => x.NodeId == nodeId).FirstOrDefault();
+            if (Children != null && Children != PlaceHolderChildren)
+            {
+                return Children.FirstOrDefault(x => x.NodeId == nodeId);
+            }
+            return null;
         }
 
         /// <summary>
-        /// 获取指定节点标识的子节点，查找包括子节点的子节点。
+        /// 主动的获取指定节点标识的子节点，查找包括子节点的子节点。
         /// </summary>
         /// <param name="nodeId">节点标识</param>
         /// <returns></returns>
-        public async virtual Task<BaseTreeNode> GetNodeRecursiveAsync(string nodeId)
+        public async virtual Task<BaseTreeNode> GetNodeAggressivelyAsync(string nodeId)
         {
             if (!IsExpanded && Expandable)
             {
@@ -474,11 +490,35 @@ namespace Leen.Practices.Tree
             if (node != null)
                 return node;
 
-            if (Children != null)
+            if (Children != null && Children != PlaceHolderChildren)
             {
                 foreach (var child in Children)
                 {
-                    node = await child.GetNodeRecursiveAsync(nodeId);
+                    node = await child.GetNodeAggressivelyAsync(nodeId);
+                    if (node != null)
+                        return node;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 被动的获取指定节点标识的子节点，查找包括子节点的子节点。
+        /// </summary>
+        /// <param name="nodeId">节点标识</param>
+        /// <returns></returns>
+        public async virtual Task<BaseTreeNode> GetNodePassivelyAsync(string nodeId)
+        {
+            var node = GetNode(nodeId);
+            if (node != null)
+                return node;
+
+            if (Children != null && Children != PlaceHolderChildren)
+            {
+                foreach (var child in Children)
+                {
+                    node = await child.GetNodePassivelyAsync(nodeId);
                     if (node != null)
                         return node;
                 }
@@ -499,15 +539,20 @@ namespace Leen.Practices.Tree
                 throw new ArgumentNullException(nameof(predicate));
             }
 
-            return Children?.FirstOrDefault(x => predicate(x));
+            if (Children != null && Children != PlaceHolderChildren)
+            {
+                return Children.FirstOrDefault(x => predicate(x));
+            }
+
+            return null;
         }
 
         /// <summary>
-        /// 递归的查找符合条件的第一个子节点。
+        /// 递归查找符合条件的第一个子节点。
         /// </summary>
         /// <param name="predicate">判断节点是否符合条件的方法。</param>
         /// <returns></returns>
-        public async virtual Task<BaseTreeNode> FindNodeRecursiveAsync(Predicate<BaseTreeNode> predicate)
+        public async virtual Task<BaseTreeNode> FindNodeAggressivelyAsync(Predicate<BaseTreeNode> predicate)
         {
             if (predicate is null)
             {
@@ -523,13 +568,44 @@ namespace Leen.Practices.Tree
             if (node != null)
                 return node;
 
-            if (Children != null && Children.Any())
+            if (Children != null && Children != PlaceHolderChildren)
             {
                 foreach (var child in Children)
                 {
                     if (predicate(child))
                         return child;
-                    var result = await child.FindNodeRecursiveAsync(predicate);
+                    var result = await child.FindNodeAggressivelyAsync(predicate);
+                    if (result != null)
+                        return result;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 被动的递归查找符合条件的第一个子节点。
+        /// </summary>
+        /// <param name="predicate">判断节点是否符合条件的方法。</param>
+        /// <returns></returns>
+        public async virtual Task<BaseTreeNode> FindNodePassivelyeAsync(Predicate<BaseTreeNode> predicate)
+        {
+            if (predicate is null)
+            {
+                throw new ArgumentNullException(nameof(predicate));
+            }
+
+            var node = FindNode(predicate);
+            if (node != null)
+                return node;
+
+            if (Children != null && Children != PlaceHolderChildren)
+            {
+                foreach (var child in Children)
+                {
+                    if (predicate(child))
+                        return child;
+                    var result = await child.FindNodePassivelyeAsync(predicate);
                     if (result != null)
                         return result;
                 }

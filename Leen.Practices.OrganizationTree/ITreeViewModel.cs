@@ -31,7 +31,7 @@ namespace Leen.Practices.Tree
         /// </summary>
         /// <param name="nodeId">树节点Id。</param>
         /// <returns></returns>
-        Task<BaseTreeNode> FindNodeAsync(string nodeId);
+        Task<BaseTreeNode> GetNodeAggressivelyAsync(string nodeId);
 
         /// <summary>
         /// 
