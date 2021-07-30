@@ -42,7 +42,6 @@ namespace Leen.Practices.Tree
         public TreeViewModel(ITreeBehaviorDescriptor treeBehavior)
         {
             Behavior = treeBehavior;
-            BindingOperations.EnableCollectionSynchronization(_nodes, _nodesLocker);
             InitializeCommands();
         }
 
@@ -69,7 +68,7 @@ namespace Leen.Practices.Tree
 
             Behavior = treeBehavior;
             Nodes = new ObservableCollection<BaseTreeNode>(children);
-            BindingOperations.EnableCollectionSynchronization(_nodes, _nodesLocker);
+            BindingOperations.EnableCollectionSynchronization(Nodes, _nodesLocker);
             InitializeCommands();
         }
 
@@ -424,6 +423,7 @@ namespace Leen.Practices.Tree
                     }
 
                     Nodes = new ObservableCollection<BaseTreeNode>(nodes);
+                    BindingOperations.EnableCollectionSynchronization(_nodes, _nodesLocker);
 
                     var rootNode = Nodes.FirstOrDefault();
                     if (rootNode != null)
@@ -496,7 +496,10 @@ namespace Leen.Practices.Tree
             if (payload.ParentId == null)
             {
                 if (Nodes == null)
+                {
                     Nodes = new ObservableCollection<BaseTreeNode>();
+                    BindingOperations.EnableCollectionSynchronization(_nodes, _nodesLocker);
+                }
 
                 Nodes.Add(CreateNode(payload));
             }
