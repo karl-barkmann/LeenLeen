@@ -162,7 +162,7 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         public IEnumerable<IGrouping<TreeNodeType, BaseTreeNode>> GetCheckedNodes()
         {
-            if (Nodes != null)
+            if (Nodes == null)
                 return null;
             var result = new List<BaseTreeNode>();
             foreach (var node in Nodes)
@@ -186,7 +186,7 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         public IEnumerable<BaseTreeNode> GetSelectedNodes()
         {
-            if (Nodes != null)
+            if (Nodes == null)
                 return null;
             var result = new List<BaseTreeNode>();
             foreach (var node in Nodes)
@@ -208,7 +208,7 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         public BaseTreeNode GetRootNode(string nodeId)
         {
-            if (Nodes != null)
+            if (Nodes == null)
                 return null;
             return Nodes.FirstOrDefault(x => x.NodeId == nodeId);
         }
@@ -220,7 +220,7 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         public async Task<BaseTreeNode> GetNodeAggressivelyAsync(string nodeId)
         {
-            if (Nodes != null)
+            if (Nodes == null)
                 return null;
             foreach (var node in Nodes)
             {
@@ -240,7 +240,7 @@ namespace Leen.Practices.Tree
         /// <returns></returns>
         public async Task<BaseTreeNode> GetNodePassivelyAsync(string nodeId)
         {
-            if (Nodes != null)
+            if (Nodes == null)
                 return null;
             foreach (var node in Nodes)
             {
@@ -266,7 +266,7 @@ namespace Leen.Practices.Tree
                 throw new ArgumentNullException(nameof(predicate));
             }
 
-            if (Nodes != null)
+            if (Nodes == null)
                 return null;
 
             return Nodes.FirstOrDefault(x => predicate(x));
@@ -284,7 +284,7 @@ namespace Leen.Practices.Tree
                 throw new ArgumentNullException(nameof(predicate));
             }
 
-            if (Nodes != null)
+            if (Nodes == null)
                 return null;
             foreach (var node in Nodes)
             {
@@ -309,7 +309,7 @@ namespace Leen.Practices.Tree
                 throw new ArgumentNullException(nameof(predicate));
             }
 
-            if (Nodes != null)
+            if (Nodes == null)
                 return null;
             foreach (var node in Nodes)
             {
@@ -360,7 +360,7 @@ namespace Leen.Practices.Tree
                 throw new ArgumentNullException(nameof(predicate));
             }
 
-            if (Nodes != null)
+            if (Nodes == null)
                 return null;
 
             foreach (var root in Nodes)

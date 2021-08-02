@@ -20,6 +20,9 @@ namespace Leen.Practices.Tree
         private RelayCommand<object> _locateSearchCommand;
         private IEnumerable<SearchResultViewModel> _searchResults;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ICommand LocateSearchCommand
         {
             get
@@ -30,6 +33,9 @@ namespace Leen.Practices.Tree
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ICommand SearchCommand
         {
             get
@@ -41,6 +47,9 @@ namespace Leen.Practices.Tree
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string SearchKeywords
         {
             get => _searchKeywords;
@@ -61,24 +70,38 @@ namespace Leen.Practices.Tree
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool ShowResult
         {
             get => _showResult;
             set => SetProperty(ref _showResult, value, () => ShowResult);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool HasResult
         {
             get => _hasResult;
             set => SetProperty(ref _hasResult, value, () => HasResult);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IEnumerable<SearchResultViewModel> SearchResults
         {
             get => _searchResults;
             set => SetProperty(ref _searchResults, value, () => SearchResults);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="keywords"></param>
+        /// <returns></returns>
         public Task<IEnumerable<SearchResultViewModel>> SearchAsync(string[] keywords)
         {
             if (keywords == null || keywords.Length < 1 || Nodes == null)
@@ -100,11 +123,21 @@ namespace Leen.Practices.Tree
             return Task.FromResult<IEnumerable<SearchResultViewModel>>(result);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public async Task LocateAsync(object item)
         {
             await LocateAsyncImpl(item as BaseTreeNode);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         protected async virtual Task LocateAsyncImpl(BaseTreeNode item)
         {
             if (item == null)
@@ -127,26 +160,28 @@ namespace Leen.Practices.Tree
         private List<object> SearchNode(BaseTreeNode item, string[] keywords)
         {
             var matchedNodes = new List<object>();
-            foreach (var keyword in keywords)
+            if (item != BaseTreeNode.Placeholder)
             {
-                if (item.NodeName.Contains(keyword))
+                foreach (var keyword in keywords)
                 {
-                    matchedNodes.Add(item);
-                    break;
+                    if (item.NodeName.Contains(keyword))
+                    {
+                        matchedNodes.Add(item);
+                        break;
+                    }
+                }
+
+                if (item.Children != null)
+                {
+                    foreach (var child in item.Children)
+                    {
+                        var matchedSubNodes = SearchNode(child, keywords);
+                        matchedNodes.AddRange(matchedSubNodes);
+                    }
                 }
             }
-
-            if (item.Children != null)
-            {
-                foreach (var child in item.Children)
-                {
-                    var matchedSubNodes = SearchNode(child, keywords);
-                    matchedNodes.AddRange(matchedSubNodes);
-                }
-            }
-
             return matchedNodes;
-        }
+        } 
 
         private void OnLocateSearch(object arg)
         {

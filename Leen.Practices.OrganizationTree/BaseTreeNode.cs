@@ -9,7 +9,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 
 namespace Leen.Practices.Tree
 {
@@ -54,11 +53,6 @@ namespace Leen.Practices.Tree
         /// </summary>
         protected BaseTreeNode(string nodeId, TreeNodeType nodeType) : this(nodeId, null, nodeType)
         {
-            //_toggleCommand = new RelayCommand(Toggle, CanToggle);
-            //_expandCommand = new RelayCommand(InternalExpand, CanExpand);
-            //_expandAllCommand = new RelayCommand(async () => await InternalExpandAll(), CanExpand);
-            //_collapseCommand = new RelayCommand(InternalCollapse, CanCollapse);
-            //_collapseAllCommand = new RelayCommand(CollapseAll, CanCollapse);
         }
 
         /// <summary>
