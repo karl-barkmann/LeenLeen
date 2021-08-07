@@ -61,14 +61,17 @@ namespace Leen.Practices.Tree
         protected override async Task<IEnumerable<BaseTreeNode>> LoadChildrenAsync()
         {
             var children = new List<BaseTreeNode>();
-            var nodeDataProvier = ServiceLocator.Current.GetInstance<ITreeNodeDataProvider>();
-            var nodeDatas = await nodeDataProvier.GetNodes(Entity);
-            if (nodeDatas != null)
+            if (ServiceLocator.Current.IsRegisterd<ITreeNodeDataProvider>())
             {
-                foreach (var nodeData in nodeDatas)
+                var nodeDataProvier = ServiceLocator.Current.GetInstance<ITreeNodeDataProvider>();
+                var nodeDatas = await nodeDataProvier.GetNodes(Entity);
+                if (nodeDatas != null)
                 {
-                    var node = new OrganizationNode(nodeData);
-                    children.Add(node);
+                    foreach (var nodeData in nodeDatas)
+                    {
+                        var node = new OrganizationNode(nodeData);
+                        children.Add(node);
+                    }
                 }
             }
             return children;

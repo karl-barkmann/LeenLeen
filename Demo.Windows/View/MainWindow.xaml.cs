@@ -31,12 +31,18 @@ namespace Demo.Windows.View
                 new OrganizationNode("3"){ NodeName="Node3" },
                 new OrganizationNode("4"){ NodeName="Node4" },
             };
-            var behavior = new TreetopNodeBehavior();
-            grandchildren.ForEach(x => x.SetBehavior(behavior));
-            children[1].SetBehavior(behavior);
-            children[2].SetBehavior(behavior);
-            nodes.Add(new OrganizationNode("1", children) { NodeName = "Node1" });
+            //var behavior = new TreetopNodeBehavior();
+            //grandchildren.ForEach(x => x.SetBehavior(behavior));
+            //children[1].SetBehavior(behavior);
+            //children[2].SetBehavior(behavior);
+            var behavior = new TreeNodeBehaviorDescriptor(false, false, false, true);
+
+            var rootNode = new OrganizationNode("1", children) { NodeName = "Node1" };
+            rootNode.SetBehavior(behavior);
+            nodes.Add(rootNode);
+
             treeSelect.ItemsSource = nodes;
+            tree.ItemsSource = nodes;
         }
 
         public FrameworkElement ActualView => this;

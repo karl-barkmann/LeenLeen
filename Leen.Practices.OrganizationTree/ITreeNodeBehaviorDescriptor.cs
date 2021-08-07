@@ -23,6 +23,11 @@ namespace Leen.Practices.Tree
         bool CanCheckedBeInherited { get; }
 
         /// <summary>
+        /// 获取一个值指示节点勾选时是否可以关联到父节点勾选。
+        /// </summary>
+        bool CanCheckedBePropagated { get; }
+
+        /// <summary>
         /// 获取一个值指示节点是否支持选中。
         /// </summary>
         /// <param name="node">指定的节点。</param>

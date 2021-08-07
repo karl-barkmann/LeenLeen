@@ -23,6 +23,11 @@
         /// <summary>
         /// 
         /// </summary>
+        public bool CanCheckedBePropagated => true;
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
         public bool CanNodeCheckable(BaseTreeNode node)

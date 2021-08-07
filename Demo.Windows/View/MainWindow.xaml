@@ -154,7 +154,7 @@
                              BorderThickness="1"
                              x:Name="treeSelect"
                              HorizontalAlignment="Left"
-                             Margin="787,259,0,0"
+                             Margin="396,122,0,0"
                              VerticalAlignment="Top"
                              Width="244"
                              Height="47">
@@ -177,5 +177,32 @@
             </controls:TreeSelect.Resources>
         </controls:TreeSelect>
         <CheckBox Content="CheckBox" HorizontalAlignment="Left" Margin="970,485,0,0" VerticalAlignment="Top" IsThreeState="True" IsChecked="{x:Null}"/>
+        <TreeView HorizontalAlignment="Left" x:Name="tree" Height="344" Margin="823,98,0,0" VerticalAlignment="Top" Width="346">
+            <TreeView.Resources>
+                <Style TargetType="TreeViewItem"
+                       BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                    <Setter Property="IsExpanded"
+                            Value="{Binding IsExpanded,Mode=TwoWay}" />
+                    <Setter Property="IsSelected"
+                            Value="{Binding IsSelected,Mode=TwoWay}" />
+                </Style>
+                <HierarchicalDataTemplate DataType="{x:Type tree:OrganizationNode}"
+                                          ItemsSource="{Binding Path=Children}">
+                    <StackPanel Orientation="Horizontal">
+                        <Grid Margin="2,0,2,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox IsChecked="{Binding IsChecked,Mode=TwoWay}"/>
+                            <TextBlock x:Name="txtName"
+                                       Grid.Column="1"
+                                       Text="{Binding NodeName, Mode=OneWay}"
+                                       Width="Auto" />
+                        </Grid>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.Resources>
+        </TreeView>
     </Grid>
 </Window>

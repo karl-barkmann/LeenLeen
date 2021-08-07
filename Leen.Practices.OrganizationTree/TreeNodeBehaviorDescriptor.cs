@@ -16,12 +16,14 @@ namespace Leen.Practices.Tree
         /// </summary>
         /// <param name="canCheckedBeInherited"></param>
         /// <param name="canBehaviorBeInherited"></param>
+        /// <param name="canCheckedBePropagated"></param>
         /// <param name="selectFirstChildOnExpanded"></param>
-        public TreeNodeBehaviorDescriptor(bool canCheckedBeInherited, bool canBehaviorBeInherited, bool selectFirstChildOnExpanded)
+        public TreeNodeBehaviorDescriptor(bool canCheckedBeInherited, bool canBehaviorBeInherited, bool canCheckedBePropagated, bool selectFirstChildOnExpanded)
         {
             CanBehaviorBeInherited = canBehaviorBeInherited;
             SelectFirstChildOnExpanded = selectFirstChildOnExpanded;
             CanCheckedBeInherited = canCheckedBeInherited;
+            CanCheckedBePropagated = canCheckedBePropagated;
         }
 
         /// <summary>
@@ -38,6 +40,11 @@ namespace Leen.Practices.Tree
         /// 
         /// </summary>
         public bool CanCheckedBeInherited { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool CanCheckedBePropagated { get; }
 
         /// <summary>
         /// 
@@ -112,6 +119,7 @@ namespace Leen.Practices.Tree
         /// </summary>
         /// <param name="canCheckedBeInherited"></param>
         /// <param name="canBehaviorBeInherited"></param>
+        /// <param name="canCheckedBePropagated"></param>
         /// <param name="selectFirstChildOnExpanded"></param>
         /// <param name="nodeSelectableFilter"></param>
         /// <param name="nodeCheckableFilter"></param>
@@ -121,13 +129,14 @@ namespace Leen.Practices.Tree
         public static ITreeNodeBehaviorDescriptor CreateBehavior(
             bool canCheckedBeInherited,
             bool canBehaviorBeInherited,
+            bool canCheckedBePropagated,
             bool selectFirstChildOnExpanded,
             Func<BaseTreeNode, bool> nodeEnabledFilter,
             Func<BaseTreeNode, bool> nodeCheckableFilter,
             Func<BaseTreeNode, bool> nodeSelectableFilter,
             Func<BaseTreeNode, bool> nodeExpandableFilter)
         {
-            return new TreeNodeBehaviorDescriptor(canCheckedBeInherited, canBehaviorBeInherited, selectFirstChildOnExpanded)
+            return new TreeNodeBehaviorDescriptor(canCheckedBeInherited, canBehaviorBeInherited, canCheckedBePropagated, selectFirstChildOnExpanded)
             {
                 NodeEnabledFilter = nodeEnabledFilter,
                 NodeCheckableFilter = nodeCheckableFilter,

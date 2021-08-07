@@ -40,7 +40,8 @@ namespace Leen.Practices.Tree
         private TreeNodeType _nodeType;
         private int _level;
         private int _childrenCount;
-        private bool _ignoreIsChecked;
+        private bool _isCheckedByInherited;
+        private bool _isCheckedByPropagating;
 
         #endregion
 
@@ -355,13 +356,13 @@ namespace Leen.Practices.Tree
                 if (checkedNodes != null)
                 {
                     nodes.AddRange(checkedNodes);
+                }
 
-                    foreach (var node in checkedNodes)
-                    {
-                        var subCheckedNodes = node.GetCheckedNodesRecursive();
-                        if (subCheckedNodes != null)
-                            nodes.AddRange(subCheckedNodes);
-                    }
+                foreach (var node in Children)
+                {
+                    var subCheckedNodes = node.GetCheckedNodesRecursive();
+                    if (subCheckedNodes != null)
+                        nodes.AddRange(subCheckedNodes);
                 }
                 return checkedNodes;
             }
@@ -379,7 +380,7 @@ namespace Leen.Practices.Tree
                 throw new ArgumentNullException(nameof(childNode));
             }
 
-            if (childNode.Behavior == DefaultBehavior && Behavior != DefaultBehavior)
+            if (childNode.Behavior == DefaultBehavior && Behavior != DefaultBehavior && Behavior.CanBehaviorBeInherited)
                 childNode.SetBehavior(Behavior);
             if (IsExpanded)
             {
@@ -962,16 +963,19 @@ namespace Leen.Practices.Tree
         protected override void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             base.RaisePropertyChanged(propertyName);
-            if (propertyName == nameof(BaseTreeNode.IsChecked) && !_ignoreIsChecked && IsExpanded)
+            if (propertyName == nameof(BaseTreeNode.IsChecked) && 
+                !_isCheckedByPropagating && 
+                Behavior.CanCheckedBeInherited && 
+                Children != null && 
+                Children != PlaceHolderChildren)
             {
-                if (Children != null && Children != PlaceHolderChildren)
+                foreach (var child in Children)
                 {
-                    foreach (var child in Children)
+                    if (child.Checkable)
                     {
-                        if (child.Checkable && Behavior.CanCheckedBeInherited)
-                        {
-                            child.IsChecked = IsChecked;
-                        }
+                        child._isCheckedByInherited = true;
+                        child.IsChecked = IsChecked;
+                        child._isCheckedByInherited = false;
                     }
                 }
             }
@@ -1026,7 +1030,7 @@ namespace Leen.Practices.Tree
 
                 foreach (var child in _presetChildren)
                 {
-                    if (Behavior.CanBehaviorBeInherited && child.Behavior == null)
+                    if (Behavior.CanBehaviorBeInherited && Behavior != DefaultBehavior && (child.Behavior == null || child.Behavior == DefaultBehavior))
                         child.SetBehavior(Behavior);
                     if (!Children.Contains(child))
                     {
@@ -1057,7 +1061,7 @@ namespace Leen.Practices.Tree
 
                     foreach (var child in children)
                     {
-                        if (Behavior.CanBehaviorBeInherited && child.Behavior == null)
+                        if (Behavior.CanBehaviorBeInherited && Behavior != DefaultBehavior && (child.Behavior == null || child.Behavior == DefaultBehavior))
                             child.SetBehavior(Behavior);
                         if (!Children.Contains(child))
                         {
@@ -1078,7 +1082,7 @@ namespace Leen.Practices.Tree
             }
             if (Children != null && Children.Any())
             {
-                if (Behavior.SelectFirstChildOnExpanded && Children.Any(x => x.IsSelected))
+                if (Behavior.SelectFirstChildOnExpanded && !Children.Any(x => x.IsSelected))
                 {
                     var first = Children.First();
                     if (first.Selectable && first.IsEnabled)
@@ -1178,9 +1182,13 @@ namespace Leen.Practices.Tree
 
         private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (sender is BaseTreeNode child && e.PropertyName == nameof(child.IsChecked))
+            if (sender is BaseTreeNode child && 
+                e.PropertyName == nameof(child.IsChecked) && 
+                !child._isCheckedByInherited && 
+                Behavior.CanCheckedBePropagated && 
+                child.Behavior.CanCheckedBePropagated)
             {
-                _ignoreIsChecked = true;
+                _isCheckedByPropagating = true;
                 if (Children.All(x => x.IsChecked == true))
                 {
                     IsChecked = true;
@@ -1193,7 +1201,7 @@ namespace Leen.Practices.Tree
                 {
                     IsChecked = null;
                 }
-                _ignoreIsChecked = false;
+                _isCheckedByPropagating = false;
             }
         }
 

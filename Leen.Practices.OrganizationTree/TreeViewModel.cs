@@ -169,12 +169,13 @@ namespace Leen.Practices.Tree
             {
                 if (node.IsChecked == true)
                 {
-                    var subCheckedNodes = node.GetCheckedNodesRecursive();
-                    if (subCheckedNodes != null)
-                    {
-                        result.AddRange(subCheckedNodes);
-                    }
                     result.Add(node);
+                }
+
+                var subCheckedNodes = node.GetCheckedNodesRecursive();
+                if (subCheckedNodes != null)
+                {
+                    result.AddRange(subCheckedNodes);
                 }
             }
             return result.GroupBy(x => x.NodeType);
