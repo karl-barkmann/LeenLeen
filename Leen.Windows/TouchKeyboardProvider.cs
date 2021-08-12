@@ -11,12 +11,23 @@ namespace Leen.Windows
     {
         #region Private: Fields
 
-        private static readonly string _virtualKeyboardPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles),
-                @"Microsoft Shared\ink\TabTip.exe");
+        private static readonly string _virtualKeyboardPath;
         private static readonly bool _hasTouchScreen = HasTouchInput();
 
         #endregion
+
+        static TouchKeyboardProvider()
+        {
+            var systemDisk = Path.GetPathRoot(System.Environment.GetFolderPath(Environment.SpecialFolder.System));
+            if (Environment.Is64BitOperatingSystem)
+            {
+                _virtualKeyboardPath = Path.Combine(systemDisk, @"Program Files\Common Files", @"Microsoft Shared\ink\TabTip.exe");
+            }
+            else
+            {
+                _virtualKeyboardPath = Path.Combine(systemDisk, @"Program Files (x86)\Common Files", @"Microsoft Shared\ink\TabTip.exe");
+            }
+        }
 
         #region ITouchKeyboardProvider Methods
 
