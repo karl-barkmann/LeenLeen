@@ -625,7 +625,7 @@ namespace Leen.Practices.Mvvm
                 throw new InvalidOperationException("In most cases, this is because you are trying to close the same view twice.");
             }
             var interopHelper = new WindowInteropHelper(dialog);
-            if (interopHelper.Handle != InteropService.Shell.Handle)
+            if (interopHelper.Handle != InteropService.Shell.Handle && dialogResult != null && dialogResult.HasValue)
             {
                 if (Extensions.IsModal(dialog))
                 {
