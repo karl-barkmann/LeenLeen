@@ -197,7 +197,7 @@ namespace Leen.Practices.Mvvm
         /// <param name="propertyName">属性名称。</param>
         protected virtual void RaisePropertyChanging([CallerMemberName] string propertyName = null)
         {
-            OnRaisePropertyChanged(propertyName);
+            OnRaisePropertyChanging(propertyName);
         }
 
         /// <summary>

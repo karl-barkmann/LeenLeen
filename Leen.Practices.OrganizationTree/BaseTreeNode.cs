@@ -333,6 +333,34 @@ namespace Leen.Practices.Tree
         }
 
         /// <summary>
+        /// 获取一个值，判断该节点的子节点是否都已勾选。
+        /// </summary>
+        /// <returns></returns>
+        public bool IsAllChildrenChecked()
+        {
+            if (Children != null && Children != PlaceHolderChildren)
+            {
+                return Children.All(x => x.IsChecked == true);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 获取一个值，判断该节点的子节点及其子孙节点是否都已勾选。
+        /// </summary>
+        /// <returns></returns>
+        public bool IsAllChildrenCheckedRecursive()
+        {
+            if (Children != null && Children != PlaceHolderChildren)
+            {
+                return Children.All(x => x.IsChecked == true && x.IsAllChildrenCheckedRecursive());
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// 获取已勾选的子节点。
         /// </summary>
         /// <returns></returns>
