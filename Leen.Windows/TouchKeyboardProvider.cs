@@ -19,14 +19,7 @@ namespace Leen.Windows
         static TouchKeyboardProvider()
         {
             var systemDisk = Path.GetPathRoot(System.Environment.GetFolderPath(Environment.SpecialFolder.System));
-            if (Environment.Is64BitOperatingSystem)
-            {
-                _virtualKeyboardPath = Path.Combine(systemDisk, @"Program Files\Common Files", @"Microsoft Shared\ink\TabTip.exe");
-            }
-            else
-            {
-                _virtualKeyboardPath = Path.Combine(systemDisk, @"Program Files (x86)\Common Files", @"Microsoft Shared\ink\TabTip.exe");
-            }
+            _virtualKeyboardPath = Path.Combine(systemDisk, @"Program Files\Common Files", @"Microsoft Shared\ink\TabTip.exe");
         }
 
         #region ITouchKeyboardProvider Methods
