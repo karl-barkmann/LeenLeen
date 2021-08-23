@@ -36,6 +36,7 @@ namespace Leen.Practices.Mvvm
         private const byte IsUnloadingMask = 0x08;
         private const byte IsInitializingMask = 0x10;
         private const byte HasInitializedMask = 0x20;
+        private const byte KeepAliveMask = 0x40;
 
         private List<IWatcher> _watchers;
         private string _busyMessage = "正在加载中...";
@@ -141,6 +142,18 @@ namespace Leen.Practices.Mvvm
             internal set
             {
                 SetLifetimeStateFlag(value, IsInitializingMask);
+            }
+        }
+
+        /// <summary>
+        /// 获取一个值指示该模型是否需要在视图卸载时继续保持存活，否则执行资源清除。
+        /// </summary>
+        public bool KeepAlive
+        {
+            get { return GetLifetimeStateFlag(KeepAliveMask); }
+            protected set
+            {
+                SetLifetimeStateFlag(value, KeepAliveMask);
             }
         }
 

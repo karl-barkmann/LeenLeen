@@ -14,7 +14,6 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:验证公共方法的参数", MessageId = "0")]
         public static bool GetIsRegistered(DependencyObject obj)
         {
             return (bool)obj.GetValue(IsRegisteredProperty);
@@ -25,7 +24,6 @@ namespace Leen.Practices.Mvvm
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="value"></param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:验证公共方法的参数", MessageId = "0")]
         public static void SetIsRegistered(DependencyObject obj, bool value)
         {
             obj.SetValue(IsRegisteredProperty, value);
@@ -38,7 +36,6 @@ namespace Leen.Practices.Mvvm
             DependencyProperty.RegisterAttached("IsRegistered", typeof(bool), typeof(ViewLocator),
             new UIPropertyMetadata(IsRegisterChanged));
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2201:DoNotRaiseReservedExceptionTypes")]
         private static async void IsRegisterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (DesignerProperties.GetIsInDesignMode(d)) return;

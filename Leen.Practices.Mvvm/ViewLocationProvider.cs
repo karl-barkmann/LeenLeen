@@ -239,25 +239,34 @@ namespace Leen.Practices.Mvvm
             if (views.Remove(view))
             {
                 view.ActualView.Unloaded -= LazyUnregister;
-                //In case of target view will load again.
-                //Such as TabControl's TabItem content view
-                if (ViewLocator.GetIsRegistered(view.ActualView))
+                await UnloadViewAsync(view);
+
+                bool keepAlive = false;
+                if(view.DataContext is ViewModelBase vm)
                 {
-                    await UnloadViewAsync(view);
+                    keepAlive = vm.KeepAlive;
+                }
+                else
+                {
+                    //In case of target view will load again.
+                    //Such as TabControl's TabItem content view
+                    keepAlive = ViewLocator.GetIsRegistered(view.ActualView);
+                }
+
+                if (keepAlive)
+                {
                     view.ActualView.Loaded += LazyRegister;
                 }
                 else
                 {
-                    await UnloadViewAsync(view);
-
-                    //clean up resources , event subscribution, etc..
+                    //clean up resources , event subscription, etc..
                     if (view is IDisposable disposableView)
                     {
                         disposableView.Dispose();
                     }
-                    if (view.DataContext is ViewModelBase vm)
+                    if (view.DataContext is ViewModelBase viewModel)
                     {
-                        vm.CleanUp();
+                        viewModel.CleanUp();
                     }
                     if (view.DataContext is IDisposable disposable)
                     {

@@ -346,25 +346,14 @@ namespace Leen.Practices.Mvvm
             await await InvokeIfNeeded(async () =>
             {
                 IView view = ViewLocationProvider.FindViewForViewModel(viewModel);
-
-                if (view is IDisposable disposableView)
+                try
                 {
-                    disposableView.Dispose();
+                    await Close(viewModel, view, dialogResult);
                 }
-
-                ViewLocator.SetIsRegistered(view.ActualView, false);
-                await Close(viewModel, view, dialogResult);
-
-                if (view.DataContext is ViewModelBase viewModelBase)
+                finally
                 {
-                    viewModelBase.CleanUp();
+                    ViewLocator.SetIsRegistered(view.ActualView, false);
                 }
-
-                if (view.DataContext is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
-
             }, viewModel);
         }
 
