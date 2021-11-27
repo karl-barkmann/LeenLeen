@@ -30,6 +30,7 @@ namespace Leen.Windows.Controls
         Point mouseFirst;//第一鼠标点下的坐标
         private readonly List<MouseWheelEventArgs> _reentrantList = new List<MouseWheelEventArgs>();
         DispatcherTimer _autoScrollTimer;
+        Timer restartAutoTimer;
 
         #endregion
 
@@ -287,10 +288,6 @@ namespace Leen.Windows.Controls
         {
             SlidablePanel control = d as SlidablePanel;
             control.Animation((int)e.NewValue, control.ScrollDuration);
-            if (control._autoScrollTimer != null && !control._autoScrollTimer.IsEnabled)
-            {
-                control._autoScrollTimer.Start();
-            }
         }
 
         #endregion
@@ -537,6 +534,7 @@ namespace Leen.Windows.Controls
 
         void NewSliderPanel_MouseWheel(object sender, MouseWheelEventArgs e)
         {
+            StopAutoTimer();
             debouncer.Throttle((int)ScrollDuration, (state) =>
             {
                 if (IsMouseOver)
@@ -549,10 +547,6 @@ namespace Leen.Windows.Controls
                             index = 0;
                         }
 
-                        if (_autoScrollTimer != null && _autoScrollTimer.IsEnabled)
-                        {
-                            _autoScrollTimer.Stop();
-                        }
                         SelectedIndex = index;
                     }
                     else
@@ -562,17 +556,46 @@ namespace Leen.Windows.Controls
                         {
                             index = Children.Count - 1;
                         }
-                        if (_autoScrollTimer != null && _autoScrollTimer.IsEnabled)
-                        {
-                            _autoScrollTimer.Stop();
-                        }
+
                         SelectedIndex = index;
                     }
                 }
+                RestartAutoTimer();
             });
             e.Handled = true;
         }
 
+        private void StopAutoTimer()
+        {
+            if (restartAutoTimer != null)
+            {
+                restartAutoTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            }
+            if (_autoScrollTimer != null && _autoScrollTimer.IsEnabled)
+            {
+                _autoScrollTimer.Stop();
+            }
+        }
+
+        private void RestartAutoTimer()
+        {
+            if (restartAutoTimer == null)
+            {
+                restartAutoTimer = new Timer(OnRestartAutoTimer, null, TimeSpan.FromMilliseconds(ScrollInterval), Timeout.InfiniteTimeSpan);
+            }
+            else
+            {
+                restartAutoTimer.Change(TimeSpan.FromMilliseconds(ScrollInterval), Timeout.InfiniteTimeSpan);
+            }
+        }
+
+        private void OnRestartAutoTimer(object state)
+        {
+            if (_autoScrollTimer != null && !_autoScrollTimer.IsEnabled)
+            {
+                _autoScrollTimer.Start();
+            }
+        }
 
         void NewSliderPanel_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -641,9 +664,14 @@ namespace Leen.Windows.Controls
             mouseFirst = mouseLast = e.GetPosition(this);
         }
 
+        private void CustomControl_MouseEnter(object sender, MouseEventArgs e)
+        {
+            StopAutoTimer();
+        }
+
         void CustomControl_MouseLeave(object sender, MouseEventArgs e)
         {
-            //mouseDown = false;
+            RestartAutoTimer();
         }
 
         void CustomControl_MouseUp(object sender, MouseButtonEventArgs e)
@@ -697,6 +725,8 @@ namespace Leen.Windows.Controls
 
         void CustomControl_MouseMove(object sender, MouseEventArgs e)
         {
+            StopAutoTimer();
+
             if (!mouseDown)
                 return;
 
@@ -900,6 +930,7 @@ namespace Leen.Windows.Controls
             MouseMove += new MouseEventHandler(CustomControl_MouseMove);
             MouseUp += new MouseButtonEventHandler(CustomControl_MouseUp);
             MouseDown += new MouseButtonEventHandler(CustomControl_MouseDown);
+            MouseEnter += new MouseEventHandler(CustomControl_MouseEnter);
             MouseLeave += new MouseEventHandler(CustomControl_MouseLeave);
         }
 
@@ -908,6 +939,7 @@ namespace Leen.Windows.Controls
             MouseMove -= new MouseEventHandler(CustomControl_MouseMove);
             MouseUp -= new MouseButtonEventHandler(CustomControl_MouseUp);
             MouseDown -= new MouseButtonEventHandler(CustomControl_MouseDown);
+            MouseEnter -= new MouseEventHandler(CustomControl_MouseEnter);
             MouseLeave -= new MouseEventHandler(CustomControl_MouseLeave);
         }
 
