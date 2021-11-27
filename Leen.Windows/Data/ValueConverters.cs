@@ -597,7 +597,10 @@ namespace Leen.Windows.Data
                     source.CacheOption = CacheOption;
                     source.CreateOptions = CreateOptions;
                     source.EndInit();
-                    source.Freeze();
+                    if (source.CanFreeze)
+                    {
+                        source.Freeze();
+                    }
                     return source;
                 }
             }
