@@ -48,6 +48,8 @@ namespace Leen.Windows.Controls
             SizeChanged += new SizeChangedEventHandler(NewSliderPanel_SizeChanged);
             MouseWheel += NewSliderPanel_MouseWheel;
             PreviewMouseWheel += NewSliderPanel_PreviewMouseWheel;
+            MouseEnter += new MouseEventHandler(CustomControl_MouseEnter);
+            MouseLeave += new MouseEventHandler(CustomControl_MouseLeave);
         }
 
         #endregion
@@ -116,9 +118,10 @@ namespace Leen.Windows.Controls
             SlidablePanel control = d as SlidablePanel;
             bool enable = (bool)e.NewValue;
 
-            control.UnregisterEvent();
             if (enable)
                 control.RegisterEvent();
+            else
+                control.UnregisterEvent();
         }
 
         #endregion
@@ -599,30 +602,33 @@ namespace Leen.Windows.Controls
 
         void NewSliderPanel_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (sender is SlidablePanel sliderPanel && !e.Handled && _reentrantList.Contains(e))
+            if (sender is SlidablePanel sliderPanel && !e.Handled)
             {
-                var previewEventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                if (_reentrantList.Contains(e))
                 {
-                    RoutedEvent = PreviewMouseWheelEvent,
-                    Source = sender
-                };
-                var originalSource = e.OriginalSource as UIElement;
-                _reentrantList.Add(previewEventArg);
-                originalSource.RaiseEvent(previewEventArg);
-                _reentrantList.Remove(previewEventArg);
-                // If children element have not handled the event, we should do our job.
-                if (!previewEventArg.Handled && ((e.Delta <= 0 && (SelectedIndex == Children.Count - 1)) ||
-                    (e.Delta > 0 && SelectedIndex == 0)))
-                {
-                    //This is it.
-                    //Our work is done,let's our parent scroll it!
-                    e.Handled = true;
-                    Console.WriteLine("Mouse Preview Whell");
-                    var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-                    eventArg.RoutedEvent = UIElement.MouseWheelEvent;
-                    eventArg.Source = sender;
-                    var parent = sliderPanel.Parent as UIElement;
-                    parent.RaiseEvent(eventArg);
+                    var previewEventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                    {
+                        RoutedEvent = PreviewMouseWheelEvent,
+                        Source = sender
+                    };
+                    var originalSource = e.OriginalSource as UIElement;
+                    _reentrantList.Add(previewEventArg);
+                    originalSource.RaiseEvent(previewEventArg);
+                    _reentrantList.Remove(previewEventArg);
+                    // If children element have not handled the event, we should do our job.
+                    if (!previewEventArg.Handled && ((e.Delta <= 0 && (SelectedIndex == Children.Count - 1)) ||
+                        (e.Delta > 0 && SelectedIndex == 0)))
+                    {
+                        //This is it.
+                        //Our work is done,let's our parent scroll it!
+                        e.Handled = true;
+                        Console.WriteLine("Mouse Preview Whell");
+                        var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+                        eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+                        eventArg.Source = sender;
+                        var parent = sliderPanel.Parent as UIElement;
+                        parent.RaiseEvent(eventArg);
+                    }
                 }
             }
         }
@@ -666,12 +672,20 @@ namespace Leen.Windows.Controls
 
         private void CustomControl_MouseEnter(object sender, MouseEventArgs e)
         {
-            StopAutoTimer();
+            Point relativePos = e.GetPosition(this);
+            if (relativePos.X >= 0 && relativePos.Y >= 0 && relativePos.X <= this.RenderSize.Width && relativePos.Y <= this.RenderSize.Height)
+            {
+                StopAutoTimer();
+            }
         }
 
         void CustomControl_MouseLeave(object sender, MouseEventArgs e)
         {
-            RestartAutoTimer();
+            Point relativePos = e.GetPosition(this);
+            if (relativePos.X < 0 || relativePos.Y < 0 || relativePos.X > this.RenderSize.Width || relativePos.Y > this.RenderSize.Height)
+            {
+                RestartAutoTimer();
+            }
         }
 
         void CustomControl_MouseUp(object sender, MouseButtonEventArgs e)
@@ -725,8 +739,6 @@ namespace Leen.Windows.Controls
 
         void CustomControl_MouseMove(object sender, MouseEventArgs e)
         {
-            StopAutoTimer();
-
             if (!mouseDown)
                 return;
 
@@ -930,8 +942,7 @@ namespace Leen.Windows.Controls
             MouseMove += new MouseEventHandler(CustomControl_MouseMove);
             MouseUp += new MouseButtonEventHandler(CustomControl_MouseUp);
             MouseDown += new MouseButtonEventHandler(CustomControl_MouseDown);
-            MouseEnter += new MouseEventHandler(CustomControl_MouseEnter);
-            MouseLeave += new MouseEventHandler(CustomControl_MouseLeave);
+           
         }
 
         private void UnregisterEvent()
@@ -939,8 +950,6 @@ namespace Leen.Windows.Controls
             MouseMove -= new MouseEventHandler(CustomControl_MouseMove);
             MouseUp -= new MouseButtonEventHandler(CustomControl_MouseUp);
             MouseDown -= new MouseButtonEventHandler(CustomControl_MouseDown);
-            MouseEnter -= new MouseEventHandler(CustomControl_MouseEnter);
-            MouseLeave -= new MouseEventHandler(CustomControl_MouseLeave);
         }
 
         private void Animation(int index, double duration)
