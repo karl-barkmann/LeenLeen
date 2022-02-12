@@ -117,6 +117,7 @@
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 EnableAutoScroll="True"
+                                EnableDrag="False"
                                 Orientation="Vertical"
                                 ScrollDuration="500"
                                 ScrollInterval="5000">

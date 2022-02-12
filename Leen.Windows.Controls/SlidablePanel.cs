@@ -672,8 +672,7 @@ namespace Leen.Windows.Controls
 
         private void CustomControl_MouseEnter(object sender, MouseEventArgs e)
         {
-            Point relativePos = e.GetPosition(this);
-            if (relativePos.X >= 0 && relativePos.Y >= 0 && relativePos.X <= this.RenderSize.Width && relativePos.Y <= this.RenderSize.Height)
+            if (IsMouseOver)
             {
                 StopAutoTimer();
             }
@@ -681,8 +680,7 @@ namespace Leen.Windows.Controls
 
         void CustomControl_MouseLeave(object sender, MouseEventArgs e)
         {
-            Point relativePos = e.GetPosition(this);
-            if (relativePos.X < 0 || relativePos.Y < 0 || relativePos.X > this.RenderSize.Width || relativePos.Y > this.RenderSize.Height)
+            if (!IsMouseOver)
             {
                 RestartAutoTimer();
             }
